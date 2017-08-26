@@ -5,6 +5,7 @@ description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 
+
 class Roll:
     rolled = 0   # int that holds the rolled number
     roller = None   # str that holds the person who rolled
@@ -15,8 +16,8 @@ class Roll:
         self.roller = roller
         self.max = max
 
-
 last_roll = [Roll(0,None,0)]
+
 
 @bot.event
 async def on_ready():
@@ -51,7 +52,7 @@ async def determine(rolls : dict, winner : bool):
             lowest = rolls[player]
             del lowest_rollers[:]
             lowest_rollers.append(player)
-        elif rolls[player] < lowest:
+        elif rolls[player] == lowest:
             lowest_rollers.append(player)
 
     while len(highest_rollers) > 1 and winner:
@@ -105,14 +106,14 @@ async def start(ctx, mode: str, bet=100):
     if mode not in valid_modes:
         await bot.say('Invalid game mode.')
         return
+    if bet < 1:
+        await bot.say('1 is the minimum for bets.')
+        return
 
     starter = get_author(ctx)
 
     players = [starter]
     player_rolls = {}
-
-    def needs_to_roll(name):
-        return name in players and name not in player_rolls
 
     @bot.command(pass_context=True)
     async def join(ctx):
@@ -125,12 +126,12 @@ async def start(ctx, mode: str, bet=100):
             await bot.say('{} is already in the game.'.format(get_name(player)))
 
     await bot.say("Starting new {} roll. Type /join in the next 15 seconds to join.".format(mode))
-    await asyncio.sleep(3.0)
+    await asyncio.sleep(15.0)
 
-    # if len(players) < 2:
-    #     await bot.say('Not enough players.')
-    #     await bot.remove_command('join')
-    #     return
+    if len(players) < 2:
+        await bot.say('Not enough players.')
+        await bot.remove_command('join')
+        return
 
     bot.remove_command('join')
 
@@ -141,9 +142,9 @@ async def start(ctx, mode: str, bet=100):
 
         while len(players) > len(player_rolls):
             await bot.wait_for_message(content='/roll')
+            await asyncio.sleep(0.01)
             if last_roll[0].roller in players and last_roll[0].roller not in player_rolls:
                 player_rolls[last_roll[0].roller] = last_roll[0].rolled
-            await asyncio.sleep(1.0)
 
         winner = await determine(player_rolls,True)
         loser = await determine(player_rolls,False)
@@ -160,9 +161,9 @@ async def start(ctx, mode: str, bet=100):
                 await bot.wait_for_message(content='/roll')
             else:
                 await bot.wait_for_message(content='/roll {}'.format(bet))
+            await asyncio.sleep(0.01)
             if last_roll[0].roller in players and last_roll[0].roller not in player_rolls:
                 player_rolls[last_roll[0].roller] = last_roll[0].rolled
-            await asyncio.sleep(1.0)
 
         winner = await determine(player_rolls, True)
         loser = await determine(player_rolls, False)
@@ -180,24 +181,30 @@ async def start(ctx, mode: str, bet=100):
         loser = None
         while last_roll[0].rolled > 1:
             for player in players:
-                await asyncio.sleep(1.0)
-                await bot.say('Waiting for roll to {} from {}'.format(last_roll[0].rolled, get_name(player)))
+                await asyncio.sleep(0.01)
                 if last_roll[0].rolled == 1:
-                    loser = player
-                    break
-                elif last_roll[0].rolled == 100:
+                    player_index = players.index(player)
+                    if player_index == 0:
+                        loser_index = len(players) - 1
+                    else:
+                        loser_index = player_index - 1
+                    loser = players[loser_index]
+                    winners = []
+                    for player in players:
+                        if player is not loser:
+                            winners.append(get_name(player))
+                    owed = bet // len(winners)
+
+                    await bot.say("{} owes {} {}g".format(get_name(loser), ', '.join(winners), owed))
+                    return
+                await bot.say('Waiting for roll to {} from {}'.format(last_roll[0].rolled, get_name(player)))
+                if last_roll[0].rolled == 100:
                     await bot.wait_for_message(content='/roll',author=player)
                 else:
                     await bot.wait_for_message(content='/roll {}'.format(last_roll[0].rolled), author=player)
 
 
-        winners = []
-        for player in players:
-            if player is not loser:
-                winners.append(get_name(player))
-        owed = bet // len(winners)
 
-        await bot.say("{} owes {} {}g".format(get_name(loser), ', '.join(winners), owed))
 
     if mode == 'normal':
         await normal(bet)
@@ -206,7 +213,9 @@ async def start(ctx, mode: str, bet=100):
     else:
         await countdown(bet)
 
+
 bot.remove_command('help')
+
 
 @bot.command()
 async def help():
@@ -222,6 +231,8 @@ async def help():
                   "\n   countdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until "
                   "someone rolls 1 and loses. The winnings are split between everyone else. "
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
+
+
 
 
 bot.run('MzUwMzU0OTQzMjQ2NTk4MTQ2.DIC1AA.rsimVu4-dQ5oVrffSu5P_lLmNJY')
