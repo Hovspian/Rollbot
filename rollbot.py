@@ -111,6 +111,7 @@ async def start(ctx, mode: str, bet=100):
         return
 
     starter = get_author(ctx)
+    channel = ctx.message.channel
 
     players = [starter]
     player_rolls = {}
@@ -118,6 +119,8 @@ async def start(ctx, mode: str, bet=100):
     @bot.command(pass_context=True)
     async def join(ctx):
         """Allows the user to join the current game"""
+        if ctx.message.channel != channel:
+            return
         player = get_author(ctx)
         if player not in players:
             players.append(player)
@@ -141,7 +144,7 @@ async def start(ctx, mode: str, bet=100):
         await bot.say("Starting normal roll with {}g bet.".format(bet))
 
         while len(players) > len(player_rolls):
-            await bot.wait_for_message(content='/roll')
+            await bot.wait_for_message(content='/roll',channel=channel)
             await asyncio.sleep(0.01)
             if last_roll[0].roller in players and last_roll[0].roller not in player_rolls:
                 player_rolls[last_roll[0].roller] = last_roll[0].rolled
@@ -158,9 +161,9 @@ async def start(ctx, mode: str, bet=100):
 
         while len(players) > len(player_rolls):
             if bet == 100:
-                await bot.wait_for_message(content='/roll')
+                await bot.wait_for_message(content='/roll', channel=channel)
             else:
-                await bot.wait_for_message(content='/roll {}'.format(bet))
+                await bot.wait_for_message(content='/roll {}'.format(bet), channel=channel)
             await asyncio.sleep(0.01)
             if last_roll[0].roller in players and last_roll[0].roller not in player_rolls:
                 player_rolls[last_roll[0].roller] = last_roll[0].rolled
@@ -199,9 +202,10 @@ async def start(ctx, mode: str, bet=100):
                     return
                 await bot.say('Waiting for roll to {} from {}'.format(last_roll[0].rolled, get_name(player)))
                 if last_roll[0].rolled == 100:
-                    await bot.wait_for_message(content='/roll',author=player)
+                    await bot.wait_for_message(content='/roll',author=player,channel=channel)
                 else:
-                    await bot.wait_for_message(content='/roll {}'.format(last_roll[0].rolled), author=player)
+                    await bot.wait_for_message(content='/roll {}'.format(last_roll[0].rolled), author=player,
+                                               channel=channel)
 
 
 
@@ -231,8 +235,6 @@ async def help():
                   "\n   countdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until "
                   "someone rolls 1 and loses. The winnings are split between everyone else. "
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
-
-
 
 
 bot.run('MzUwMzU0OTQzMjQ2NTk4MTQ2.DIC1AA.rsimVu4-dQ5oVrffSu5P_lLmNJY')
