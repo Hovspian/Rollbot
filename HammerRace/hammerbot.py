@@ -84,14 +84,22 @@ class HammerRaceManager:
             return 'The answer is :hammer:'
         elif len(self.winners) > 1:
             return 'The answer is maybe'
-        else:
-            winner_title = self.winners[0].title
 
+        winner_title = self.winners[0].title
         return 'The answer is {}'.format(winner_title)
 
     def announce_gold_owed(self):
-        """TODO announce gold owed by losing participants"""
+        message = ''
+        for participant in self.participants:
+            if participant not in self.winners:
+                steps_remaining = self.race.steps_left(participant.progress)
+                gold = self.calculate_gold(steps_remaining)
+                message += '{} owes {} gold.\n'.format(participant.nametag, gold)
 
+        return message
+
+    def calculate_gold(self, steps_remaining):
+        return pow(steps_remaining, 3) * 5
 
 class Announcer:
     """ TODO hold all methods related to representing the racetrack and announcing progress"""
