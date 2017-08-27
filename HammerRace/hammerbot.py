@@ -44,8 +44,8 @@ class HammerRaceManager:
         self.n = self.init_char('n', 'No')
         self.h = self.init_char('h', ':hammer:')
 
-        """TODO fix magic number"""
-        self.race.set_num_players(3)
+        num = len(self.players)
+        self.race.set_num_players(num)
 
     def init_race(self):
         self.init_chars()
