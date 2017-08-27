@@ -6,6 +6,9 @@ class HammerRaceManager:
     """Sets up participants, puts rules into play, and determines progress"""
 
     def __init__(self):
+        self.y = None
+        self.n = None
+        self.h = None
         self.race = Race()
         self.participants = []
         self.winners = []
