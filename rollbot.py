@@ -220,7 +220,7 @@ async def hammerbot(ctx):
     await bot.say(hammer.init_race())
     while(hammer.race_in_progress):
         await asyncio.sleep(2.0)
-        await bot.say(hammer.report_next_round())
+        await bot.say(hammer.report_round())
 
     question = str(ctx.message.content)
     remove_command_msg = 11

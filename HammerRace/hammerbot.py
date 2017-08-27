@@ -3,81 +3,81 @@ from HammerRace.participant import Participant
 
 
 class HammerRaceManager:
+    """Sets up participants, puts rules into play, and determines progress"""
 
-    """Concerned with setting up the players, putting rules into play, and determining progress"""
     def __init__(self):
         self.race = Race()
-        self.players = []
+        self.participants = []
         self.winners = []
         self.race_in_progress = False
 
-    def init_char(self, nametag, title):
-        player = Participant()
-        player.set_nametag(nametag)
-        player.set_title(title)
-        self.players.append(player)
-        return player
+    def init_participant(self, nametag, title):
+        participant = Participant()
+        participant.set_nametag(nametag)
+        participant.set_title(title)
+        self.participants.append(participant)
+        return participant
 
-    def init_chars(self):
-        self.y = self.init_char('y', 'Yes')
-        self.n = self.init_char('n', 'No')
-        self.h = self.init_char('h', ':hammer:')
+    def init_participants(self):
+        self.y = self.init_participant('y', 'Yes')
+        self.n = self.init_participant('n', 'No')
+        self.h = self.init_participant('h', ':hammer:')
 
-        num = len(self.players)
-        self.race.set_num_players(num)
+        self.race.set_num_participants(len(self.participants))
 
     def init_race(self):
-        self.init_chars()
+        self.init_participants()
         self.race_in_progress = True
-        round_progress = []
+        display_participants = []
         race_track = self.race.get_race_track()
 
-        for player in self.players:
-            round_progress.append(self.display_position(player))
+        for participant in self.participants:
+            display_participants.append(self.progress_position(participant))
 
-        return race_track.format(*round_progress)
+        return race_track.format(*display_participants)
 
-    def report_next_round(self):
-        """report the state of the entire round"""
-        round_progress = self.next_round()
+    def report_round(self):
+        """String representing the entire round"""
+        display_participants = self.next_round()
         race_track = self.race.get_race_track()
-        report = race_track.format(*round_progress)
+        report = race_track.format(*display_participants)
         return report
 
-    def display_win_position(self, player : Participant):
+    def win_position(self, participant: Participant):
+        """String representing a winner"""
         path = '|'
         for i in range(0, self.race.distance_to_finish):
             path += ' '
-        path += '| {} |'.format(player.nametag)
+        path += '| {} |'.format(participant.nametag)
         return path
 
-    def display_position(self, player : Participant):
+    def progress_position(self, participant: Participant):
+        """String representing a character still racing"""
         path = '|'
-        for i in range(0, player.progress):
+        for i in range(0, participant.progress):
             path += '~'
-        path += player.nametag
-        for j in range(0, self.race.steps_left(player.progress)):
+        path += participant.nametag
+        for j in range(0, self.race.steps_left(participant.progress)):
             path += ' '
         path += "|   |"
         return path
 
     def next_round(self):
 
-        round_progress = []
+        display_participants = []
 
-        for player in self.players:
-            player.make_move()
-            if self.race.check_winner(player.progress):
-                round_progress.append(self.display_win_position(player))
-                self.winners.append(player)
+        for participant in self.participants:
+            participant.make_move()
+            if self.race.check_winner(participant.progress):
+                display_participants.append(self.win_position(participant))
+                self.winners.append(participant)
             else:
-                round_progress.append(self.display_position(player))
+                display_participants.append(self.progress_position(participant))
 
         if len(self.winners) > 0:
             self.race_in_progress = False
 
-        self.race.increment_round()
-        return round_progress
+        return display_participants
 
     def announce_winner(self):
         if self.h in self.winners:
