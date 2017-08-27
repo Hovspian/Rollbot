@@ -229,6 +229,10 @@ async def hammerbot(ctx):
 
     await bot.say(hammer.announce_winner())
 
+    gold_owed_announcement = hammer.announce_gold_owed()
+    if gold_owed_announcement != '':
+        await bot.say(gold_owed_announcement)
+
 
 @bot.command()
 async def help():
