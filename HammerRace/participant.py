@@ -2,12 +2,12 @@ import random
 
 
 class Participant:
-    def __init__(self):
+    def __init__(self, short_name, name):
         self.progress = 0
         self.min_move = 3
         self.max_move = 13
-        self.short_name = ''
-        self.name = ''
+        self.short_name = short_name
+        self.name = name
 
     def make_move(self, bonus=0):
         min_move = self.min_move + bonus
