@@ -4,6 +4,8 @@ class Race:
     def __init__(self):
         self.distance_to_finish = 40
         self.num_participants = 0
+        self.winners = []
+        self.participants = []
 
     def get_race_track(self):
         """String racetrack with placeholder participant slots"""
@@ -27,8 +29,8 @@ class Race:
 
         return race_track
 
-    def set_num_participants(self, num):
-        self.num_participants = num
+    def set_num_participants(self):
+        self.num_participants = len(self.participants)
 
     def steps_left(self, participant_progress):
         character_space = 1
