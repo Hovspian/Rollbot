@@ -1,6 +1,8 @@
 import discord, random, asyncio, math
 from discord.ext import commands
 
+from HammerRace.hammerbot import HammerRaceManager
+
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
@@ -220,6 +222,22 @@ class Game:
 
 bot.remove_command('help')
 
+
+@bot.command(pass_context=True)
+async def hammerbot(ctx):
+    bot.remove_command('hammerbot')
+    hammer = HammerRaceManager()
+    await bot.say(hammer.init_race())
+    while(hammer.race_in_progress):
+        await asyncio.sleep(2.0)
+        await bot.say(hammer.report_round())
+
+    question = str(ctx.message.content)
+    remove_command_msg = 11
+    if question != '':
+        await bot.say('"' + question[remove_command_msg:] + '":')
+
+    await bot.say(hammer.announce_winner())
 
 @bot.command()
 async def help():
