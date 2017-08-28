@@ -225,7 +225,6 @@ bot.remove_command('help')
 
 @bot.command(pass_context=True)
 async def hammerbot(ctx):
-    bot.remove_command('hammerbot')
     hammer = HammerRaceManager()
     hammer.init_race()
     await bot.say(hammer.round_report())
