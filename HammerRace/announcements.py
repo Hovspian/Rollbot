@@ -1,5 +1,6 @@
 from HammerRace.participant import Participant
 
+
 class Announcement:
 
     def __init__(self, race):
@@ -7,11 +8,9 @@ class Announcement:
         self.overriding_winner = None
 
     def round_report(self):
-        """String representing the entire round"""
         participant_slots = self.participant_slots()
         race_track = self.race.get_race_track()
-        report = race_track.format(*participant_slots)
-        return report
+        return race_track.format(*participant_slots)
 
     def participant_slots(self):
         slots = []
@@ -32,23 +31,23 @@ class Announcement:
         return path
 
     def string_progress_path(self, participant: Participant):
-        participant_progress = self.get_progress(participant.progress)
+        progress = self.get_progress(participant.progress)
         steps_left = self.get_steps_left(participant.progress)
-        path = '|' + participant_progress + participant.short_name + steps_left + "|   |"
+        path = '|' + progress + participant.short_name + steps_left + "|   |"
         return path
 
     def get_progress(self, progress):
-        path = ''
+        path_part = ''
         for i in range(0, progress):
-            path += '~'
-        return path
+            path_part += '~'
+        return path_part
 
     def get_steps_left(self, progress):
-        path = ''
+        path_part = ''
         steps_left = self.race.steps_left(progress)
         for j in range(0, steps_left):
-            path += ' '
-        return path
+            path_part += ' '
+        return path_part
 
     def winner(self):
         if self.overriding_winner in self.race.winners:
