@@ -9,12 +9,9 @@ class HammerRaceManager:
         self.race = Race()
         self.race_in_progress = False
 
-    def init_participant(self, short_name, name):
-        participant = Participant()
-        participant.short_name = short_name
-        participant.name = name
-        self.race.participants.append(participant)
-        return participant
+    def init_race(self):
+        self.init_participants()
+        self.race_in_progress = True
 
     def init_participants(self):
         self.y = self.init_participant(short_name='y', name='Yes')
@@ -23,25 +20,33 @@ class HammerRaceManager:
 
         self.race.set_num_participants()
 
-    def init_race(self):
-        self.init_participants()
-        self.race_in_progress = True
+    def init_participant(self, short_name, name):
+        participant = Participant(short_name=short_name, name=name)
+        self.race.participants.append(participant)
+        return participant
+
+    def next_round(self):
+        for participant in self.race.participants:
+            participant.make_move()
+            if self.race.check_winner(participant.progress):
+                self.race.winners.append(participant)
+        if len(self.race.winners) > 0:
+            self.race_in_progress = False
 
     def report_round(self):
         """String representing the entire round"""
-
-        display_participants = []
+        participant_slots = []
 
         for participant in self.race.participants:
             if participant in self.race.winners:
                 display_winner = self.string_winner_path(participant)
-                display_participants.append(display_winner)
+                participant_slots.append(display_winner)
             else:
-                in_progress = self.string_progress_path(participant)
-                display_participants.append(in_progress)
+                display_in_progress = self.string_progress_path(participant)
+                participant_slots.append(display_in_progress)
 
         race_track = self.race.get_race_track()
-        report = race_track.format(*display_participants)
+        report = race_track.format(*participant_slots)
         return report
 
     def string_winner_path(self, participant: Participant):
@@ -56,18 +61,12 @@ class HammerRaceManager:
         for i in range(0, participant.progress):
             path += '~'
         path += participant.short_name
-        for j in range(0, self.race.steps_left(participant.progress)):
+
+        steps_left = self.race.steps_left(participant.progress)
+        for j in range(0, steps_left):
             path += ' '
         path += "|   |"
         return path
-
-    def next_round(self):
-        for participant in self.race.participants:
-            participant.make_move()
-            if self.race.check_winner(participant.progress):
-                self.race.winners.append(participant)
-        if len(self.race.winners) > 0:
-            self.race_in_progress = False
 
     def announce_winner(self):
         if self.h in self.race.winners:
@@ -89,7 +88,8 @@ class HammerRaceManager:
         return message
 
     def calculate_gold(self, steps_remaining):
-        return pow(steps_remaining, 2)*3 + 100
+        return pow(steps_remaining, 2) * 3 + 100
+
 
 class Announcer:
     """ TODO hold all methods related to representing the racetrack and announcing progress"""
