@@ -218,23 +218,19 @@ async def hammerbot(ctx):
     bot.remove_command('hammerbot')
     hammer = HammerRaceManager()
     hammer.init_race()
-    await bot.say(hammer.report_round())
+    await bot.say(hammer.round_report())
 
     while hammer.race_in_progress:
         await asyncio.sleep(2.0)
         hammer.next_round()
-        await bot.say(hammer.report_round())
+        await bot.say(hammer.round_report())
 
     question = str(ctx.message.content)
     remove_command_msg = 11
     if question != '':
         await bot.say('"' + question[remove_command_msg:] + '":')
 
-    await bot.say(hammer.announce_winner())
-
-    gold_owed_announcement = hammer.announce_gold_owed()
-    if gold_owed_announcement != '':
-        await bot.say(gold_owed_announcement)
+    await bot.say(hammer.winner_report())
 
 
 @bot.command()
