@@ -16,10 +16,10 @@ class HammerRaceManager:
         self.race_in_progress = True
 
     def init_participants(self):
-        self.y = self.init_participant(short_name='y', name='Yes')
-        self.n = self.init_participant(short_name='n', name='No')
-        self.h = self.init_participant(short_name='h', name=':hammer:')
-        self.announcement.overriding_winner = self.h
+        self.init_participant(short_name='y', name='Yes')
+        self.init_participant(short_name='n', name='No')
+        hammer = self.init_participant(short_name='h', name=':hammer:')
+        self.announcement.overriding_winner = hammer
 
         self.race.set_num_participants()
 
