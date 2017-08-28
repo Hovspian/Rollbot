@@ -7,6 +7,9 @@ class HammerRaceManager:
     """Manage relationship between participants and race"""
 
     def __init__(self):
+        self.y = None
+        self.n = None
+        self.h = None
         self.race = Race()
         self.announcement = Announcement(self.race)
         self.race_in_progress = False
