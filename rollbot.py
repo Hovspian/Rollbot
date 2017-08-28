@@ -227,9 +227,12 @@ bot.remove_command('help')
 async def hammerbot(ctx):
     bot.remove_command('hammerbot')
     hammer = HammerRaceManager()
-    await bot.say(hammer.init_race())
-    while(hammer.race_in_progress):
+    hammer.init_race()
+    await bot.say(hammer.report_round())
+
+    while hammer.race_in_progress:
         await asyncio.sleep(2.0)
+        hammer.next_round()
         await bot.say(hammer.report_round())
 
     question = str(ctx.message.content)
