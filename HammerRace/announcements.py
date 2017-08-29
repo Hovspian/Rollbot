@@ -5,7 +5,7 @@ class Announcement:
 
     def __init__(self, race):
         self.race = race
-        self.overriding_winner = None
+        self.overriding_answer = None
 
     def round_report(self):
         participant_slots = self.participant_slots()
@@ -49,9 +49,9 @@ class Announcement:
             path_part += ' '
         return path_part
 
-    def winner(self):
-        if self.overriding_winner in self.race.winners:
-            return 'The answer is {}'.format(self.overriding_winner.name)
+    def answer(self):
+        if self.overriding_answer in self.race.winners:
+            return 'The answer is {}'.format(self.overriding_answer.name)
         elif len(self.race.winners) > 1:
             return 'The answer is maybe'
         winner_name = self.race.winners[0].name

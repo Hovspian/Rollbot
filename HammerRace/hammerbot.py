@@ -19,20 +19,23 @@ class HammerRaceManager:
         self.init_participant(short_name='y', name='Yes')
         self.init_participant(short_name='n', name='No')
         hammer = self.init_participant(short_name='h', name=':hammer:')
-        self.announcement.overriding_winner = hammer
+        self.announcement.overriding_answer = hammer
 
         self.race.set_num_participants()
 
     def init_participant(self, short_name, name):
         participant = Participant(short_name, name)
-        self.race.participants.append(participant)
+        self.race.add_participant(participant)
         return participant
 
     def next_round(self):
         for participant in self.race.participants:
             participant.make_move()
             if self.race.check_winner(participant.progress):
-                self.race.winners.append(participant)
+                self.race.add_winner(participant)
+        self.check_race_end()
+
+    def check_race_end(self):
         if len(self.race.winners) > 0:
             self.race_in_progress = False
 
@@ -40,4 +43,4 @@ class HammerRaceManager:
         return self.announcement.round_report()
 
     def winner_report(self):
-        return self.announcement.winner() + '\n' + self.announcement.gold_owed()
+        return self.announcement.answer() + '\n' + self.announcement.gold_owed()

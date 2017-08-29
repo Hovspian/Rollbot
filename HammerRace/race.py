@@ -40,3 +40,9 @@ class Race:
     def check_winner(self, participant_progress):
         if self.steps_left(participant_progress) <= 0:
             return True
+
+    def add_participant(self, participant):
+        self.participants.append(participant)
+
+    def add_winner(self, participant):
+        self.winners.append(participant)
