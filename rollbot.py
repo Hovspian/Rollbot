@@ -23,7 +23,7 @@ class Roll:
         self.max = max
 
 last_roll = [Roll(0, None, 0)]
-
+games_in_progress = []
 
 @bot.command(pass_context=True)
 async def roll(ctx, max=100):
@@ -37,13 +37,19 @@ async def roll(ctx, max=100):
     roll = random.randint(1, max)
     last_roll[0] = Roll(roll,roller,max)
     await bot.say("{} rolled {} (1-{})".format(roller.display_name, roll, max))
-    # return last_roll[0]
+    return last_roll[0]
 
 
 @bot.command(pass_context=True)
 async def start(ctx, mode: str, bet=100):
     """Starts the game mode specified with the given bet. If no bet is given, 100 is chosen as the default."""
+    starter = ctx.message.author
+    channel = ctx.message.channel
     valid_modes = ['normal', 'difference', 'countdown']
+
+    if channel in games_in_progress:
+        await bot.say('Game already in progress in channel')
+        return
     if mode not in valid_modes:
         await bot.say('Invalid game mode.')
         return
@@ -51,17 +57,13 @@ async def start(ctx, mode: str, bet=100):
         await bot.say('1 is the minimum for bets.')
         return
 
-
-    starter = ctx.message.author
-    channel = ctx.message.channel
-
     the_game = Game(mode,bet,channel,starter)
+    games_in_progress.append(channel)
     await the_game.play()
+    games_in_progress.remove(channel)
 
 
 class Game:
-    # from rollbot import bot
-
     def __init__(self, game_mode, bet, channel, starter):
         self.mode = game_mode
         self.bet = bet
@@ -258,5 +260,5 @@ async def help():
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
 
 
-bot.run('MzUwMzU0OTQzMjQ2NTk4MTQ2.DIC1AA.rsimVu4-dQ5oVrffSu5P_lLmNJY')
+bot.run('token')
 
