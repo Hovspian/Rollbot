@@ -237,8 +237,8 @@ async def hammerbot(ctx):
         await bot.say(hammer.round_report())
 
     question = str(ctx.message.content)
-    remove_command_msg = 11
     if question != '':
+        remove_command_msg = 11
         await bot.say('"' + question[remove_command_msg:] + '":')
 
     await bot.say(hammer.winner_report())

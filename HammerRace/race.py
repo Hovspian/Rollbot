@@ -19,9 +19,9 @@ class Race:
         race_track = code_tag + '\n'
         race_track += track_borders
 
-        for i in range(0, self.num_participants):
+        for participant in range(0, self.num_participants):
             race_track += participant_placeholder
-            if i != last:
+            if participant != last:
                 race_track += empty_lane
 
         race_track += track_borders
