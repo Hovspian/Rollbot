@@ -1,4 +1,5 @@
 import discord, random, asyncio, math
+import token
 from discord.ext import commands
 
 from HammerRace.hammerbot import ClassicHammer
@@ -259,5 +260,5 @@ async def help():
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
 
 
-bot.run('token')
+bot.run(token.TOKEN)
 
