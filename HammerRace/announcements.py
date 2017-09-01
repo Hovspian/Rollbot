@@ -8,8 +8,8 @@ class Announcement:
         self.overriding_answer = None
 
     def round_report(self):
-        participant_slots = self.participant_slots()
         race_track = self.race.get_race_track()
+        participant_slots = self.participant_slots()
         return race_track.format(*participant_slots)
 
     def participant_slots(self):
@@ -58,6 +58,7 @@ class Announcement:
         return 'The answer is {}'.format(winner_name)
 
     def gold_owed(self):
+        """TODO divide by the number of winners"""
         message = ''
         for participant in self.race.participants:
             if participant not in self.race.winners:
@@ -68,3 +69,19 @@ class Announcement:
 
     def calculate_gold(self, steps_remaining):
         return pow(steps_remaining, 2) * 3 + 100
+
+    def winners(self):
+        if len(self.race.winners) > 1:
+            winner_list = self.get_list_of_winners()
+            return "The winners are {}".format(winner_list)
+        else:
+            return "The winner is {}".format(self.race.winners[0])
+
+    def get_list_of_winners(self):
+        winner_list = ''
+        last = len(self.race.winners) - 1
+        for winner in self.race.winners:
+            winner_list += winner
+            if winner != last:
+                winner_list += ', '
+        return winner_list
