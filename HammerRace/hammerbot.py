@@ -49,7 +49,6 @@ class ClassicHammer(HammerRaceManager):
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
         self.announcement.overriding_answer = hammer
-
         super().init_participants()
 
     def next_round(self):
@@ -80,7 +79,6 @@ class ComparisonHammer(HammerRaceManager):
 
     def set_options(self, message):
         options = message.split(',')
-        """TODO remove spaces at the beginning/end of options"""
         self.options = options
 
     def unique_short_name(self):
@@ -89,8 +87,8 @@ class ComparisonHammer(HammerRaceManager):
 
     def init_participants(self):
         for option in self.options:
-            option = option.lstrip()
-            short_name = option[0]
+            option = option.strip()
+            short_name = option[0].lower()
             name = option
             super().init_participant(short_name, name)
         super().init_participants()
