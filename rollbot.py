@@ -1,8 +1,10 @@
-import discord, random, asyncio, math
-import token
+import discord
+import random
+import asyncio
+import math
+import discordtoken
 from discord.ext import commands
-
-from HammerRace.hammerbot import ClassicHammer
+from HammerRace.hammerbot import *
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
@@ -244,6 +246,21 @@ async def askhammer(ctx):
     await bot.say(hammer.winner_report())
 
 
+@bot.command(pass_context=True)
+async def hammer(ctx):
+    message = str(ctx.message.content)
+    remove_command = 8
+    message = message[remove_command:]
+    hammer = ComparisonHammer(message)
+    await bot.say(hammer.round_report())
+
+    while hammer.race_in_progress:
+        await asyncio.sleep(2.0)
+        hammer.next_round()
+        await bot.say(hammer.round_report())
+
+    await bot.say(hammer.winner_report())
+
 @bot.command()
 async def help():
     await bot.say("```Rollbot commands: "
@@ -260,5 +277,5 @@ async def help():
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
 
 
-bot.run(token.TOKEN)
+bot.run(discordtoken.TOKEN)
 

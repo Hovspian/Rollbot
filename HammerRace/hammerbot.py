@@ -48,7 +48,7 @@ class ClassicHammer(HammerRaceManager):
         super().init_participant(short_name='y', name='Yes')
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
-        super().announcement.overriding_answer = hammer
+        self.announcement.overriding_answer = hammer
 
         super().init_participants()
 
@@ -59,15 +59,15 @@ class ClassicHammer(HammerRaceManager):
         super().check_race_end()
 
     def round_report(self):
-        super().round_report()
+        return super().round_report()
 
     def winner_report(self):
-        return super().announcement.answer() + '\n' + super().winner_report()
+        return self.announcement.answer() + '\n' + super().winner_report()
 
 class ComparisonHammer(HammerRaceManager):
-    """TODO gamemode compares different choices entered by users.
+    """Game mode compares different choices
     eg. /hammer eggs, bread, banana
-    If a short name is duplicate it will look at proceeding letters in the long name.
+    TODO: If a short name is duplicate it will look at proceeding letters in the long name.
     If none are available it will choose another available letter.
     Accepts up to 5. """
 
@@ -75,12 +75,11 @@ class ComparisonHammer(HammerRaceManager):
         super().__init__()
         self.options = []
         self.set_options(message)
+        self.init_participants()
         self.short_names = []
 
     def set_options(self, message):
         options = message.split(',')
-        command_msg = 0
-        options.pop(command_msg)
         """TODO remove spaces at the beginning/end of options"""
         self.options = options
 
@@ -90,9 +89,11 @@ class ComparisonHammer(HammerRaceManager):
 
     def init_participants(self):
         for option in self.options:
-            short_name = option[0][0]
-            name = option[0]
+            option = option.lstrip()
+            short_name = option[0]
+            name = option
             super().init_participant(short_name, name)
+        super().init_participants()
 
     def next_round(self):
         super().next_round()
@@ -101,10 +102,10 @@ class ComparisonHammer(HammerRaceManager):
         super().check_race_end()
 
     def round_report(self):
-        super().round_report()
+        return super().round_report()
 
     def winner_report(self):
-        return super().announcement.winners()
+        return self.announcement.winners()
 
 
 class VersusHammer(HammerRaceManager):

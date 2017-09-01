@@ -75,13 +75,13 @@ class Announcement:
             winner_list = self.get_list_of_winners()
             return "The winners are {}".format(winner_list)
         else:
-            return "The winner is {}".format(self.race.winners[0])
+            return "The winner is {}".format(self.race.winners[0].name)
 
     def get_list_of_winners(self):
         winner_list = ''
         last = len(self.race.winners) - 1
         for winner in self.race.winners:
-            winner_list += winner
+            winner_list += winner.name
             if winner != last:
                 winner_list += ', '
         return winner_list
