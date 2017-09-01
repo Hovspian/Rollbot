@@ -28,26 +28,18 @@ class ClassicHammer(HammerRaceManager):
         return self.announcement.answer() + '\n' + super().winner_report()
 
 class ComparisonHammer(HammerRaceManager):
-    """Game mode compares different choices
-    eg. /hammer eggs, bread, banana
-    TODO: If a short name is duplicate it will look at proceeding letters in the long name.
-    If none are available it will choose another available letter.
-    Accepts up to 5. """
+    """Game mode compares inputted choices.
+    Example: /hammer eggs, bread, banana"""
 
     def __init__(self, message):
         super().__init__()
         self.options = []
         self.set_options(message)
         self.init_participants()
-        self.short_names = []
 
     def set_options(self, message):
         options = message.split(',')
         self.options = options
-
-    def unique_short_name(self):
-        # TODO select unique short_names for everything that comes through
-        return True
 
     def init_participants(self):
         for option in self.options:
@@ -56,6 +48,10 @@ class ComparisonHammer(HammerRaceManager):
             name = option
             super().init_participant(short_name, name)
         super().init_participants()
+
+    def valid_num_participants(self):
+        if (self.race.num_participants > 1) & (self.race.num_participants <= 5):
+            return True
 
     def next_round(self):
         super().next_round()
