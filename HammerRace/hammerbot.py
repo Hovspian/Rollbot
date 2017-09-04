@@ -27,6 +27,7 @@ class ClassicHammer(HammerRaceManager):
     def winner_report(self):
         return self.announcement.answer() + '\n' + super().winner_report()
 
+
 class ComparisonHammer(HammerRaceManager):
     """Game mode compares inputted choices.
     Example: /hammer eggs, bread, banana"""
@@ -67,3 +68,32 @@ class VersusHammer(HammerRaceManager):
     """TODO gamemode allows users to join in the race.
     eg. /hammerrace
     """
+    def __init__(self, game_starter):
+        super().__init__()
+        super().init_participants()
+        self.users = []
+        self.thrown_rock = []
+        self.race_in_progress = False
+
+    def sign_up(self, participant):
+        self.add_user_participant(participant)
+        participant = participant.split('#')
+        short_name = participant[0][0].lower()
+        name = participant[0]
+        super().init_participant(short_name, name)
+        print(name + "joined the game as + " + short_name)
+
+    def add_user_participant(self, user):
+        self.users.append(user)
+
+    def valid_participant(self, user):
+        if user not in self.users:
+            return True
+
+    def valid_max_participants(self):
+        if self.race.num_participants <= 5:
+            return True
+
+    def valid_min_participants(self):
+        if self.race.num_participants > 1:
+            return True

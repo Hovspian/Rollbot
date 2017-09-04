@@ -268,6 +268,10 @@ async def hammer(ctx):
         await bot.say("Please enter 2-5 options, separated by commas. Example: \n ```/hammer bread, eggs, hammer```")
 
 
+@bot.command(pass_context=True)
+async def hammerrace(ctx):
+    """TODO"""
+
 
 @bot.command()
 async def help():
