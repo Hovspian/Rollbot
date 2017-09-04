@@ -38,15 +38,12 @@ class ComparisonHammer(HammerRaceManager):
         self.init_participants()
 
     def set_options(self, message):
-        options = message.split(',')
-        self.options = options
+        self.options = message.split(',')
 
     def init_participants(self):
         for option in self.options:
             option = option.strip()
-            short_name = option[0].lower()
-            name = option
-            super().init_participant(short_name, name)
+            super().init_participant(short_name=option[0].lower(), name=option)
         super().init_participants()
 
     def valid_num_participants(self):
