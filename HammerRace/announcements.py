@@ -79,7 +79,7 @@ class Announcement:
 
     def get_list_of_winners(self):
         winner_list = ''
-        last = len(self.race.winners) - 1
+        last = self.race.winners[-1]
         for winner in self.race.winners:
             winner_list += winner.name
             if winner != last:
