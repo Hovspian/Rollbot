@@ -12,7 +12,7 @@ class ClassicHammer(HammerRaceManager):
         super().init_participant(short_name='y', name='Yes')
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
-        self.announcement.overriding_answer = hammer
+        self.announcement.overriding_answer = hammer.name
         super().init_participants()
 
     def next_round(self):

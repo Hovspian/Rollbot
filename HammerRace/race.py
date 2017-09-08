@@ -4,7 +4,7 @@ class Race:
     def __init__(self):
         self.distance_to_finish = 40
         self.num_participants = 0
-        self.winners = []
+        self.winner_names = []
         self.participants = []
 
     def get_race_track(self):
@@ -45,4 +45,4 @@ class Race:
         self.participants.append(participant)
 
     def add_winner(self, participant):
-        self.winners.append(participant)
+        self.winner_names.append(participant.name)

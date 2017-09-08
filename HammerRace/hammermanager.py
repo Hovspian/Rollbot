@@ -26,7 +26,7 @@ class HammerRaceManager:
         self.check_race_end()
 
     def check_race_end(self):
-        if len(self.race.winners) > 0:
+        if len(self.race.winner_names) > 0:
             self.race_in_progress = False
 
     def round_report(self):

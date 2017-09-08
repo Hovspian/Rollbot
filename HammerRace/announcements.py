@@ -5,7 +5,7 @@ class Announcement:
 
     def __init__(self, race):
         self.race = race
-        self.overriding_answer = None
+        self.overriding_answer = ''
 
     def round_report(self):
         race_track = self.race.get_race_track()
@@ -15,7 +15,7 @@ class Announcement:
     def participant_slots(self):
         slots = []
         for participant in self.race.participants:
-            if participant in self.race.winners:
+            if participant.name in self.race.winner_names:
                 winning_participant = self.string_winner_path(participant)
                 slots.append(winning_participant)
             else:
@@ -50,18 +50,18 @@ class Announcement:
         return path_part
 
     def answer(self):
-        if self.overriding_answer in self.race.winners:
-            return 'The answer is {}'.format(self.overriding_answer.name)
-        elif len(self.race.winners) > 1:
+        if self.overriding_answer in self.race.winner_names:
+            return 'The answer is {}'.format(self.overriding_answer)
+        elif len(self.race.winner_names) > 1:
             return 'The answer is maybe'
-        winner_name = self.race.winners[0].name
+        winner_name = self.race.winner_names[0]
         return 'The answer is {}'.format(winner_name)
 
     def gold_owed(self):
         """TODO divide by the number of winners"""
         message = ''
         for participant in self.race.participants:
-            if participant not in self.race.winners:
+            if participant not in self.race.winner_names:
                 steps_remaining = self.race.steps_left(participant.progress)
                 gold = self.calculate_gold(steps_remaining)
                 message += '{} owes {} gold.\n'.format(participant.short_name, gold)
@@ -71,17 +71,12 @@ class Announcement:
         return pow(steps_remaining, 2) * 3 + 100
 
     def winners(self):
-        if len(self.race.winners) > 1:
+        if len(self.race.winner_names) > 1:
             winner_list = self.get_list_of_winners()
             return "The winners are {}".format(winner_list)
         else:
-            return "The winner is {}".format(self.race.winners[0].name)
+            return "The winner is {}".format(self.race.winner_names[0])
 
     def get_list_of_winners(self):
-        winner_list = ''
-        last = self.race.winners[-1]
-        for winner in self.race.winners:
-            winner_list += winner.name
-            if winner != last:
-                winner_list += ', '
+        winner_list = ', '.join(self.race.winner_names)
         return winner_list
