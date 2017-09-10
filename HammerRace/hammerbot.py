@@ -12,7 +12,7 @@ class ClassicHammer(HammerRaceManager):
         super().init_participant(short_name='y', name='Yes')
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
-        self.announcement.overriding_answer = hammer.name
+        self.announcement.set_overriding_answer(hammer.name)
         super().init_participants()
 
     def next_round(self):
@@ -44,7 +44,7 @@ class ComparisonHammer(HammerRaceManager):
     def init_participants(self):
         for option in self.options:
             option = option.strip()
-            super().init_participant(short_name=option[0].lower(), name=option)
+            super().init_participant(short_name=option[0], name=option)
         super().init_participants()
 
     def valid_num_participants(self):
@@ -78,7 +78,7 @@ class VersusHammer(HammerRaceManager):
     def sign_up(self, participant):
         self.add_user_participant(participant)
         participant = participant.split('#')
-        short_name = participant[0][0].lower()
+        short_name = participant[0][0]
         name = participant[0]
         super().init_participant(short_name, name)
         print(name + "joined the game as + " + short_name)
