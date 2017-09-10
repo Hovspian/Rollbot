@@ -1,9 +1,15 @@
+
 import discord, random, asyncio
 from discord.ext import commands
 from game import Game, last_roll
 from roll import Roll
-
-from HammerRace.hammerbot import HammerRaceManager
+import discord
+import random
+import asyncio
+import math
+import discordtoken
+from discord.ext import commands
+from HammerRace.hammerbot import *
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
@@ -76,23 +82,49 @@ async def join(ctx):
         await bot.say("{} joined the game.".format(author.display_name))
 
 
+def message_without_command(full_string):
+    command, space, message_body = str(full_string).partition(' ')
+    return message_body
+
+
 @bot.command(pass_context=True)
-async def hammerbot(ctx):
-    hammer = HammerRaceManager()
-    hammer.init_race()
-    await bot.say(hammer.round_report())
+async def askhammer(ctx):
+    question = message_without_command(ctx.message.content)
+    hammer_manager = ClassicHammer()
+    await bot.say(hammer_manager.round_report())
 
-    while hammer.race_in_progress:
+    while hammer_manager.race_in_progress:
         await asyncio.sleep(2.0)
-        hammer.next_round()
-        await bot.say(hammer.round_report())
+        hammer_manager.next_round()
+        await bot.say(hammer_manager.round_report())
 
-    question = str(ctx.message.content)
     if question != '':
-        remove_command_msg = 11
-        await bot.say('"' + question[remove_command_msg:] + '":')
+        await bot.say('"' + question + '":')
 
-    await bot.say(hammer.winner_report())
+    await bot.say(hammer_manager.winner_report())
+
+
+@bot.command(pass_context=True)
+async def hammer(ctx):
+    options = message_without_command(ctx.message.content)
+    hammer_manager = ComparisonHammer(options)
+
+    if hammer_manager.valid_num_participants():
+        await bot.say(hammer_manager.round_report())
+
+        while hammer_manager.race_in_progress:
+            await asyncio.sleep(2.0)
+            hammer_manager.next_round()
+            await bot.say(hammer_manager.round_report())
+
+        await bot.say(options + ':\n' + hammer_manager.winner_report())
+    else:
+        await bot.say("Please enter 2-5 options, separated by commas. Example: \n ```/hammer bread, eggs, hammer```")
+
+
+@bot.command(pass_context=True)
+async def hammerrace(ctx):
+    """TODO"""
 
 
 bot.remove_command('help')
@@ -114,5 +146,5 @@ async def help():
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
 
 
-bot.run('token')
+bot.run(discordtoken.TOKEN)
 
