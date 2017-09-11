@@ -1,9 +1,10 @@
 import discord, random, asyncio
 from discord.ext import commands
-from game import Game, last_roll
-from roll import Roll
-
+from RollGames.game import Game, last_roll
+from RollGames.roll import Roll
 from HammerRace.hammerbot import HammerRaceManager
+from discordtoken import TOKEN
+
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
@@ -17,9 +18,8 @@ async def on_ready():
     print(bot.user.id)
     print('-' * len(bot.user.id))
 
-
-
 games_in_progress = {}
+
 
 @bot.command(pass_context=True)
 async def roll(ctx, max=100):
@@ -65,15 +65,23 @@ async def join(ctx):
     """Allows the user to join the current game"""
     channel = ctx.message.channel
     author = ctx.message.author
-    if channel not in games_in_progress.keys():
+    if not game_in_channel(channel):
         await bot.say("No game in this channel")
-        return
-    elif channel in games_in_progress.keys() and author in games_in_progress[channel].players:
+    elif games_in_progress[channel].in_progress:
+        await bot.say("It's too late to join.")
+    elif game_in_channel(channel) and person_in_game(author, channel):
         await bot.say("{} is already in the game.".format(author.display_name))
-        return
     else:
-        games_in_progress[channel].add(author)
+        await games_in_progress[channel].add(author)
         await bot.say("{} joined the game.".format(author.display_name))
+
+
+def game_in_channel(channel):
+    return channel in games_in_progress.keys()
+
+
+def person_in_game(person, channel):
+    return person in games_in_progress[channel].players
 
 
 @bot.command(pass_context=True)
@@ -114,5 +122,13 @@ async def help():
                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
 
 
-bot.run('token')
+@bot.command(alias='8ball')
+async def eightball():
+    responses = [ 'It is certain', 'It is decidedly so', 'Without a doubt', 'Yes definitely', 'You may rely on it',
+                  'As I see it, yes', 'Most likely', 'Outlook good', 'Yes', 'Signs point to yes', 'Reply hazy try again'
+                  , 'Ask again later', 'Better not tell you now', 'Cannot predict now', 'Concentrate and ask again',
+                  'Don\'t count on it', 'My reply is no', 'My sources say no', 'Outlook not so good', 'Very doubtful']
+    await bot.say(responses[random.randint(0, len(responses) - 1)])
+
+bot.run(TOKEN)
 
