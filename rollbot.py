@@ -1,8 +1,9 @@
+
 import discord, random, asyncio
 from discord.ext import commands
 from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
-from HammerRace.hammerbot import HammerRaceManager
+from HammerRace.hammerbot import *
 from discordtoken import TOKEN
 
 
@@ -83,24 +84,49 @@ def game_in_channel(channel):
 def person_in_game(person, channel):
     return person in games_in_progress[channel].players
 
+def message_without_command(full_string):
+    command, space, message_body = str(full_string).partition(' ')
+    return message_body
+
 
 @bot.command(pass_context=True)
-async def hammerbot(ctx):
-    hammer = HammerRaceManager()
-    hammer.init_race()
-    await bot.say(hammer.round_report())
+async def askhammer(ctx):
+    question = message_without_command(ctx.message.content)
+    hammer_manager = ClassicHammer()
+    await bot.say(hammer_manager.round_report())
 
-    while hammer.race_in_progress:
+    while hammer_manager.race_in_progress:
         await asyncio.sleep(2.0)
-        hammer.next_round()
-        await bot.say(hammer.round_report())
+        hammer_manager.next_round()
+        await bot.say(hammer_manager.round_report())
 
-    question = str(ctx.message.content)
     if question != '':
-        remove_command_msg = 11
-        await bot.say('"' + question[remove_command_msg:] + '":')
+        await bot.say('"' + question + '":')
 
-    await bot.say(hammer.winner_report())
+    await bot.say(hammer_manager.winner_report())
+
+
+@bot.command(pass_context=True)
+async def hammer(ctx):
+    options = message_without_command(ctx.message.content)
+    hammer_manager = ComparisonHammer(options)
+
+    if hammer_manager.valid_num_participants():
+        await bot.say(hammer_manager.round_report())
+
+        while hammer_manager.race_in_progress:
+            await asyncio.sleep(2.0)
+            hammer_manager.next_round()
+            await bot.say(hammer_manager.round_report())
+
+        await bot.say(options + ':\n' + hammer_manager.winner_report())
+    else:
+        await bot.say("Please enter 2-5 options, separated by commas. Example: \n ```/hammer bread, eggs, hammer```")
+
+
+@bot.command(pass_context=True)
+async def hammerrace(ctx):
+    """TODO"""
 
 
 bot.remove_command('help')

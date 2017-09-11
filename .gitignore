@@ -1,4 +1,4 @@
 /__pycache__
 /.idea
 *.pyc
-*discord_token.py
+discordtoken.py
