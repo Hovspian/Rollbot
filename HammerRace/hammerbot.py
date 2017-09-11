@@ -2,7 +2,6 @@ from HammerRace.hammermanager import HammerRaceManager
 
 
 class ClassicHammer(HammerRaceManager):
-    # TODO might have its own announcer?
 
     def __init__(self):
         super().__init__()
@@ -13,13 +12,9 @@ class ClassicHammer(HammerRaceManager):
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
         self.announcement.set_overriding_answer(hammer.name)
-        super().init_participants()
 
     def next_round(self):
         super().next_round()
-
-    def check_race_end(self):
-        super().check_race_end()
 
     def round_report(self):
         return super().round_report()
@@ -45,17 +40,13 @@ class ComparisonHammer(HammerRaceManager):
         for option in self.options:
             option = option.strip()
             super().init_participant(short_name=option[0], name=option)
-        super().init_participants()
 
     def valid_num_participants(self):
-        if (self.race.num_participants > 1) & (self.race.num_participants <= 5):
+        if (len(self.race.participants) > 1) and (len(self.race.participants) <= 5):
             return True
 
     def next_round(self):
         super().next_round()
-
-    def check_race_end(self):
-        super().check_race_end()
 
     def round_report(self):
         return super().round_report()
@@ -70,7 +61,6 @@ class VersusHammer(HammerRaceManager):
     """
     def __init__(self, game_starter):
         super().__init__()
-        super().init_participants()
         self.users = []
         self.thrown_rock = []
         self.race_in_progress = False

@@ -2,6 +2,7 @@ from HammerRace.participant import Participant
 
 
 class Announcement:
+    # Return string announcements
 
     def __init__(self, race):
         self.race = race
@@ -18,7 +19,7 @@ class Announcement:
     def participant_slots(self):
         slots = []
         for participant in self.race.participants:
-            if participant.name in self.race.winner_names:
+            if self.race.is_winner(participant):
                 winning_participant = self.string_winner_path(participant)
                 slots.append(winning_participant)
             else:
@@ -33,50 +34,32 @@ class Announcement:
         return path
 
     def string_progress_path(self, participant: Participant):
-        progress = self.get_progress_part(participant.progress)
-        steps_left = self.get_steps_remaining_part(participant.progress)
+        progress = '~' * participant.progress
+        steps_left = ' ' * self.race.get_steps_left(participant.progress)
         path = '|' + progress + participant.short_name + steps_left + "|   |"
         return path
 
-    @staticmethod
-    def get_progress_part(progress):
-        path_part = '~' * progress
-        return path_part
-
-    def get_steps_remaining_part(self, progress):
-        path_part = ' ' * self.race.steps_left(progress)
-        return path_part
-
     def answer(self):
-        if self.overriding_answer in self.race.winner_names:
-            return 'The answer is {}'.format(self.overriding_answer)
-        if len(self.race.winner_names) > 1:
-            return 'The answer is maybe'
-        winner_name = self.race.winner_names[0]
-        return 'The answer is {}'.format(winner_name)
+        answers = self.get_winner_name_list()
+        if self.overriding_answer in answers:
+            answer = '{}'.format(self.overriding_answer)
+        elif len(answers) > 1:
+            answer = 'maybe'
+        else:
+            answer = '{}'.format(answers[0])
+        return 'The answer is ' + answer
 
-    def gold_owed(self):
-        """TODO divide by the number of winners"""
-        message = ''
-        for participant in self.race.participants:
-            if participant.name not in self.race.winner_names:
-                steps_remaining = self.race.steps_left(participant.progress)
-                gold = self.calculate_gold(steps_remaining)
-                message += '{} owes {} gold.\n'.format(participant.short_name, gold)
-        return message
-
-    @staticmethod
-    def calculate_gold(steps_remaining):
-        """TODO move this method away"""
-        return pow(steps_remaining, 2) * 3 + 100
+    def gold_owed(self, participant: Participant):
+        gold = self.race.calculate_gold_owed(participant.progress)
+        return '{} owes {} gold.\n'.format(participant.short_name, gold)
 
     def winners(self):
-        if len(self.race.winner_names) > 1:
-            winner_list = self.get_list_of_winners()
-            return "The winners are {}".format(winner_list)
+        winners = self.get_winner_name_list()
+        if len(winners) > 1:
+            return "The winners are {}".format(winners)
         else:
-            winner_name = self.race.winner_names[0]
-            return "The winner is {}".format(winner_name)
+            return "The winner is {}".format(winners[0])
 
-    def get_list_of_winners(self):
-        return ', '.join(self.race.winner_names)
+    def get_winner_name_list(self):
+        winner_names = (winner.name for winner in self.race.winners)
+        return ', '.join(winner_names)

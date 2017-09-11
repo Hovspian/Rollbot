@@ -2,6 +2,7 @@ from HammerRace.race import Race
 from HammerRace.participant import Participant
 from HammerRace.announcements import Announcement
 
+
 class HammerRaceManager:
     # Manage relationship between feedback, participants and race
 
@@ -9,9 +10,6 @@ class HammerRaceManager:
         self.race = Race()
         self.announcement = Announcement(self.race)
         self.race_in_progress = True
-
-    def init_participants(self):
-        self.race.set_num_participants()
 
     def init_participant(self, short_name, name):
         participant = Participant(short_name, name)
@@ -21,16 +19,24 @@ class HammerRaceManager:
     def next_round(self):
         for participant in self.race.participants:
             participant.make_move()
-            if self.race.check_winner(participant.progress):
+            if self.race.is_winner(participant):
+                participant.progress = self.race.distance_to_finish
                 self.race.add_winner(participant)
         self.check_race_end()
 
     def check_race_end(self):
-        if len(self.race.winner_names) > 0:
+        if self.race.is_race_end():
             self.race_in_progress = False
 
     def round_report(self):
         return self.announcement.round_report()
 
     def winner_report(self):
-        return self.announcement.gold_owed()
+        return self.report_gold_owed()
+
+    def report_gold_owed(self):
+        report = ''
+        for participant in self.race.participants:
+            if participant not in self.race.winners:
+                report += self.announcement.gold_owed(participant)
+        return report
