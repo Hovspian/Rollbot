@@ -3,7 +3,7 @@ import discord, random, asyncio
 from discord.ext import commands
 from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
-from HammerRace.hammerbot import *
+from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
 
 
@@ -83,6 +83,7 @@ def game_in_channel(channel):
 
 def person_in_game(person, channel):
     return person in games_in_progress[channel].players
+
 
 def message_without_command(full_string):
     command, space, message_body = str(full_string).partition(' ')
