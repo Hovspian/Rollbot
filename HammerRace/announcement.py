@@ -1,15 +1,12 @@
 from HammerRace.participant import Participant
+from HammerRace.race import Race
 
 
 class Announcement:
     # Return string announcements
 
-    def __init__(self, race):
+    def __init__(self, race: Race):
         self.race = race
-        self.overriding_answer = ''
-
-    def set_overriding_answer(self, answer):
-        self.overriding_answer = answer
 
     def round_report(self):
         race_track = self.race.get_race_track()
@@ -19,7 +16,7 @@ class Announcement:
     def participant_slots(self):
         slots = []
         for participant in self.race.participants:
-            if self.race.is_winner(participant):
+            if self.race.is_winner(participant.progress):
                 winning_participant = self.string_winner_path(participant)
                 slots.append(winning_participant)
             else:
@@ -39,27 +36,10 @@ class Announcement:
         path = '|' + progress + participant.short_name + steps_left + "|   |"
         return path
 
-    def answer(self):
-        answers = self.get_winner_name_list()
-        if self.overriding_answer in answers:
-            answer = '{}'.format(self.overriding_answer)
-        elif len(answers) > 1:
-            answer = 'maybe'
-        else:
-            answer = '{}'.format(answers[0])
-        return 'The answer is ' + answer
-
-    def gold_owed(self, participant: Participant):
-        gold = self.race.calculate_gold_owed(participant.progress)
-        return '{} owes {} gold.\n'.format(participant.short_name, gold)
-
-    def winners(self):
-        winners = self.get_winner_name_list()
-        if len(winners) > 1:
-            return "The winners are {}".format(winners)
-        else:
-            return "The winner is {}".format(winners[0])
-
     def get_winner_name_list(self):
         winner_names = (winner.name for winner in self.race.winners)
         return ', '.join(winner_names)
+
+    def get_loser_name_list(self):
+        loser_names = (loser.name for loser in self.race.losers)
+        return ', '.join(loser_names)

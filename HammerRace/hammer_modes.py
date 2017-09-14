@@ -1,10 +1,12 @@
-from HammerRace.hammermanager import HammerRaceManager
+from HammerRace.hammer_manager import HammerRaceManager
+from HammerRace.sub_announcements import ClassicAnnouncement
+from HammerRace.sub_announcements import WinnerAnnouncement
 
 
 class ClassicHammer(HammerRaceManager):
 
     def __init__(self):
-        super().__init__()
+        super().__init__(ClassicAnnouncement)
         self.init_participants()
 
     def init_participants(self):
@@ -20,7 +22,7 @@ class ClassicHammer(HammerRaceManager):
         return super().round_report()
 
     def winner_report(self):
-        return self.announcement.answer() + '\n' + super().winner_report()
+        return self.announcement.answer()
 
 
 class ComparisonHammer(HammerRaceManager):
@@ -28,7 +30,7 @@ class ComparisonHammer(HammerRaceManager):
     Example: /hammer eggs, bread, banana"""
 
     def __init__(self, message):
-        super().__init__()
+        super().__init__(WinnerAnnouncement)
         self.options = []
         self.set_options(message)
         self.init_participants()
@@ -60,16 +62,13 @@ class VersusHammer(HammerRaceManager):
     eg. /hammerrace
     """
     def __init__(self, game_starter):
-        super().__init__()
+        super().__init__(WinnerAnnouncement)
         self.users = []
-        self.thrown_rock = []
-        self.race_in_progress = False
 
     def sign_up(self, participant):
         self.add_user_participant(participant)
-        participant = participant.split('#')
-        short_name = participant[0][0]
-        name = participant[0]
+        short_name = participant[0]
+        name = participant
         super().init_participant(short_name, name)
         print(name + "joined the game as + " + short_name)
 
