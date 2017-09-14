@@ -1,6 +1,5 @@
 from HammerRace.hammer_manager import HammerRaceManager
-from HammerRace.sub_announcements import ClassicAnnouncement
-from HammerRace.sub_announcements import WinnerAnnouncement
+from HammerRace.sub_announcements import *
 
 
 class ClassicHammer(HammerRaceManager):
