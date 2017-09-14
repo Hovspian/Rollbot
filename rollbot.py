@@ -1,11 +1,12 @@
-
-import discord, random, asyncio
+import discord
+import random
+import asyncio
 from discord.ext import commands
 from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
-
+from constants import *
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
@@ -18,6 +19,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('-' * len(bot.user.id))
+
 
 games_in_progress = {}
 
@@ -32,7 +34,7 @@ async def roll(ctx, max=100):
         return
 
     roll = random.randint(1, max)
-    last_roll[0] = Roll(roll,roller,max)
+    last_roll[0] = Roll(roll, roller, max)
     await bot.say("{} rolled {} (1-{})".format(roller.display_name, roll, max))
     return last_roll[0]
 
@@ -102,7 +104,7 @@ async def askhammer(ctx):
         await bot.say(hammer_manager.round_report())
 
     if question != '':
-        await bot.say('"' + question + '":')
+        await bot.say(question + ':')
 
     await bot.say(hammer_manager.winner_report())
 
@@ -120,14 +122,9 @@ async def hammer(ctx):
             hammer_manager.next_round()
             await bot.say(hammer_manager.round_report())
 
-        await bot.say(options + ':\n' + hammer_manager.winner_report())
+        await bot.say('Out of ' + options + ':\n' + hammer_manager.winner_report())
     else:
-        await bot.say("Please enter 2-5 options, separated by commas. Example: \n ```/hammer bread, eggs, hammer```")
-
-
-@bot.command(pass_context=True)
-async def hammerrace(ctx):
-    """TODO"""
+        await bot.say("Please enter 2-5 options, separated by commas. Example: ```/hammer bread, eggs, hammer```")
 
 
 bot.remove_command('help')
@@ -135,27 +132,13 @@ bot.remove_command('help')
 
 @bot.command()
 async def help():
-    await bot.say("```Rollbot commands: "
-                  "\n   /roll <max> - Rolls a random number between 1 and max. 100 is the default max. "
-                  "\n   /start <mode> <bet> - Starts a new game. The bet is set to 100 if not specified. "
-                  "\n   Note: only one game can be in progress at a time. "
-                  "\n   /join - Join the current game. "
-                  "\n\nGame modes: "
-                  "\n   normal - everyone rolls 1-100. The lowest roller owes the highest roller the bet. "
-                  "\n   difference - everyone rolls 1-bet and the lowest roller owes the highest roller the difference "
-                  "between the rolls."
-                  "\n   countdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until "
-                  "someone rolls 1 and loses. The winnings are split between everyone else. "
-                  "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```")
+    await bot.say(ROLLBOT_COMMANDS)
 
 
 @bot.command(alias='8ball')
 async def eightball():
-    responses = [ 'It is certain', 'It is decidedly so', 'Without a doubt', 'Yes definitely', 'You may rely on it',
-                  'As I see it, yes', 'Most likely', 'Outlook good', 'Yes', 'Signs point to yes', 'Reply hazy try again'
-                  , 'Ask again later', 'Better not tell you now', 'Cannot predict now', 'Concentrate and ask again',
-                  'Don\'t count on it', 'My reply is no', 'My sources say no', 'Outlook not so good', 'Very doubtful']
-    await bot.say(responses[random.randint(0, len(responses) - 1)])
+    pick = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
+    await bot.say(EIGHTBALL_RESPONSES[pick])
+
 
 bot.run(TOKEN)
-
