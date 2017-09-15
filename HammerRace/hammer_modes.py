@@ -9,9 +9,9 @@ class ClassicHammer(HammerRaceManager):
         self.init_participants()
 
     def init_participants(self) -> None:
-        super().init_participant(short_name='y', name='Yes')
-        super().init_participant(short_name='n', name='No')
-        hammer = super().init_participant(short_name='h', name=':hammer:')
+        super()._init_participant(short_name='y', name='Yes')
+        super()._init_participant(short_name='n', name='No')
+        hammer = super()._init_participant(short_name='h', name=':hammer:')
         self.overriding_answer = hammer.name
 
     def winner_report(self) -> str:
@@ -32,19 +32,19 @@ class ComparisonHammer(HammerRaceManager):
     def __init__(self, message: str):
         super().__init__()
         self.options = []
-        self.set_options(message)
-        self.init_participants()
+        self._set_options(message)
+        self._init_participants()
 
-    def set_options(self, message: str) -> None:
+    def _set_options(self, message: str) -> None:
         self.options = message.split(',')
 
-    def init_participants(self) -> None:
-        [self.init_option(option) for option in self.options]
+    def _init_participants(self) -> None:
+        [self._init_option(option) for option in self.options]
 
-    def init_option(self, option: str) -> None:
+    def _init_option(self, option: str) -> None:
         option = option.strip()
         first_letter = option[0]
-        super().init_participant(short_name=first_letter, name=option)
+        super()._init_participant(short_name=first_letter, name=option)
 
     def valid_num_participants(self) -> bool:
         if (len(self.race.participants) > 1) and (len(self.race.participants) <= 5):
@@ -63,7 +63,7 @@ class VersusHammer(HammerRaceManager):
         self.add_user_participant(participant)
         short_name = participant[0]
         name = participant
-        super().init_participant(short_name, name)
+        super()._init_participant(short_name, name)
         print(name + "joined the game as + " + short_name)
 
     def add_user_participant(self, user):
