@@ -10,27 +10,24 @@ class Announcement:
 
     def round_report(self):
         race_track = self.race.get_race_track()
-        participant_slots = self.participant_slots()
+        participant_slots = self.get_participant_slots()
         return race_track.format(*participant_slots)
 
-    def participant_slots(self):
-        slots = []
-        for participant in self.race.participants:
-            if self.race.is_winner(participant.progress):
-                winning_participant = self.string_winner_path(participant)
-                slots.append(winning_participant)
-            else:
-                participant_in_progress = self.string_progress_path(participant)
-                slots.append(participant_in_progress)
-        return slots
+    def get_participant_slots(self):
+        return [self.draw_position(participant) for participant in self.race.participants]
 
-    def string_winner_path(self, participant: Participant):
+    def draw_position(self, participant):
+        if self.race.is_winner(participant.progress):
+            return self.winner_path(participant)
+        return self.progress_path(participant)
+
+    def winner_path(self, participant: Participant):
         path = '|'
         path += ' ' * self.race.distance_to_finish
         path += '| {} |'.format(participant.short_name)
         return path
 
-    def string_progress_path(self, participant: Participant):
+    def progress_path(self, participant: Participant):
         progress = '~' * participant.progress
         steps_left = ' ' * self.race.get_steps_left(participant.progress)
         path = '|' + progress + participant.short_name + steps_left + "|   |"

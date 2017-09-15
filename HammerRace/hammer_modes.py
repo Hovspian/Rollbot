@@ -14,12 +14,6 @@ class ClassicHammer(HammerRaceManager):
         hammer = super().init_participant(short_name='h', name=':hammer:')
         self.announcement.set_overriding_answer(hammer.name)
 
-    def next_round(self):
-        super().next_round()
-
-    def round_report(self):
-        return super().round_report()
-
     def winner_report(self):
         return self.announcement.answer()
 
@@ -40,17 +34,12 @@ class ComparisonHammer(HammerRaceManager):
     def init_participants(self):
         for option in self.options:
             option = option.strip()
-            super().init_participant(short_name=option[0], name=option)
+            first_letter = option[0]
+            super().init_participant(short_name=first_letter, name=option)
 
     def valid_num_participants(self):
         if (len(self.race.participants) > 1) and (len(self.race.participants) <= 5):
             return True
-
-    def next_round(self):
-        super().next_round()
-
-    def round_report(self):
-        return super().round_report()
 
     def winner_report(self):
         return self.announcement.winners()
@@ -85,3 +74,12 @@ class VersusHammer(HammerRaceManager):
     def valid_min_participants(self):
         if self.race.num_participants > 1:
             return True
+
+    def winner_report(self):
+        return self.report_gold_owed()
+
+    def report_gold_owed(self):
+        report = ''
+        for loser in self.race.losers:
+            report += self.announcement.gold_owed(loser)
+        return report

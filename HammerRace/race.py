@@ -18,7 +18,6 @@ class Race:
         race_track += self.get_participant_lanes()
         race_track += track_border
         race_track += code_tag
-
         return race_track
 
     def get_border_size(self):
@@ -26,18 +25,22 @@ class Race:
         return self.distance_to_finish + finish_line
 
     def get_participant_lanes(self):
-        linebreak = '\n'
         last = -1
-        empty_lane = '|' + (' ' * self.distance_to_finish) + '|   |' + linebreak
-        participant_placeholder = '{}' + linebreak
-        player_lanes = ''
-
+        lanes = ''
         for participant in self.participants:
-            player_lanes += participant_placeholder
+            lanes += self.draw_participant_placeholder()
             if participant != self.participants[last]:
-                player_lanes += empty_lane
+                lanes += self.draw_empty_lane()
+        return lanes
 
-        return player_lanes
+    @staticmethod
+    def draw_participant_placeholder():
+        linebreak = '\n'
+        return '{}' + linebreak
+
+    def draw_empty_lane(self):
+        linebreak = '\n'
+        return '|' + (' ' * self.distance_to_finish) + '|   |' + linebreak
 
     def get_steps_left(self, participant_progress):
         character_space = 1

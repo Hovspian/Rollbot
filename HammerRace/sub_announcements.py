@@ -28,7 +28,7 @@ class ClassicAnnouncement(Announcement):
 
 class WinnerAnnouncement(Announcement):
 
-    def __init__(self, race):
+    def __init__(self, race: Race):
         super().__init__(race)
 
     def gold_owed(self, participant: Participant):

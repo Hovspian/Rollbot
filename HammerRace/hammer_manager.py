@@ -29,12 +29,3 @@ class HammerRaceManager:
 
     def round_report(self):
         return self.announcement.round_report()
-
-    def winner_report(self):
-        return self.report_gold_owed()
-
-    def report_gold_owed(self):
-        report = ''
-        for loser in self.race.losers:
-            report += self.announcement.gold_owed(loser)
-        return report
