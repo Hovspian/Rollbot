@@ -32,6 +32,5 @@ class HammerRaceManager:
 
     def winner_report(self) -> str:
         winners = self.race.get_winner_name_list()
-        report = "The winners are {}".format(winners) if self.race.has_multiple_winners() \
-            else "The winner is {}".format(winners)
-        return report
+        report = "The winners are {}" if self.race.has_multiple_winners() else "The winner is {}"
+        return report.format(winners)

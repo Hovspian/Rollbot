@@ -13,9 +13,7 @@ class Race:
         self.race_track = RaceTrack(self)
 
     def get_full_track(self) -> str:
-        race_track = self.race_track.draw_track()
-        participant_slots = self.race_track.get_participant_slots()
-        return race_track.format(*participant_slots)
+        return self.race_track.draw_track()
 
     def get_steps_left(self, participant_progress: int) -> int:
         character_space = 1
@@ -46,52 +44,57 @@ class RaceTrack:
     def __init__(self, race: Race):
         self.race = race
 
-    def draw_track(self):
-        # Racetrack with placeholder participant slots
+    def draw_track(self) -> str:
+        # Race track with participant positions
+        track_frame = self._get_race_track_frame()
+        participant_slots = self._get_participant_slots()
+        return track_frame.format(participant_slots)
+
+    def _get_race_track_frame(self) -> str:
         linebreak = '\n'
         code_tag = '```'
-        track_border = self._draw_border() + linebreak
-        race_track = code_tag + linebreak
-        race_track += track_border
-        race_track += self._placeholder_participant_lanes()
-        race_track += track_border
-        race_track += code_tag
-        return race_track
+        track_border = self._draw_border()
+        race_track_list = [code_tag,
+                           track_border,
+                           '{}',
+                           track_border,
+                           code_tag]
+        return linebreak.join(race_track_list)
 
-    def get_participant_slots(self) -> List[str]:
-        return [self._draw_position(participant) for participant in self.race.participants]
+    def _get_participant_slots(self) -> str:
+        linebreak = '\n'
+        lane_list = [self._draw_lanes(participant) for participant in self.race.participants]
+        return linebreak.join(lane_list)
 
     def _draw_border(self) -> str:
         finish_line_size = 4
         border_size = self.race.distance_to_finish + finish_line_size
-        return '+{}+'.format('=' * border_size)
+        border = '=' * border_size
+        return f'+{border}+'
 
-    def _placeholder_participant_lanes(self) -> str:
+    def _draw_lanes(self, participant) -> str:
         linebreak = '\n'
-        lanes = linebreak.join(self._draw_lanes(participant) for participant in self.race.participants)
-        return lanes
+        participant_position = self._draw_position(participant)
+        spacer = ' ' * self.race.distance_to_finish
+        empty_lane = f'|{spacer}|   |'
+
+        def final_lane() -> bool:
+            return participant == self.race.participants[-1]
+
+        return participant_position if final_lane() else linebreak.join([participant_position, empty_lane])
 
     def _draw_position(self, participant: Participant) -> str:
         if self.race.is_winner(participant):
-            path = self._draw_winner_path()
-        else:
-            path = self._draw_progress_path(participant)
-        return path.format(participant.short_name)
+            return self._draw_winner_path(participant)
+        return self._draw_progress_path(participant)
 
-    def _draw_winner_path(self) -> str:
-        return '|' + (' ' * self.race.distance_to_finish) + '| {} |'
+    def _draw_winner_path(self, participant: Participant) -> str:
+        spacer = ' ' * self.race.distance_to_finish
+        short_name = participant.short_name
+        return f'|{spacer}|{short_name}|'
 
     def _draw_progress_path(self, participant: Participant) -> str:
         progress = '~' * participant.progress
         steps_left = ' ' * self.race.get_steps_left(participant.progress)
-        return '|' + progress + "{}" + steps_left + "|   |"
-
-    def _draw_lanes(self, participant) -> str:
-        linebreak = '\n'
-        placeholder = '{}' + linebreak
-        empty_lane = '|{}|   |'.format(' ' * self.race.distance_to_finish)
-        return placeholder + empty_lane if self._not_last(participant) else placeholder
-
-    def _not_last(self, participant) -> bool:
-        if participant != self.race.participants[-1]:
-            return True
+        short_name = participant.short_name
+        return f'|{progress}{short_name}{steps_left}|   |'

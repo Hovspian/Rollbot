@@ -21,7 +21,7 @@ class ClassicHammer(HammerRaceManager):
         elif self.race.has_multiple_winners():
             answer = 'maybe'
         else:
-            answer = answer_list[0]
+            answer = answer_list
         return 'The answer is ' + answer
 
 
@@ -31,15 +31,15 @@ class ComparisonHammer(HammerRaceManager):
 
     def __init__(self, message: str):
         super().__init__()
-        self.options = []
+        self._options = []
         self._set_options(message)
         self._init_participants()
 
     def _set_options(self, message: str) -> None:
-        self.options = message.split(',')
+        self._options = message.split(',')
 
     def _init_participants(self) -> None:
-        [self._init_option(option) for option in self.options]
+        [self._init_option(option) for option in self._options]
 
     def _init_option(self, option: str) -> None:
         option = option.strip()
@@ -60,13 +60,13 @@ class VersusHammer(HammerRaceManager):
         self.users = []
 
     def sign_up(self, participant):
-        self.add_user_participant(participant)
+        self.add_user(participant)
         short_name = participant[0]
         name = participant
         super()._init_participant(short_name, name)
         print(name + "joined the game as + " + short_name)
 
-    def add_user_participant(self, user):
+    def add_user(self, user):
         self.users.append(user)
 
     def valid_participant(self, user):

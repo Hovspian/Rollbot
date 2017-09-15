@@ -2,7 +2,7 @@ import random
 
 
 class Participant:
-    def __init__(self, short_name, name):
+    def __init__(self, short_name: str, name: str):
         self.progress = 0
         self.min_move = 3
         self.max_move = 13
