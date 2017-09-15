@@ -9,7 +9,7 @@ class Participant:
         self.short_name = short_name
         self.name = name
 
-    def make_move(self, bonus=0):
+    def make_move(self, bonus=0) -> None:
         min_move = self.min_move + bonus
         roll = random.randint(min_move, self.max_move)
         self.progress += roll

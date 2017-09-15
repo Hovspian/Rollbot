@@ -1,56 +1,62 @@
-from HammerRace.hammer_manager import HammerRaceManager
-from HammerRace.sub_announcements import *
+from HammerRace.hammer_manager import *
 
 
 class ClassicHammer(HammerRaceManager):
 
     def __init__(self):
-        super().__init__(ClassicAnnouncement)
+        super().__init__()
+        self.overriding_answer = ''
         self.init_participants()
 
-    def init_participants(self):
+    def init_participants(self) -> None:
         super().init_participant(short_name='y', name='Yes')
         super().init_participant(short_name='n', name='No')
         hammer = super().init_participant(short_name='h', name=':hammer:')
-        self.announcement.set_overriding_answer(hammer.name)
+        self.overriding_answer = hammer.name
 
-    def winner_report(self):
-        return self.announcement.answer()
+    def winner_report(self) -> str:
+        answer_list = self.race.get_winner_name_list()
+        if self.overriding_answer in answer_list:
+            answer = self.overriding_answer
+        elif self.race.has_multiple_winners():
+            answer = 'maybe'
+        else:
+            answer = answer_list[0]
+        return 'The answer is ' + answer
 
 
 class ComparisonHammer(HammerRaceManager):
     """Game mode compares inputted choices.
     Example: /hammer eggs, bread, banana"""
 
-    def __init__(self, message):
-        super().__init__(WinnerAnnouncement)
+    def __init__(self, message: str):
+        super().__init__()
         self.options = []
         self.set_options(message)
         self.init_participants()
 
-    def set_options(self, message):
+    def set_options(self, message: str) -> None:
         self.options = message.split(',')
 
-    def init_participants(self):
-        for option in self.options:
-            option = option.strip()
-            first_letter = option[0]
-            super().init_participant(short_name=first_letter, name=option)
+    def init_participants(self) -> None:
+        [self.init_option(option) for option in self.options]
 
-    def valid_num_participants(self):
+    def init_option(self, option: str) -> None:
+        option = option.strip()
+        first_letter = option[0]
+        super().init_participant(short_name=first_letter, name=option)
+
+    def valid_num_participants(self) -> bool:
         if (len(self.race.participants) > 1) and (len(self.race.participants) <= 5):
             return True
 
-    def winner_report(self):
-        return self.announcement.winners()
-
 
 class VersusHammer(HammerRaceManager):
-    """TODO gamemode allows users to join in the race.
-    eg. /hammerrace
+    """TODO game mode allows users to join in the race.
+    eg. /start race
     """
     def __init__(self, game_starter):
-        super().__init__(WinnerAnnouncement)
+        super().__init__()
         self.users = []
 
     def sign_up(self, participant):
@@ -76,10 +82,14 @@ class VersusHammer(HammerRaceManager):
             return True
 
     def winner_report(self):
-        return self.report_gold_owed()
+        return super().winner_report() + self.report_gold_owed()
 
     def report_gold_owed(self):
-        report = ''
-        for loser in self.race.losers:
-            report += self.announcement.gold_owed(loser)
-        return report
+        linebreak = '\n'
+        reports = [self.gold_owed(loser) for loser in self.race.losers]
+        return linebreak.join(reports)
+
+    def gold_owed(self, participant: Participant):
+        steps_left = self.race.get_steps_left(participant.progress)
+        gold = pow(steps_left, 2) * 3 + 100
+        return '{} owes {} gold.'.format(participant.short_name, gold)
