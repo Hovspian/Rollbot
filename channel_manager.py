@@ -29,8 +29,8 @@ class ChannelManager:
         error = False
         if not self.is_game_in_channel(channel):
             error = "No game in this channel."
-        if self.is_game_in_progress(channel):
+        elif self.is_game_in_progress(channel):
             error = "It's too late to join."
-        if self.is_user_in_game(channel, user):
+        elif self.is_user_in_game(channel, user):
             error = "{} is already in the game.".format(user.display_name)
         return error
