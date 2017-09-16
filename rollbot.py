@@ -116,6 +116,19 @@ async def hammer(ctx):
         await bot.say("Please enter 2-5 options, separated by commas. Example: ```/hammer bread, eggs, hammer```")
 
 
+@bot.command(pass_context=True)
+async def butts(ctx):
+    message = ctx.message
+    tich = discord.utils.get(message.server.members, name = "Tich Showers")
+    num_butts = random.randint(1, 20)
+    # await bot.say(tich.mention)
+    await bot.say(':peach:' * num_butts)
+    if num_butts == 1:
+        await bot.say('```{} Butt```'.format(num_butts))
+    else:
+        await bot.say('```{} Butts```'.format(num_butts))
+
+
 bot.remove_command('help')
 
 
