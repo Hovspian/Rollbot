@@ -15,9 +15,9 @@ class Race:
     def get_full_track(self) -> str:
         return self.race_track.draw_track()
 
-    def get_steps_left(self, participant_progress: int) -> int:
+    def get_steps_left(self, progress: int) -> int:
         character_space = 1
-        return self.distance_to_finish - participant_progress - character_space
+        return self.distance_to_finish - progress - character_space
 
     def is_winner(self, participant: Participant) -> bool:
         if self.get_steps_left(participant.progress) <= 0:
@@ -45,7 +45,6 @@ class RaceTrack:
         self.race = race
 
     def draw_track(self) -> str:
-        # Race track with participant positions
         track_frame = self._get_race_track_frame()
         participant_slots = self._get_participant_slots()
         return track_frame.format(participant_slots)
@@ -68,20 +67,20 @@ class RaceTrack:
 
     def _draw_border(self) -> str:
         finish_line_size = 4
-        border_size = self.race.distance_to_finish + finish_line_size
-        border = '=' * border_size
-        return f'+{border}+'
+        wall_size = self.race.distance_to_finish + finish_line_size
+        wall = '=' * wall_size
+        return f'+{wall}+'
 
-    def _draw_lanes(self, participant) -> str:
+    def _draw_lanes(self, participant: Participant) -> str:
         linebreak = '\n'
-        participant_position = self._draw_position(participant)
+        participant_lane = self._draw_position(participant)
         spacer = ' ' * self.race.distance_to_finish
         empty_lane = f'|{spacer}|   |'
 
-        def final_lane() -> bool:
+        def final_participant() -> bool:
             return participant == self.race.participants[-1]
 
-        return participant_position if final_lane() else linebreak.join([participant_position, empty_lane])
+        return participant_lane if final_participant() else linebreak.join([participant_lane, empty_lane])
 
     def _draw_position(self, participant: Participant) -> str:
         if self.race.is_winner(participant):
@@ -91,7 +90,7 @@ class RaceTrack:
     def _draw_winner_path(self, participant: Participant) -> str:
         spacer = ' ' * self.race.distance_to_finish
         short_name = participant.short_name
-        return f'|{spacer}|{short_name}|'
+        return f'|{spacer}| {short_name} |'
 
     def _draw_progress_path(self, participant: Participant) -> str:
         progress = '~' * participant.progress
