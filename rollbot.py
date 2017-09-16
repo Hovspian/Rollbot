@@ -2,7 +2,7 @@ import discord
 import random
 import asyncio
 from discord.ext import commands
-from RollGames.game import Game, last_roll
+from RollGames.rollgame import RollGame, last_roll
 from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
@@ -55,7 +55,7 @@ async def start(ctx, mode: str, bet=100):
         await bot.say('1 is the minimum for bets.')
         return
 
-    the_game = Game(bot, mode, bet, channel)
+    the_game = RollGame(bot, mode, bet, channel)
     await the_game.add(starter)
     channel_manager.add_game_in_progress(channel, the_game)
     await the_game.play()
@@ -72,7 +72,7 @@ async def join(ctx):
     if error:
         await bot.say(error)
     else:
-        channel_manager.add_user_to_game(channel, author)
+        await channel_manager.add_user_to_game(channel, author)
         await bot.say("{} joined the game.".format(author.display_name))
 
 

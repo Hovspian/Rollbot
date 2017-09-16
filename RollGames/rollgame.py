@@ -5,7 +5,7 @@ from RollGames.roll import Roll
 last_roll = [Roll(0, None, 0)]
 
 
-class Game:
+class RollGame:
     def __init__(self, bot, game_mode, bet, channel):
         self.bot = bot
         self.mode = game_mode
@@ -25,7 +25,11 @@ class Game:
         loser_and_winner = await self.determine(self.player_rolls)
         loser = self.get_name(loser_and_winner[0][0])
         winner = self.get_name(loser_and_winner[1][0])
-        await self.bot.say("{} owes {} {}g".format(loser, winner, bet))
+        the_difference = loser_and_winner[1][1] - loser_and_winner[0][1]
+        if the_difference:
+            await self.bot.say("It's a tie.")
+        else:
+            await self.bot.say("{} owes {} {}g".format(loser, winner, bet))
 
     async def difference(self, bet):
         """Begins a difference game with the specified bet. In difference games, everyone rolls 1-bet and the lowest
@@ -38,7 +42,10 @@ class Game:
         loser = self.get_name(loser_and_winner[0][0])
         winner = self.get_name(loser_and_winner[1][0])
         the_difference = loser_and_winner[1][1] - loser_and_winner[0][1]
-        await self.bot.say("{} owes {} {}g".format(loser, winner, the_difference))
+        if the_difference == 0:
+            await self.bot.say("It's a tie.")
+        else:
+            await self.bot.say("{} owes {} {}g".format(loser, winner, the_difference))
 
     async def wait_for_rolls(self, max):
         while len(self.players) > len(self.player_rolls):
@@ -105,8 +112,8 @@ class Game:
             loser_reroll = []
             for person in lowest_rollers:
                 the_roll = await self.forced_roll(person, 100)
-                loser_reroll.append((the_roll.roller, the_roll.roll))
-            result = self.determine(loser_reroll)
+                loser_reroll.append((the_roll.roller, the_roll.rolled))
+            result = await self.determine(loser_reroll)
             loser = result[0][0]
         else:
             loser = lowest_rollers[0]
@@ -115,8 +122,8 @@ class Game:
             winner_reroll = []
             for person in highest_rollers:
                 the_roll = await self.forced_roll(person, 100)
-                winner_reroll.append((the_roll.roller, the_roll.roll))
-            result = self.determine(winner_reroll)
+                winner_reroll.append((the_roll.roller, the_roll.rolled))
+            result = await self.determine(winner_reroll)
             winner = result[1][0]
         else:
             winner = highest_rollers[0]
@@ -154,3 +161,6 @@ class Game:
         else:
             await self.countdown(self.bet)
         self.in_progress = False
+
+
+

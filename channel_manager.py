@@ -8,9 +8,8 @@ class ChannelManager:
     def add_game_in_progress(self, channel, game):
         self.games_in_progress[channel] = game
 
-    def add_user_to_game(self, channel, user):
-        game = self.games_in_progress[channel]
-        await game.add(user)
+    async def add_user_to_game(self, channel, user):
+        await self.games_in_progress[channel].add(user)
 
     def remove_channel(self, channel):
         self.games_in_progress.pop(channel)
