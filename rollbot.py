@@ -7,10 +7,12 @@ from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
 from constants import *
+from channel_manager import ChannelManager
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
+channel_manager = ChannelManager()
 
 
 @bot.event
@@ -19,9 +21,6 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('-' * len(bot.user.id))
-
-
-games_in_progress = {}
 
 
 @bot.command(pass_context=True)
@@ -46,7 +45,7 @@ async def start(ctx, mode: str, bet=100):
     channel = ctx.message.channel
     valid_modes = ['normal', 'difference', 'countdown']
 
-    if channel in games_in_progress.keys():
+    if channel_manager.is_game_in_progress(channel):
         await bot.say('Game already in progress in channel')
         return
     if mode not in valid_modes:
@@ -58,9 +57,9 @@ async def start(ctx, mode: str, bet=100):
 
     the_game = Game(bot, mode, bet, channel)
     await the_game.add(starter)
-    games_in_progress[channel] = the_game
+    channel_manager.add_game_in_progress(channel, the_game)
     await the_game.play()
-    games_in_progress.pop(channel)
+    channel_manager.remove_channel(channel)
 
 
 @bot.command(pass_context=True)
@@ -68,23 +67,13 @@ async def join(ctx):
     """Allows the user to join the current game"""
     channel = ctx.message.channel
     author = ctx.message.author
-    if not game_in_channel(channel):
-        await bot.say("No game in this channel")
-    elif games_in_progress[channel].in_progress:
-        await bot.say("It's too late to join.")
-    elif game_in_channel(channel) and person_in_game(author, channel):
-        await bot.say("{} is already in the game.".format(author.display_name))
+    error = channel_manager.is_invalid_user_error(channel, author)
+
+    if error:
+        await bot.say(error)
     else:
-        await games_in_progress[channel].add(author)
+        await channel_manager.add_user_to_game(channel, author)
         await bot.say("{} joined the game.".format(author.display_name))
-
-
-def game_in_channel(channel):
-    return channel in games_in_progress.keys()
-
-
-def person_in_game(person, channel):
-    return person in games_in_progress[channel].players
 
 
 def message_without_command(full_string):
