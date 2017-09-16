@@ -1,3 +1,6 @@
+import asyncio
+
+
 class ChannelManager:
     def __init__(self):
         self.games_in_progress = {}
@@ -7,7 +10,7 @@ class ChannelManager:
 
     def add_user_to_game(self, channel, user):
         game = self.games_in_progress[channel]
-        game.add(user)
+        await game.add(user)
 
     def remove_channel(self, channel):
         self.games_in_progress.pop(channel)

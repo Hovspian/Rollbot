@@ -37,7 +37,7 @@ class Game:
         loser_and_winner = await self.determine(self.player_rolls)
         loser = self.get_name(loser_and_winner[0][0])
         winner = self.get_name(loser_and_winner[1][0])
-        the_difference = loser_and_winner[0][1] - loser_and_winner[1][1]
+        the_difference = loser_and_winner[1][1] - loser_and_winner[0][1]
         await self.bot.say("{} owes {} {}g".format(loser, winner, the_difference))
 
     async def wait_for_rolls(self, max):
@@ -104,7 +104,7 @@ class Game:
         if len(lowest_rollers) > 1:
             loser_reroll = []
             for person in lowest_rollers:
-                the_roll = self.forced_roll(person, 100)
+                the_roll = await self.forced_roll(person, 100)
                 loser_reroll.append((the_roll.roller, the_roll.roll))
             result = self.determine(loser_reroll)
             loser = result[0][0]
@@ -114,7 +114,7 @@ class Game:
         if len(highest_rollers) > 1:
             winner_reroll = []
             for person in highest_rollers:
-                the_roll = self.forced_roll(person, 100)
+                the_roll = await self.forced_roll(person, 100)
                 winner_reroll.append((the_roll.roller, the_roll.roll))
             result = self.determine(winner_reroll)
             winner = result[1][0]

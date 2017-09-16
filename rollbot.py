@@ -72,7 +72,7 @@ async def join(ctx):
     if error:
         await bot.say(error)
     else:
-        await channel_manager.add_user_to_game(channel, author)
+        channel_manager.add_user_to_game(channel, author)
         await bot.say("{} joined the game.".format(author.display_name))
 
 
