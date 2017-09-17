@@ -7,8 +7,10 @@ pear = {'emote': ':pear:', 'value': 5}
 pineapple = {'emote': ':pineapple:', 'value': 7}
 butt = {'emote': ':peach:', 'value': 10}
 meat = {'emote': ':meat_on_bone:', 'value': 15}
-hammer = {'emote': ':hammer:', 'value': 25}
-seven = {'emote': ':seven:', 'value': 100}
+bar = {'emote': ':chocolate_bar:', 'value': 30}
+hammer = {'emote': ':hammer:', 'value': 50}
+cake = {'emote': ':cake:', 'value': 75}
+seven = {'emote': ':slot_machine:', 'value': 100}
 
 
 class SlotMachine:
