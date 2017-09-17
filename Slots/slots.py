@@ -42,49 +42,18 @@ class SlotMachine:
         return outcomes[pick]
 
     def analyze_results(self, results):
-        for result in results:
-            self.is_winning_match(result)
+        for row in results:
+            self.check_winning_match(row)
         self.check_diagonals(results)
 
     def check_diagonals(self, results):
-        middle_result = self.get_middle_result(results)
-        first_row = self.get_first_of(results)
-        last_row = self.get_last_of(results)
-        top_left = self.top_left_diagonal(first_row, middle_result, last_row)
-        top_right = self.top_right_diagonal(first_row, middle_result, last_row)
-        self.is_winning_match(top_left)
-        self.is_winning_match(top_right)
+        top_left_diagonal = [row[i] for i, row in enumerate(results)]
+        reversed_rows = reversed(results)
+        top_right_diagonal = [row[j] for j, row in enumerate(reversed_rows)]
+        self.check_winning_match(top_left_diagonal)
+        self.check_winning_match(top_right_diagonal)
 
-    def top_left_diagonal(self, first_row, middle_result, last_row):
-        top_left = self.get_first_of(first_row)
-        bottom_right = self.get_last_of(last_row)
-        return [top_left, middle_result, bottom_right]
-
-    def top_right_diagonal(self, first_row, middle_result, last_row):
-        top_right = self.get_last_of(first_row)
-        bottom_left = self.get_first_of(last_row)
-        return [top_right, middle_result, bottom_left]
-
-    @staticmethod
-    def get_last_of(items):
-        last = len(items) - 1
-        return items[last]
-
-    @staticmethod
-    def get_first_of(items):
-        return items[0]
-
-    @staticmethod
-    def get_middle_of(items):
-        num_items = len(items) - 1
-        pick_middle = num_items - int(num_items / 2)
-        return items[pick_middle]
-
-    def get_middle_result(self, results):
-        middle_row = self.get_middle_of(results)
-        return self.get_middle_of(middle_row)
-
-    def is_winning_match(self, symbols: List[dict]):
+    def check_winning_match(self, symbols: List[dict]):
         first_item = symbols[0]
         for item in symbols:
             if item != first_item:
@@ -95,8 +64,7 @@ class SlotMachine:
         self.winning_symbols.append(symbol)
 
     def has_winnings(self):
-        if len(self.winning_symbols) > 0:
-            return True
+        return len(self.winning_symbols) > 0
 
     def get_payout(self):
         payout = 0
@@ -105,29 +73,28 @@ class SlotMachine:
         return payout
 
     def get_winning_symbols(self):
+        return [self.get_stats(symbol) for symbol in self.winning_symbols]
 
-        def get_stats(symbol):
-            emote = symbol['emote']
-            value = str(symbol['value'])
-            return ': '.join([emote, value])
-        return [get_stats(symbol) for symbol in self.winning_symbols]
+    @staticmethod
+    def get_stats(symbol):
+        emote = symbol['emote']
+        value = str(symbol['value'])
+        return ': '.join([emote, value])
 
-    def draw_slot_interface(self, results):
+    @staticmethod
+    def draw_slot_interface(results):
         linebreak = '\n'
-        first_row = self.get_first_of(results)
-        middle_row = self.get_middle_of(results)
-        last_row = self.get_last_of(results)
 
         def get_emotes(symbol_list):
             return ''.join([symbol['emote'] for symbol in symbol_list])
 
-        return linebreak.join([get_emotes(first_row), get_emotes(middle_row), get_emotes(last_row)])
+        return linebreak.join([get_emotes(row) for row in results])
 
     def get_outcome_report(self):
         if self.has_winnings():
             linebreak = '\n'
             winning_stats = linebreak.join(self.get_winning_symbols())
             payout = self.get_payout()
-            return f":dollar: Rolled a match! \n{winning_stats} \n Payout is {payout} gold. :dollar:"
+            return f"Rolled a match! \n{winning_stats} \n :dollar: Payout is {payout} gold. :dollar:"
         else:
             return "Sorry, not a winning game."
