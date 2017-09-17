@@ -42,23 +42,29 @@ class SlotMachine:
         return outcomes[pick]
 
     def analyze_results(self, results):
-        for row in results:
-            self.check_winning_match(row)
-        self.check_diagonals(results)
+        [self.check_winning_match(row) for row in results]
+        self.check_top_left_diagonal(results)
+        self.check_top_right_diagonal(results)
 
-    def check_diagonals(self, results):
+    def check_top_left_diagonal(self, results):
         top_left_diagonal = [row[i] for i, row in enumerate(results)]
+        self.check_winning_match(top_left_diagonal)
+
+    def check_top_right_diagonal(self, results):
         reversed_rows = reversed(results)
         top_right_diagonal = [row[j] for j, row in enumerate(reversed_rows)]
-        self.check_winning_match(top_left_diagonal)
         self.check_winning_match(top_right_diagonal)
 
     def check_winning_match(self, symbols: List[dict]):
-        first_item = symbols[0]
-        for item in symbols:
-            if item != first_item:
-                return
-        self.add_winning_match(first_item)
+        if self.is_winning_match(symbols):
+            self.add_winning_match(symbols[0])
+
+    @staticmethod
+    def is_winning_match(symbols):
+        for symbol in symbols:
+            if symbol != symbols[0]:
+                return False
+        return True
 
     def add_winning_match(self, symbol: dict):
         self.winning_symbols.append(symbol)
@@ -67,10 +73,7 @@ class SlotMachine:
         return len(self.winning_symbols) > 0
 
     def get_payout(self):
-        payout = 0
-        for symbol in self.winning_symbols:
-            payout += symbol['value']
-        return payout
+        return sum([symbol['value'] for symbol in self.winning_symbols])
 
     def get_winning_symbols(self):
         return [self.get_stats(symbol) for symbol in self.winning_symbols]
@@ -87,14 +90,15 @@ class SlotMachine:
 
         def get_emotes(symbol_list):
             return ''.join([symbol['emote'] for symbol in symbol_list])
-
         return linebreak.join([get_emotes(row) for row in results])
 
     def get_outcome_report(self):
         if self.has_winnings():
-            linebreak = '\n'
-            winning_stats = linebreak.join(self.get_winning_symbols())
-            payout = self.get_payout()
-            return f"Rolled a match! \n{winning_stats} \n :dollar: Payout is {payout} gold. :dollar:"
-        else:
-            return "Sorry, not a winning game."
+            return self.get_win_report()
+        return "Sorry, not a winning game."
+
+    def get_win_report(self):
+        linebreak = '\n'
+        winning_stats = linebreak.join(self.get_winning_symbols())
+        payout = self.get_payout()
+        return f"Rolled a match! \n{winning_stats} \n :dollar: Payout is {payout} gold. :dollar:"
