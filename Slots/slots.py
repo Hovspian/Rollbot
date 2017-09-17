@@ -1,68 +1,98 @@
 import random
 from typing import List
 
+cherry = {'emote': ':cherries:', 'value': 1}
+angel = {'emote': ':angel:', 'value': 3}
+pear = {'emote': ':pear:', 'value': 5}
+pineapple = {'emote': ':pineapple:', 'value': 7}
+butt = {'emote': ':peach:', 'value': 10}
+meat = {'emote': ':meat_on_bone:', 'value': 15}
+hammer = {'emote': ':hammer:', 'value': 25}
+seven = {'emote': ':seven:', 'value': 100}
+
 
 class SlotMachine:
     def __init__(self, author):
         self.player = author
-        self.num_rows = 3
+        self.num_columns = 3
         self.winning_symbols = []
         self.results = []
-        self.cherry = {'emote': ':cherries:', 'value': 1}
-        self.angel = {'emote': ':angel:', 'value': 3}
-        self.pear = {'emote': ':pear:', 'value': 5}
-        self.pineapple = {'emote': ':pineapple:', 'value': 7}
-        self.butt = {'emote': ':peach:', 'value': 10}
-        self.meat = {'emote': ':meat_on_bone:', 'value': 15}
-        self.hammer = {'emote': ':hammer:', 'value': 25}
-        self.seven = {'emote': ':seven:', 'value': 100}
 
-    def get_outcomes(self):
-        return [self.cherry, self.cherry,
-                self.angel, self.angel,
-                self.pear, self.pear,
-                self.pineapple,
-                self.butt,
-                self.meat,
-                self.hammer,
-                self.seven]
+    @staticmethod
+    def get_outcomes():
+        return [cherry, cherry,
+                angel, angel,
+                pear, pear,
+                pineapple,
+                butt,
+                meat,
+                hammer,
+                seven]
 
     def play_slot(self) -> None:
-        self.results = [self.roll_row() for i in range(self.num_rows)]
+        first_column = self.roll_column()
+        self.add_result(first_column)
+
+        def perform_rolls(last_column):
+            next_column = self.roll_column(last_column)
+            self.add_result(next_column)
+
+        [perform_rolls(self.results[i]) for i in range(self.num_columns - 1)]
         self.analyze_results()
+
+    def add_result(self, column):
+        self.results.append(column)
 
     def compile_report(self) -> str:
         linebreak = '\n'
         label = "| {}'s slot results |".format(self.player)
-        slot_machine = self.draw_slot_interface(self.results)
+        slot_machine = self.draw_slot_interface()
         outcome = self.get_outcome_report()
         return linebreak.join([label, slot_machine, outcome])
 
-    def roll_row(self) -> List[dict]:
-        return [self.roll() for i in range(self.num_rows)]
+    def roll_column(self, previous_column=None) -> List[dict]:
+        symbol_lists = self.get_symbol_lists(previous_column)
+        symbols = self.roll(symbol_lists)
+        return [self.roll(symbols) for i in range(self.num_columns)]
 
-    def roll(self) -> dict:
-        symbols = self.get_outcomes()
-        pick = random.randint(0, len(symbols) - 1)
-        return symbols[pick]
+    def get_symbol_lists(self, previous_column=None):
+        normal_outcomes = self.get_outcomes()
+        roll_types = [normal_outcomes, normal_outcomes]
+        if previous_column:
+            roll_types.append(previous_column)
+        return roll_types
+
+    @staticmethod
+    def roll(input_list: List) -> any:
+        pick = random.randint(0, len(input_list) - 1)
+        return input_list[pick]
 
     def analyze_results(self) -> None:
-        [self.check_winning_match(row) for row in self.results]
-        self.check_top_left_diagonal(self.results)
-        self.check_top_right_diagonal(self.results)
+        self.check_rows()
+        self.check_top_left_diagonal()
+        self.check_top_right_diagonal()
 
-    def check_top_left_diagonal(self, results) -> None:
-        top_left_diagonal = self.get_diagonal(results)
+    def get_rows(self):
+        def get_row(column):
+            return [self.results[column][i] for i in range(self.num_columns)]
+        return [get_row(column) for column in range(self.num_columns)]
+
+    def check_rows(self):
+        rows = self.get_rows()
+        [self.check_winning_match(row) for row in rows]
+
+    def check_top_left_diagonal(self) -> None:
+        top_left_diagonal = self.get_diagonal(self.results)
         self.check_winning_match(top_left_diagonal)
 
-    def check_top_right_diagonal(self, results) -> None:
-        reversed_rows = reversed(results)
-        top_right_diagonal = self.get_diagonal(reversed_rows)
+    def check_top_right_diagonal(self) -> None:
+        reversed_columns = reversed(self.results)
+        top_right_diagonal = self.get_diagonal(reversed_columns)
         self.check_winning_match(top_right_diagonal)
 
     @staticmethod
-    def get_diagonal(rows) -> List[dict]:
-        return [row[i] for i, row in enumerate(rows)]
+    def get_diagonal(columns) -> List[dict]:
+        return [column[i] for i, column in enumerate(columns)]
 
     def check_winning_match(self, symbols: List[dict]) -> None:
         if self.is_winning_match(symbols):
@@ -93,8 +123,9 @@ class SlotMachine:
     def get_stats(symbol: dict) -> str:
         return ': '.join([str(symbol[key]) for key in symbol])
 
-    def draw_slot_interface(self, results) -> str:
-        return '\n'.join([self.get_emotes(row) for row in results])
+    def draw_slot_interface(self) -> str:
+        rows = self.get_rows()
+        return '\n'.join([self.get_emotes(row) for row in rows])
 
     @staticmethod
     def get_emotes(symbols) -> str:
