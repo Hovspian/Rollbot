@@ -79,18 +79,16 @@ class SlotMachine:
         return [self.get_stats(symbol) for symbol in self.winning_symbols]
 
     @staticmethod
-    def get_stats(symbol):
-        emote = symbol['emote']
-        value = str(symbol['value'])
-        return ': '.join([emote, value])
+    def get_stats(symbol: dict):
+        return ': '.join([str(symbol[key]) for key in symbol])
 
     @staticmethod
     def draw_slot_interface(results):
-        linebreak = '\n'
 
-        def get_emotes(symbol_list):
-            return ''.join([symbol['emote'] for symbol in symbol_list])
-        return linebreak.join([get_emotes(row) for row in results])
+        def get_emotes(row):
+            return ''.join([symbol['emote'] for symbol in row])
+
+        return '\n'.join([get_emotes(row) for row in results])
 
     def get_outcome_report(self):
         if self.has_winnings():
