@@ -18,13 +18,13 @@ class SlotMachine:
         self.seven = {'emote': ':seven:', 'value': 100}
 
     def get_outcomes(self):
-        return [self.cherry, self.cherry, self.cherry,
-                self.angel, self.angel, self.angel,
-                self.pear, self.pear, self.pear,
-                self.pineapple, self.pineapple,
-                self.butt, self.butt,
-                self.meat, self.meat,
-                self.hammer, self.hammer,
+        return [self.cherry, self.cherry,
+                self.angel, self.angel,
+                self.pear, self.pear,
+                self.pineapple,
+                self.butt,
+                self.meat,
+                self.hammer,
                 self.seven]
 
     def play_slot(self) -> None:
@@ -52,13 +52,17 @@ class SlotMachine:
         self.check_top_right_diagonal(self.results)
 
     def check_top_left_diagonal(self, results) -> None:
-        top_left_diagonal = [row[i] for i, row in enumerate(results)]
+        top_left_diagonal = self.get_diagonal(results)
         self.check_winning_match(top_left_diagonal)
 
     def check_top_right_diagonal(self, results) -> None:
         reversed_rows = reversed(results)
-        top_right_diagonal = [row[j] for j, row in enumerate(reversed_rows)]
+        top_right_diagonal = self.get_diagonal(reversed_rows)
         self.check_winning_match(top_right_diagonal)
+
+    @staticmethod
+    def get_diagonal(rows) -> List[dict]:
+        return [row[i] for i, row in enumerate(rows)]
 
     def check_winning_match(self, symbols: List[dict]) -> None:
         if self.is_winning_match(symbols):
@@ -78,7 +82,9 @@ class SlotMachine:
         return len(self.winning_symbols) > 0
 
     def get_payout(self) -> int:
-        return sum([symbol['value'] for symbol in self.winning_symbols])
+        sum_payout = sum([symbol['value'] for symbol in self.winning_symbols])
+        num_winning_symbols = len(self.winning_symbols)
+        return sum_payout * num_winning_symbols
 
     def get_winning_symbols(self) -> List[str]:
         return [self.get_stats(symbol) for symbol in self.winning_symbols]
