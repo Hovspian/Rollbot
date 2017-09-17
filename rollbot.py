@@ -6,6 +6,7 @@ from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
+from Slots.slots import SlotMachine
 from constants import *
 from channel_manager import ChannelManager
 
@@ -128,6 +129,12 @@ async def butts(ctx):
     else:
         await bot.say('```{} Butts```'.format(num_butts))
 
+
+@bot.command(pass_context=True)
+async def slots(ctx):
+    author = ctx.message.author
+    slot_machine = SlotMachine(author.display_name)
+    await bot.say(slot_machine.play_slot())
 
 bot.remove_command('help')
 
