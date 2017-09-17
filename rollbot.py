@@ -134,7 +134,8 @@ async def butts(ctx):
 async def slots(ctx):
     author = ctx.message.author
     slot_machine = SlotMachine(author.display_name)
-    await bot.say(slot_machine.play_slot())
+    slot_machine.play_slot()
+    await bot.say(slot_machine.compile_report())
 
 bot.remove_command('help')
 
