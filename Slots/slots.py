@@ -37,11 +37,11 @@ class SlotMachine:
         first_column = self.roll_column()
         self.add_result(first_column)
 
-        def perform_rolls(previous_column):
-            next_column = self.roll_column(previous_column)
+        def perform_rolls():
+            next_column = self.roll_column()
             self.add_result(next_column)
 
-        [perform_rolls(self.results[previous]) for previous in range(self.num_columns - 1)]
+        [perform_rolls() for i in range(self.num_columns - 1)]
         self.analyze_results()
 
     def add_result(self, column):
@@ -54,20 +54,50 @@ class SlotMachine:
         outcome = self.get_outcome_report()
         return linebreak.join([label, slot_machine, outcome])
 
-    def roll_column(self, previous_column=None) -> List[dict]:
+    def roll_column(self) -> List[dict]:
 
-        def roll_symbols(i):
-            symbol_lists = self.get_symbol_lists(i, previous_column)
-            return self.roll(symbol_lists)
-        return [self.roll(roll_symbols(i)) for i in range(self.num_columns)]
+        def roll_symbol(i):
+            symbol_container = roll_symbol_container(i)
+            return self.roll(symbol_container)
 
-    def get_symbol_lists(self, i, previous_column=None):
-        normal_outcomes = self.get_outcomes()
-        roll_types = [normal_outcomes, normal_outcomes, normal_outcomes]
+        def roll_symbol_container(i):
+            containers = self.get_symbol_containers(i)
+            return self.roll(containers)
+
+        return [roll_symbol(i) for i in range(self.num_columns)]
+
+    def get_symbol_containers(self, i):
+        default_outcomes = self.get_outcomes()
+        default_containers = [default_outcomes, default_outcomes, default_outcomes]
+        containers = self.add_biased_containers(default_containers, i)
+        return containers
+
+    def add_biased_containers(self, roll_types, i):
+        previous_column = self.get_previous_column()
         if previous_column:
+            previous_diagonals = self.get_previous_diagonals(previous_column, i)
+            roll_types += self.results
             roll_types.append(previous_column)
-            roll_types.append([previous_column[i]])
+            previous_symbol = [previous_column[i]]
+            roll_types.append(previous_symbol)
+            if len(previous_diagonals) > 0:
+                roll_types.append(previous_diagonals)
         return roll_types
+
+    def get_previous_diagonals(self, previous_column, i):
+        diagonals = []
+        upper_left = i - 1
+        lower_left = i + 1
+        if upper_left >= 0:
+            diagonals.append(previous_column[upper_left])
+        if lower_left < self.num_columns:
+            diagonals.append(previous_column[lower_left])
+        return diagonals
+
+    def get_previous_column(self) -> any:
+        pick_previous = len(self.results) - 1
+        if pick_previous >= 0:
+            return self.results[pick_previous]
 
     @staticmethod
     def roll(input_list: List) -> any:
@@ -87,8 +117,7 @@ class SlotMachine:
 
     def get_rows(self):
         def get_row(column):
-            row = [self.results[i][column] for i in range(self.num_columns)]
-            return row
+            return [self.results[i][column] for i in range(self.num_columns)]
         return [get_row(column) for column in range(self.num_columns)]
 
     def check_top_left_diagonal(self) -> None:
@@ -105,11 +134,11 @@ class SlotMachine:
         return [column[i] for i, column in enumerate(columns)]
 
     def check_winning_match(self, symbols: List[dict]) -> None:
-        if self.is_winning_match(symbols):
+        if self.is_matching(symbols):
             self.add_winning_match(symbols[0])
 
     @staticmethod
-    def is_winning_match(symbols) -> bool:
+    def is_matching(symbols) -> bool:
         for symbol in symbols:
             if symbol != symbols[0]:
                 return False
