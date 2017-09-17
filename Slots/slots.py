@@ -26,18 +26,20 @@ class SlotMachine:
                 pineapple,
                 butt,
                 meat,
+                bar, bar,
                 hammer,
+                cake,
                 seven]
 
     def play_slot(self) -> None:
         first_column = self.roll_column()
         self.add_result(first_column)
 
-        def perform_rolls(last_column):
-            next_column = self.roll_column(last_column)
+        def perform_rolls(previous_column):
+            next_column = self.roll_column(previous_column)
             self.add_result(next_column)
 
-        [perform_rolls(self.results[i]) for i in range(self.num_columns - 1)]
+        [perform_rolls(self.results[previous]) for previous in range(self.num_columns - 1)]
         self.analyze_results()
 
     def add_result(self, column):
@@ -51,15 +53,18 @@ class SlotMachine:
         return linebreak.join([label, slot_machine, outcome])
 
     def roll_column(self, previous_column=None) -> List[dict]:
-        symbol_lists = self.get_symbol_lists(previous_column)
-        symbols = self.roll(symbol_lists)
-        return [self.roll(symbols) for i in range(self.num_columns)]
 
-    def get_symbol_lists(self, previous_column=None):
+        def roll_symbols(i):
+            symbol_lists = self.get_symbol_lists(i, previous_column)
+            return self.roll(symbol_lists)
+        return [self.roll(roll_symbols(i)) for i in range(self.num_columns)]
+
+    def get_symbol_lists(self, i, previous_column=None):
         normal_outcomes = self.get_outcomes()
-        roll_types = [normal_outcomes, normal_outcomes]
+        roll_types = [normal_outcomes, normal_outcomes, normal_outcomes]
         if previous_column:
             roll_types.append(previous_column)
+            roll_types.append([previous_column[i]])
         return roll_types
 
     @staticmethod
@@ -72,14 +77,17 @@ class SlotMachine:
         self.check_top_left_diagonal()
         self.check_top_right_diagonal()
 
-    def get_rows(self):
-        def get_row(column):
-            return [self.results[column][i] for i in range(self.num_columns)]
-        return [get_row(column) for column in range(self.num_columns)]
+    def check_columns(self):
+        [self.check_winning_match(column) for column in self.results]
 
     def check_rows(self):
-        rows = self.get_rows()
-        [self.check_winning_match(row) for row in rows]
+        [self.check_winning_match(row) for row in self.get_rows()]
+
+    def get_rows(self):
+        def get_row(column):
+            row = [self.results[i][column] for i in range(self.num_columns)]
+            return row
+        return [get_row(column) for column in range(self.num_columns)]
 
     def check_top_left_diagonal(self) -> None:
         top_left_diagonal = self.get_diagonal(self.results)
