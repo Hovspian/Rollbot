@@ -68,31 +68,35 @@ class SlotMachine:
 
     def get_symbol_containers(self, i):
         default_outcomes = self.get_outcomes()
-        default_containers = [default_outcomes, default_outcomes, default_outcomes]
-        containers = self.add_biased_containers(default_containers, i)
-        return containers
-
-    def add_biased_containers(self, roll_types, i):
+        containers = [default_outcomes, default_outcomes, default_outcomes]
         previous_column = self.get_previous_column()
         if previous_column:
-            previous_diagonals = self.get_previous_diagonals(previous_column, i)
-            roll_types += self.results
-            roll_types.append(previous_column)
-            previous_symbol = [previous_column[i]]
-            roll_types.append(previous_symbol)
-            if len(previous_diagonals) > 0:
-                roll_types.append(previous_diagonals)
+            containers += self.get_biased_containers(i, previous_column)
+        return containers
+
+    def get_biased_containers(self, i, previous_column):
+        previous_diagonals = self.get_previous_diagonals(previous_column, i)
+        previous_symbol = [previous_column[i]]
+        roll_types = [previous_column, previous_symbol]
+        if len(previous_diagonals) > 0:
+            roll_types.append(previous_diagonals)
         return roll_types
 
     def get_previous_diagonals(self, previous_column, i):
         diagonals = []
         upper_left = i - 1
         lower_left = i + 1
-        if upper_left >= 0:
+        if self.match_top_left_diagonal(i):
             diagonals.append(previous_column[upper_left])
-        if lower_left < self.num_columns:
+        if self.match_top_right_diagonal(i):
             diagonals.append(previous_column[lower_left])
         return diagonals
+
+    def match_top_left_diagonal(self, i):
+        return i == len(self.results)
+
+    def match_top_right_diagonal(self, i):
+        return len(self.results) == (self.num_columns - 1) - i
 
     def get_previous_column(self) -> any:
         pick_previous = len(self.results) - 1
@@ -106,6 +110,7 @@ class SlotMachine:
 
     def analyze_results(self) -> None:
         self.check_rows()
+        self.check_columns()
         self.check_top_left_diagonal()
         self.check_top_right_diagonal()
 
