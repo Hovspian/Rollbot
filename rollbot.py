@@ -133,8 +133,19 @@ async def butts(ctx):
 @bot.command(pass_context=True)
 async def slots(ctx):
     author = ctx.message.author
-    slot_machine = SlotMachine(author.display_name)
+    slot_machine = SlotMachine()
     slot_machine.play_slot()
+    await bot.say(f"| {author}'s slot results |")
+    await bot.say(slot_machine.compile_report())
+
+@bot.command(pass_context=True)
+async def bigslots(ctx):
+    author = ctx.message.author
+    num_columns = 5
+    bonus_payout = 10
+    slot_machine = SlotMachine(bonus_payout, num_columns)
+    slot_machine.play_slot()
+    await bot.say(f"| {author}'s slot results |")
     await bot.say(slot_machine.compile_report())
 
 bot.remove_command('help')

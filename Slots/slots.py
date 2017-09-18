@@ -14,11 +14,11 @@ seven = {'emote': ':slot_machine:', 'value': 100}
 
 
 class SlotMachine:
-    def __init__(self, author):
-        self.player = author
-        self.num_columns = 3
+    def __init__(self, bonus=1, num_columns=3):
+        self.num_columns = num_columns
         self.winning_symbols = []
         self.results = []
+        self.bonus = bonus
 
     @staticmethod
     def get_outcomes():
@@ -49,10 +49,9 @@ class SlotMachine:
 
     def compile_report(self) -> str:
         linebreak = '\n'
-        label = "| {}'s slot results |".format(self.player)
         slot_machine = self.draw_slot_interface()
         outcome = self.get_outcome_report()
-        return linebreak.join([label, slot_machine, outcome])
+        return linebreak.join([slot_machine, outcome])
 
     def roll_column(self) -> List[dict]:
 
@@ -158,7 +157,7 @@ class SlotMachine:
     def get_payout(self) -> int:
         sum_payout = sum([symbol['value'] for symbol in self.winning_symbols])
         num_winning_symbols = len(self.winning_symbols)
-        return sum_payout * num_winning_symbols
+        return sum_payout * num_winning_symbols * self.bonus
 
     def get_winning_symbols(self) -> List[str]:
         return [self.get_stats(symbol) for symbol in self.winning_symbols]
