@@ -2,7 +2,7 @@ import random
 from typing import List
 
 cherry = {'emote': ':cherries:', 'value': 1}
-angel = {'emote': ':angel:', 'value': 3}
+strawberry = {'emote': ':strawberry:', 'value': 3}
 pear = {'emote': ':pear:', 'value': 5}
 pineapple = {'emote': ':pineapple:', 'value': 7}
 butt = {'emote': ':peach:', 'value': 10}
@@ -34,7 +34,7 @@ class SlotMachine:
     @staticmethod
     def get_outcomes():
         return [cherry, cherry,
-                angel, angel,
+                strawberry, strawberry,
                 pear, pear,
                 pineapple,
                 butt,
@@ -81,18 +81,18 @@ class SlotMachine:
     def get_biased_containers(self, i, previous_column):
         previous_diagonals = self.get_previous_diagonals(previous_column, i)
         previous_symbol = [previous_column[i]]
-        roll_types = [previous_column, previous_symbol]
+        containers = [previous_column, previous_symbol]
         if len(previous_diagonals) > 0:
-            roll_types.append(previous_diagonals)
-        return roll_types
+            containers.append(previous_diagonals)
+        return containers
 
     def get_previous_diagonals(self, previous_column, i):
         diagonals = []
-        upper_left = i - 1
-        lower_left = i + 1
         if self.match_top_left_diagonal(i):
+            upper_left = i - 1
             diagonals.append(previous_column[upper_left])
         if self.match_top_right_diagonal(i):
+            lower_left = i + 1
             diagonals.append(previous_column[lower_left])
         return diagonals
 
