@@ -12,6 +12,17 @@ hammer = {'emote': ':hammer:', 'value': 50}
 cake = {'emote': ':cake:', 'value': 75}
 seven = {'emote': ':slot_machine:', 'value': 100}
 
+bubbling = {'emote': '<:bubbling:246852286658248713>', 'value': 1}
+warbow = {'emote': '<:warbow:293077578821140503>', 'value': 3}
+slime = {'emote': '<:slime:231168322203287552>', 'value': 5}
+mushroom = {'emote': '<:f5:247978459886780416>', 'value': 7}
+kumbi = {'emote': '<:kumbi:247982565020008449>', 'value': 10}
+pepe = {'emote': '<:pepe:242567441346068480>', 'value': 15}
+mesocoin = {'emote': '<:mesocoin:246852286914101248>', 'value': 30}
+steely = {'emote': '<:steely:247981619519029248>', 'value': 50}
+mesobag = {'emote': '<:mesobag:246852286658248704>', 'value': 75}
+panlid = {'emote': '<:panlid:336281521893933057>', 'value': 100}
+
 
 class SlotMachine:
     def __init__(self, bonus=1, num_columns=3):
@@ -46,12 +57,6 @@ class SlotMachine:
 
     def add_result(self, column):
         self.results.append(column)
-
-    def compile_report(self) -> str:
-        linebreak = '\n'
-        slot_machine = self.draw_slot_interface()
-        outcome = self.get_outcome_report()
-        return linebreak.join([slot_machine, outcome])
 
     def roll_column(self) -> List[dict]:
 
@@ -122,6 +127,7 @@ class SlotMachine:
     def get_rows(self):
         def get_row(column):
             return [self.results[i][column] for i in range(self.num_columns)]
+
         return [get_row(column) for column in range(self.num_columns)]
 
     def check_top_left_diagonal(self) -> None:
@@ -184,3 +190,28 @@ class SlotMachine:
         winning_stats = linebreak.join(self.get_winning_symbols())
         payout = self.get_payout()
         return linebreak.join(['Rolled a match!', f'{winning_stats}', f':dollar: Payout is {payout} gold. :dollar:'])
+
+
+class MapleSlot(SlotMachine):
+    def __init__(self, bonus=1, num_columns=3):
+        super().__init__(bonus, num_columns)
+
+    @staticmethod
+    def get_outcomes():
+        return [bubbling, bubbling,
+                warbow, warbow,
+                mushroom, mushroom,
+                slime, slime,
+                kumbi, kumbi,
+                pepe,
+                mesocoin,
+                steely,
+                mesobag,
+                panlid]
+
+    def get_win_report(self) -> str:
+        linebreak = '\n'
+        winning_stats = linebreak.join(self.get_winning_symbols())
+        payout = self.get_payout()
+        mesowad = '<:mesowad:246852286993793025>'
+        return linebreak.join(['Rolled a match!', f'{winning_stats}', f'{mesowad} Payout is {payout} mesos. {mesowad}'])

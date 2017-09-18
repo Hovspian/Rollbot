@@ -6,7 +6,7 @@ from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
-from Slots.slots import SlotMachine
+from Slots.slots import *
 from constants import *
 from channel_manager import ChannelManager
 
@@ -119,10 +119,7 @@ async def hammer(ctx):
 
 @bot.command(pass_context=True)
 async def butts(ctx):
-    message = ctx.message
-    tich = discord.utils.get(message.server.members, name = "Tich Showers")
     num_butts = random.randint(1, 20)
-    # await bot.say(tich.mention)
     await bot.say(':peach:' * num_butts)
     if num_butts == 1:
         await bot.say('```{} Butt```'.format(num_butts))
@@ -136,7 +133,9 @@ async def slots(ctx):
     slot_machine = SlotMachine()
     slot_machine.play_slot()
     await bot.say(f"| {author}'s slot results |")
-    await bot.say(slot_machine.compile_report())
+    await bot.say(slot_machine.draw_slot_interface())
+    await bot.say(slot_machine.get_outcome_report())
+
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
@@ -146,7 +145,19 @@ async def bigslots(ctx):
     slot_machine = SlotMachine(bonus_payout, num_columns)
     slot_machine.play_slot()
     await bot.say(f"| {author}'s slot results |")
-    await bot.say(slot_machine.compile_report())
+    await bot.say(slot_machine.draw_slot_interface())
+    await bot.say(slot_machine.get_outcome_report())
+
+
+@bot.command(pass_context=True)
+async def mapleslots(ctx):
+    author = ctx.message.author.display_name
+    slot_machine = MapleSlot()
+    slot_machine.play_slot()
+    await bot.say(f"| {author}'s slot results |")
+    await bot.say(slot_machine.draw_slot_interface())
+    await bot.say(slot_machine.get_outcome_report())
+
 
 bot.remove_command('help')
 
