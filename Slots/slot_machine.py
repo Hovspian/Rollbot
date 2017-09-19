@@ -10,6 +10,7 @@ class SlotMachine:
         self.payout_multiplier = 1
         self.results = []
         self.winning_symbols = []
+        self.winning_combos = []
         self.feedback = SlotsFeedback(self)
         self.result_checker = ResultChecker(self)
         self.default_outcomes = []

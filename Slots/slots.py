@@ -18,9 +18,11 @@ class ClassicSlots(SlotMachine):
                                  seven]
 
     @staticmethod
-    def get_win_message(winning_stats, payout) -> str:
+    def get_win_message(matches, winning_stats, payout) -> str:
         linebreak = '\n'
-        return linebreak.join(['Rolled a match!', f'{winning_stats}', f':dollar: Payout is {payout} gold. :dollar:'])
+        return linebreak.join([f'Rolled {matches}!',
+                               f'{winning_stats}',
+                               f':dollar: Payout is {payout} gold. :dollar:'])
 
 
 class BigSlots(ClassicSlots):
@@ -48,7 +50,9 @@ class MapleSlots(SlotMachine):
                                  panlid]
 
     @staticmethod
-    def get_win_message(winning_stats, payout) -> str:
+    def get_win_message(matches, winning_stats, payout) -> str:
         linebreak = '\n'
         mesowad = '<:mesowad:246852286993793025>'
-        return linebreak.join(['Rolled a match!', f'{winning_stats}', f'{mesowad} Payout is {payout} mesos. {mesowad}'])
+        return linebreak.join([f'Rolled {matches}!',
+                               f'{winning_stats}',
+                               f'{mesowad} Payout is {payout} mesos. {mesowad}'])
