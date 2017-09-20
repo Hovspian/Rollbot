@@ -43,30 +43,37 @@ class SlotMachine:
         self.results.append(column)
 
     def _roll_column(self) -> List[dict]:
-        symbol_container = [self._roll_container(i) for i in range(self.num_columns)]
+        symbol_container = [self._roll_container(current_index) for current_index in range(self.num_columns)]
         return [self._roll(symbols) for symbols in symbol_container]
 
     def _roll_container(self, current_index) -> List[dict]:
+        containers = self._get_containers(current_index)
+        picked_container = self._roll(containers)
+        return picked_container
+
+    def _get_containers(self, current_index):
         containers = self._get_default_containers()
         previous_column = self._get_previous_column()
         if previous_column:
-            biased_containers = self._get_biased_containers(previous_column, current_index)
+            biased_containers = self._get_biased_containers(current_index)
             containers += biased_containers
-        picked_container = self._roll(containers)
-        return picked_container
+        return containers
 
     def _get_default_containers(self) -> List[list]:
         return [self.default_outcomes, self.default_outcomes, self.default_outcomes]
 
-    def _get_biased_containers(self, previous_column, current_index) -> List[list]:
+    def _get_biased_containers(self, current_index) -> List[list]:
+        previous_column = self._get_previous_column()
         previous_symbol = [previous_column[current_index]]
-        containers = [previous_column, previous_symbol]
-        previous_diagonals = self._get_previous_diagonals(previous_column, current_index)
-        if previous_diagonals:
-            containers.append(previous_diagonals)
+        first_column = self.results[0]
+        containers = [first_column, first_column, previous_symbol]
+        previous_diagonals = self._get_previous_diagonals(current_index)
+        for diagonal in previous_diagonals:
+            containers.append([diagonal])
         return containers
 
-    def _get_previous_diagonals(self, previous_column, current_index) -> List[dict]:
+    def _get_previous_diagonals(self, current_index) -> List[dict]:
+        previous_column = self._get_previous_column()
         diagonals = []
         if self._match_top_left_diagonal(current_index):
             upper_left = current_index - 1
