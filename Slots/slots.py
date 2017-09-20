@@ -3,6 +3,16 @@ from Slots.slot_machine import SlotMachine
 from typing import List
 
 
+class BigSlots(SlotMachine):
+    def __init__(self):
+        super().__init__()
+        self.num_columns = 5
+        self.payout_multiplier = 5
+
+    def _get_default_containers(self) -> List[list]:
+        return [self.default_outcomes]
+
+
 class ClassicSlots(SlotMachine):
     def __init__(self):
         super().__init__()
@@ -25,14 +35,9 @@ class ClassicSlots(SlotMachine):
                                f':dollar: Payout is {payout} gold. :dollar:'])
 
 
-class BigSlots(ClassicSlots):
+class BigClassicSlots(BigSlots, ClassicSlots):
     def __init__(self):
         super().__init__()
-        self.num_columns = 5
-        self.payout_multiplier = 5
-
-    def _get_default_containers(self) -> List[list]:
-        return [self.default_outcomes]
 
 
 class MapleSlots(SlotMachine):
@@ -56,3 +61,8 @@ class MapleSlots(SlotMachine):
         return linebreak.join([f'Rolled {matches}!',
                                f'{winning_stats}',
                                f'{mesowad} Payout is {payout} mesos. {mesowad}'])
+
+
+class BigMapleSlots(BigSlots, MapleSlots):
+    def __init__(self):
+        super().__init__()

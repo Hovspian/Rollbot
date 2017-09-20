@@ -118,38 +118,38 @@ async def hammer(ctx):
 
 
 @bot.command(pass_context=True)
-async def butts(ctx):
+async def butts():
     num_butts = random.randint(1, 20)
-    if num_butts == 1:
-        await bot.say('\n'.join([':peach:' * num_butts, f'```{num_butts} Butt```']))
+    butts_message = [':peach:' * num_butts]
+    if num_butts > 1:
+        butts_message.append(f'```{num_butts} Butts```')
     else:
-        await bot.say('\n'.join([':peach:' * num_butts, f'```{num_butts} Butts```']))
+        butts_message.append(f'```{num_butts} Butt```')
+    await bot.say(''.join(butts_message))
 
 
 @bot.command(pass_context=True)
 async def slots(ctx):
-    author = ctx.message.author.display_name
-    slot_machine = ClassicSlots()
-    slot_machine.play_slot()
-    await bot.say(slot_machine.draw_slot_interface())
-    report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
-    await bot.say(report)
+    await play_slots(ctx, slot_machine=ClassicSlots())
 
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
-    author = ctx.message.author.display_name
-    slot_machine = BigSlots()
-    slot_machine.play_slot()
-    await bot.say(slot_machine.draw_slot_interface())
-    report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
-    await bot.say(report)
+    await play_slots(ctx, slot_machine=BigClassicSlots())
 
 
 @bot.command(pass_context=True)
 async def mapleslots(ctx):
+    await play_slots(ctx, slot_machine=MapleSlots())
+
+
+@bot.command(pass_context=True)
+async def bigmapleslots(ctx):
+    await play_slots(ctx, slot_machine=BigMapleSlots())
+
+
+async def play_slots(ctx, slot_machine):
     author = ctx.message.author.display_name
-    slot_machine = MapleSlots()
     slot_machine.play_slot()
     await bot.say(slot_machine.draw_slot_interface())
     report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
