@@ -3,7 +3,6 @@ from typing import List
 
 class ResultChecker:
     def __init__(self, slot_machine):
-        self.slot_machine = slot_machine
         self.get_rows = slot_machine.get_rows
         self.results = slot_machine.results
         self.winning_symbols = slot_machine.winning_symbols

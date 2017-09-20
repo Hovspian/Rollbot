@@ -11,15 +11,13 @@ class SlotMachine:
         self.results = []
         self.winning_symbols = []
         self.winning_combos = []
-        self.feedback = SlotsFeedback(self)
-        self.result_checker = ResultChecker(self)
         self.default_outcomes = []
 
     def play_slot(self) -> None:
         def _perform_rolls():
             self._add_result(self._roll_column())
         [_perform_rolls() for i in range(self.num_columns)]
-        self.result_checker.analyze_results()
+        ResultChecker(self).analyze_results()
 
     def draw_slot_interface(self) -> str:
         rows = self.get_rows()
@@ -30,7 +28,7 @@ class SlotMachine:
         return '\n'.join([get_emotes(row) for row in rows])
 
     def get_outcome_report(self) -> str:
-        return self.feedback.get_outcome_report()
+        return SlotsFeedback(self).get_outcome_report()
 
     @staticmethod
     def get_lose_message() -> str:
