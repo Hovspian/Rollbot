@@ -1,6 +1,5 @@
 from Slots.symbols import *
 from Slots.slot_machine import SlotMachine
-from typing import List
 
 
 class BigSlots(SlotMachine):
@@ -9,8 +8,12 @@ class BigSlots(SlotMachine):
         self.num_columns = 5
         self.payout_multiplier = 3
 
-    def _get_default_containers(self) -> List[list]:
-        return [self.default_outcomes]
+
+class GiantSlots(SlotMachine):
+    def __init__(self):
+        super().__init__()
+        self.num_columns = 7
+        self.payout_multiplier = 5
 
 
 class ClassicSlots(SlotMachine):
@@ -40,6 +43,11 @@ class BigClassicSlots(BigSlots, ClassicSlots):
         super().__init__()
 
 
+class GiantClassicSlots(GiantSlots, ClassicSlots):
+    def __init__(self):
+        super().__init__()
+
+
 class MapleSlots(SlotMachine):
     def __init__(self):
         super().__init__()
@@ -64,5 +72,10 @@ class MapleSlots(SlotMachine):
 
 
 class BigMapleSlots(BigSlots, MapleSlots):
+    def __init__(self):
+        super().__init__()
+
+
+class GiantMapleSlots(GiantSlots, MapleSlots):
     def __init__(self):
         super().__init__()

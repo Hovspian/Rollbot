@@ -139,6 +139,11 @@ async def bigslots(ctx):
 
 
 @bot.command(pass_context=True)
+async def giantslots(ctx):
+    await play_slots(ctx, slot_machine=GiantClassicSlots())
+
+
+@bot.command(pass_context=True)
 async def mapleslots(ctx):
     await play_slots(ctx, slot_machine=MapleSlots())
 
@@ -146,6 +151,11 @@ async def mapleslots(ctx):
 @bot.command(pass_context=True)
 async def bigmapleslots(ctx):
     await play_slots(ctx, slot_machine=BigMapleSlots())
+
+
+@bot.command(pass_context=True)
+async def giantmapleslots(ctx):
+    await play_slots(ctx, slot_machine=GiantMapleSlots())
 
 
 async def play_slots(ctx, slot_machine):
