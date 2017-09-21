@@ -7,7 +7,7 @@ class BigSlots(SlotMachine):
     def __init__(self):
         super().__init__()
         self.num_columns = 5
-        self.payout_multiplier = 5
+        self.payout_multiplier = 3
 
     def _get_default_containers(self) -> List[list]:
         return [self.default_outcomes]
