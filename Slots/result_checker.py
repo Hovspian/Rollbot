@@ -10,7 +10,6 @@ class ResultChecker:
 
     def analyze_results(self) -> None:
         self._check_rows()
-        self._check_columns()
         self._check_top_left_diagonal()
         self._check_top_right_diagonal()
 

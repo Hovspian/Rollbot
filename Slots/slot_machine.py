@@ -12,10 +12,16 @@ class SlotMachine:
         self.winning_symbols = []
         self.winning_combos = []
         self.default_outcomes = []
+        self.reel = []
+        self.bias_index = 0
 
     def play_slot(self) -> None:
+        self.reel = self.roll_reel(self.default_outcomes)
+        self.bias_index = random.randint(0, self.num_columns - 1)
+
         def _perform_rolls():
             self._add_result(self._roll_column())
+
         [_perform_rolls() for i in range(self.num_columns)]
         ResultChecker(self).analyze_results()
 
@@ -30,6 +36,9 @@ class SlotMachine:
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
 
+    def get_payout(self):
+        return SlotsFeedback(self).get_payout()
+
     @staticmethod
     def get_lose_message() -> str:
         return 'Sorry, not a winning game.'
@@ -37,62 +46,79 @@ class SlotMachine:
     def get_rows(self) -> List[list]:
         def _get_row(i):
             return [self.results[column][i] for column in range(self.num_columns)]
+
         return [_get_row(i) for i in range(self.num_columns)]
+
+    def roll_reel(self, symbols):
+        reel_size = self.num_columns + 2
+        reel = []
+
+        def add_to_reel(i):
+            symbol = self._roll(symbols)
+            if not is_previous_symbol(symbol, i):
+                reel.append(symbol)
+            else:
+                add_to_reel(i)
+
+        def is_previous_symbol(symbol, i):
+            if len(reel) > 0:
+                return symbol == reel[i - 1]
+
+        [add_to_reel(i) for i in range(reel_size)]
+        return reel
 
     def _add_result(self, column) -> None:
         self.results.append(column)
 
     def _roll_column(self) -> List[dict]:
-        symbol_container = [self._roll_container(current_index) for current_index in range(self.num_columns)]
-        return [self._roll(symbols) for symbols in symbol_container]
+        reel = self.roll_reel(self.reel)
+        if len(self.results) > 0:
+            reel += self.results[0]
+            index = self._get_match_index(reel)
+        else:
+            index = 0
+        column = []
 
-    def _roll_container(self, current_index) -> List[dict]:
-        containers = self._get_containers(current_index)
-        picked_container = self._roll(containers)
-        return picked_container
+        for i in range(self.num_columns):
+            column.append(reel[index])
+            index += 1
+            if index > self.num_columns - 1:
+                index = 0
+        return column
 
-    def _get_containers(self, current_index):
-        containers = self._get_default_containers()
-        previous_column = self._get_previous_column()
-        if previous_column:
-            biased_containers = self._get_biased_containers(current_index)
-            containers += biased_containers
-        return containers
-
-    def _get_default_containers(self) -> List[list]:
-        return [self.default_outcomes, self.default_outcomes, self.default_outcomes]
-
-    def _get_biased_containers(self, current_index) -> List[list]:
-        previous_column = self._get_previous_column()
-        previous_symbol = [previous_column[current_index]]
+    def _get_match_index(self, reel):
         first_column = self.results[0]
-        containers = [first_column, first_column, previous_symbol]
-        previous_diagonals = self._get_previous_diagonals(current_index)
-        for diagonal in previous_diagonals:
-            containers.append([diagonal])
-        return containers
-
-    def _get_previous_diagonals(self, current_index) -> List[dict]:
-        previous_column = self._get_previous_column()
-        diagonals = []
-        if self._match_top_left_diagonal(current_index):
-            upper_left = current_index - 1
-            diagonals.append(previous_column[upper_left])
-        if self._match_top_right_diagonal(current_index):
-            lower_left = current_index + 1
-            diagonals.append(previous_column[lower_left])
-        return diagonals
-
-    def _match_top_left_diagonal(self, current_index) -> bool:
-        return current_index == len(self.results)
-
-    def _match_top_right_diagonal(self, current_index) -> bool:
-        return len(self.results) == (self.num_columns - 1) - current_index
+        symbol_to_match = first_column[self.bias_index]
+        tilted_index = self._check_index_diagonals(self.bias_index)
+        return reel.index(symbol_to_match) - tilted_index
 
     def _get_previous_column(self) -> List[dict]:
         previous = len(self.results) - 1
         if previous >= 0:
             return self.results[previous]
+
+    def _check_index_diagonals(self, index):
+        tilt = [index]
+        if self._match_top_left_diagonal(index):
+            top_left_diagonal = self._loop_reel(index - len(self.results))
+            tilt.append(top_left_diagonal)
+        if self._match_top_right_diagonal(index):
+            top_right_diagonal = self._loop_reel(index + len(self.results))
+            tilt.append(top_right_diagonal)
+        return self._roll(tilt)
+
+    def _loop_reel(self, index):
+        if index > self.num_columns - 1:
+            return index - (self.num_columns - 1)
+        if index < 0:
+            return self.num_columns + index
+        return index
+
+    def _match_top_left_diagonal(self, index) -> bool:
+        return index == len(self.results)
+
+    def _match_top_right_diagonal(self, index) -> bool:
+        return len(self.results) == (self.num_columns - 1) - index
 
     @staticmethod
     def _roll(input_list: List) -> any:
