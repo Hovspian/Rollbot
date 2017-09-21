@@ -89,7 +89,7 @@ class SlotMachine:
     def _get_match_index(self, reel):
         first_column = self.results[0]
         symbol_to_match = first_column[self.bias_index]
-        tilted_index = self._check_index_diagonals(self.bias_index)
+        tilted_index = self._check_index_diagonals()
         return reel.index(symbol_to_match) - tilted_index
 
     def _get_previous_column(self) -> List[dict]:
@@ -97,15 +97,14 @@ class SlotMachine:
         if previous >= 0:
             return self.results[previous]
 
-    def _check_index_diagonals(self, index):
-        tilt = [index]
-        if self._match_top_left_diagonal(index):
-            top_left_diagonal = self._loop_reel(index - len(self.results))
-            tilt.append(top_left_diagonal)
-        if self._match_top_right_diagonal(index):
-            top_right_diagonal = self._loop_reel(index + len(self.results))
-            tilt.append(top_right_diagonal)
-        return self._roll(tilt)
+    def _check_index_diagonals(self):
+        if self.bias_index == 0:
+            top_left_diagonal = self._loop_reel(self.bias_index + len(self.results))
+            return top_left_diagonal
+        if self.bias_index == self.num_columns - 1:
+            top_right_diagonal = self._loop_reel(self.bias_index - len(self.results))
+            return top_right_diagonal
+        return self.bias_index
 
     def _loop_reel(self, index):
         if index > self.num_columns - 1:
