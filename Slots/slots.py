@@ -34,6 +34,7 @@ class ClassicSlots(SlotMachine):
                                  grapes,
                                  butt,
                                  meat,
+                                 lemon,
                                  bar, bar,
                                  hammer,
                                  cake,
