@@ -26,7 +26,22 @@ class SlotMachine:
             self._add_result(self._roll_next_column())
 
         [_perform_rolls() for i in range(self.num_columns - 1)]
-        self.check_results()
+        self._check_results()
+
+    def draw_slot_interface(self) -> str:
+        rows = self.get_rows()
+
+        def get_emotes(symbols) -> str:
+            return ''.join([symbol['emote'] for symbol in symbols])
+        return '\n'.join([get_emotes(row) for row in rows])
+
+    def get_outcome_report(self) -> str:
+        return SlotsFeedback(self).get_outcome_report()
+
+    def get_rows(self) -> List[list]:
+        def _get_row(i):
+            return [self.results[column][i] for column in range(self.num_columns)]
+        return [_get_row(i) for i in range(self.num_columns)]
 
     def _get_default_bias(self):
         return self.bias_index
@@ -34,19 +49,19 @@ class SlotMachine:
     def _roll_first_column(self):
         self._roll_initial_reel()
         self._roll_bias_index()
-        first_column = self._roll_column(self.get_first_reel())
+        first_column = self._roll_column(self._get_first_reel())
         self._add_result(first_column)
 
-    def get_first_reel(self):
+    def _get_first_reel(self):
         return self.reels[0]
 
-    def check_results(self):
+    def _check_results(self):
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
         self.payout_amount += result_checker.calculate_payout()
 
     def _roll_initial_reel(self):
-        self.reels.append(self.roll_reel(self.default_outcomes))
+        self.reels.append(self._roll_reel(self.default_outcomes))
 
     def get_bias_options(self):
         first_row = 0
@@ -68,34 +83,21 @@ class SlotMachine:
         bias_directions = [self.bias_direction, diagonal, diagonal]
         self.bias_direction = self._roll(bias_directions)
 
-    def draw_slot_interface(self) -> str:
-        rows = self.get_rows()
-
-        def get_emotes(symbols) -> str:
-            return ''.join([symbol['emote'] for symbol in symbols])
-        return '\n'.join([get_emotes(row) for row in rows])
-
-    def get_outcome_report(self) -> str:
-        return SlotsFeedback(self).get_outcome_report()
-
-    def get_rows(self) -> List[list]:
-        def _get_row(i):
-            return [self.results[column][i] for column in range(self.num_columns)]
-        return [_get_row(i) for i in range(self.num_columns)]
-
-    def roll_reel(self, symbols):
+    def _roll_reel(self, symbols):
         reel = []
 
         def roll_add_to_reel(i):
-            symbol = self._roll(symbols)
-            if is_previous_symbol(symbol, i):
-                roll_add_to_reel(i)
+            previous_symbol = has_previous_symbol(i)
+            if previous_symbol:
+                filtered_container = self.remove_symbol(symbols, previous_symbol)
+                symbol = self._roll(filtered_container)
             else:
-                reel.append(symbol)
+                symbol = self._roll(symbols)
+            reel.append(symbol)
 
-        def is_previous_symbol(symbol, i):
+        def has_previous_symbol(i):
             if len(reel) > 0:
-                return symbol == reel[i - 1]
+                return reel[i - 1]
 
         [roll_add_to_reel(i) for i in range(self.init_reel_size)]
         return reel
@@ -105,18 +107,18 @@ class SlotMachine:
 
     def _roll_next_column(self):
         reel = self._rebuild_reel()
-        if self.has_bias():
+        if self._has_bias():
             match_index = self._get_match_index(reel)
             return self._roll_column(reel, match_index)
         return self._roll_column(reel)
 
-    def has_bias(self):
+    def _has_bias(self):
         return self.bias_index > -1
 
     def _rebuild_reel(self):
         first_column = self.results[0]
         exclude_symbols = self.num_columns
-        new_reel = self.roll_reel(self.get_first_reel())
+        new_reel = self._roll_reel(self._get_first_reel())
         self.reels.append(new_reel)
         return new_reel[:exclude_symbols] + first_column
 
@@ -148,6 +150,10 @@ class SlotMachine:
         if index < 0:
             return previous_reel_size + index
         return index
+
+    @staticmethod
+    def remove_symbol(container, filter_symbol):
+        return [symbol for symbol in container if symbol != filter_symbol]
 
     @staticmethod
     def _roll(input_list: List) -> any:

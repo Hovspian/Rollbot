@@ -21,7 +21,15 @@ class GiantSlots(BigSlots):
     def __init__(self):
         super().__init__()
         self.num_columns = 7
-        self.payout_multiplier = 5
+        self.payout_multiplier = 3
+        self.reel_size = self.num_columns * 2
+
+    def get_bias_options(self):
+        first_row = 0
+        last_row = self.num_columns - 1
+        random_index = random.randint(first_row, last_row)
+        no_bias = -1
+        return [random_index, random_index, first_row, last_row, no_bias]
 
 
 class ClassicSlots(SlotMachine):
