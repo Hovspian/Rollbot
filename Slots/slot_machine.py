@@ -22,7 +22,7 @@ class SlotMachine:
     def play_slot(self) -> None:
         self._roll_first_column()
 
-        def _perform_rolls():
+        def _perform_rolls() -> None:
             self._add_result(self._roll_next_column())
 
         [_perform_rolls() for i in range(self.num_columns - 1)]
@@ -43,34 +43,34 @@ class SlotMachine:
             return [self.results[column][i] for column in range(self.num_columns)]
         return [_get_row(i) for i in range(self.num_columns)]
 
-    def _get_default_bias(self):
+    def _get_default_bias(self) -> int:
         return self.bias_index
 
-    def _roll_first_column(self):
+    def _roll_first_column(self) -> None:
         self._roll_initial_reel()
         self._roll_bias_index()
         first_column = self._roll_column(self._get_first_reel())
         self._add_result(first_column)
 
-    def _get_first_reel(self):
+    def _get_first_reel(self) -> List[dict]:
         return self.reels[0]
 
-    def _check_results(self):
+    def _check_results(self) -> None:
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
         self.payout_amount += result_checker.calculate_payout()
 
-    def _roll_initial_reel(self):
+    def _roll_initial_reel(self) -> None:
         self.reels.append(self._roll_reel(self.default_outcomes))
 
-    def get_bias_options(self):
+    def get_bias_options(self) -> List[int]:
         first_row = 0
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
         return [random_index, random_index, random_index, no_bias, no_bias]
 
-    def _roll_bias_index(self):
+    def _roll_bias_index(self) -> None:
         first_row = 0
         last_row = self.num_columns - 1
         self.bias_index = self._roll(self.get_bias_options())
@@ -83,7 +83,7 @@ class SlotMachine:
         bias_directions = [self.bias_direction, diagonal, diagonal]
         self.bias_direction = self._roll(bias_directions)
 
-    def _roll_reel(self, symbols):
+    def _roll_reel(self, symbols) -> List[dict]:
         reel = []
 
         def roll_add_to_reel(i):
@@ -102,20 +102,14 @@ class SlotMachine:
         [roll_add_to_reel(i) for i in range(self.init_reel_size)]
         return reel
 
-    def _add_result(self, column) -> None:
-        self.results.append(column)
-
-    def _roll_next_column(self):
+    def _roll_next_column(self) -> List[dict]:
         reel = self._rebuild_reel()
         if self._has_bias():
             match_index = self._get_match_index(reel)
             return self._roll_column(reel, match_index)
         return self._roll_column(reel)
 
-    def _has_bias(self):
-        return self.bias_index > -1
-
-    def _rebuild_reel(self):
+    def _rebuild_reel(self) -> List[dict]:
         first_column = self.results[0]
         exclude_symbols = self.num_columns
         new_reel = self._roll_reel(self._get_first_reel())
@@ -129,20 +123,20 @@ class SlotMachine:
             index = self._loop_reel_value(index + 1)
         return column
 
-    def _get_match_index(self, reel):
+    def _get_match_index(self, reel) -> int:
         first_column = self.results[0]
         symbol_to_match = first_column[self.bias_index]
         return reel.index(symbol_to_match) - self.bias_direction()
 
-    def _top_left_diagonal(self):
+    def _top_left_diagonal(self) -> int:
         index = self.bias_index + len(self.results)
         return self._loop_reel_value(index)
 
-    def _top_right_diagonal(self):
+    def _top_right_diagonal(self) -> int:
         index = self.bias_index - len(self.results)
         return self._loop_reel_value(index)
 
-    def _loop_reel_value(self, index):
+    def _loop_reel_value(self, index) -> int:
         previous = len(self.reels) - 1
         previous_reel_size = len(self.reels[previous])
         if index > previous_reel_size - 1:
@@ -150,6 +144,12 @@ class SlotMachine:
         if index < 0:
             return previous_reel_size + index
         return index
+
+    def _has_bias(self) -> bool:
+        return self.bias_index > -1
+
+    def _add_result(self, column) -> None:
+        self.results.append(column)
 
     @staticmethod
     def remove_symbol(container, filter_symbol):

@@ -1,6 +1,7 @@
 from Slots.symbols import *
 from Slots.slot_machine import SlotMachine
 import random
+from typing import List
 
 
 class BigSlots(SlotMachine):
@@ -10,7 +11,7 @@ class BigSlots(SlotMachine):
         self.payout_multiplier = 2
         self.reel_size = self.num_columns * 2
 
-    def get_bias_options(self):
+    def get_bias_options(self) -> List[int]:
         first_row = 0
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
@@ -22,9 +23,8 @@ class GiantSlots(BigSlots):
         super().__init__()
         self.num_columns = 7
         self.payout_multiplier = 3
-        self.reel_size = self.num_columns * 2
 
-    def get_bias_options(self):
+    def get_bias_options(self) -> List[int]:
         first_row = 0
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
