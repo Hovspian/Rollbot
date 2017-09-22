@@ -3,8 +3,7 @@ class SlotsFeedback:
         self.winning_symbols = slot_machine.winning_symbols
         self.winning_combos = slot_machine.winning_combos
         self.win_message = slot_machine.get_win_message
-        self.lose_message = slot_machine.get_lose_message
-        self.payout_multiplier = slot_machine.payout_multiplier
+        self.payout_amount = slot_machine.payout_amount
 
     def display_winning_symbols(self) -> str:
         return '\n'.join([self.get_stats(symbol, i) for i, symbol in enumerate(self.winning_symbols)])
@@ -19,8 +18,7 @@ class SlotsFeedback:
     def get_win_report(self):
         matches = self.winning_combos_message()
         winning_stats = self.display_winning_symbols()
-        payout = self.get_payout()
-        return self.win_message(matches, winning_stats, payout)
+        return self.win_message(matches, winning_stats, self.payout_amount)
 
     def winning_combos_message(self):
         num_combos = len(self.winning_combos)
@@ -28,12 +26,7 @@ class SlotsFeedback:
             return ' '.join([str(num_combos), 'matches'])
         return 'a match'
 
-    def get_payout(self) -> int:
-        sum_payout = sum([symbol['value'] for symbol in self.winning_symbols])
-        num_winning_symbols = len(self.winning_symbols)
-        return sum_payout * num_winning_symbols * self.payout_multiplier
-
     def get_outcome_report(self):
         if self.winning_symbols:
             return self.get_win_report()
-        return self.lose_message()
+        return 'Sorry, not a winning game.'

@@ -1,15 +1,23 @@
 from Slots.symbols import *
 from Slots.slot_machine import SlotMachine
+import random
 
 
 class BigSlots(SlotMachine):
     def __init__(self):
         super().__init__()
         self.num_columns = 5
-        self.payout_multiplier = 3
+        self.payout_multiplier = 2
+        self.reel_size = self.num_columns * 2
+
+    def get_bias_options(self):
+        first_row = 0
+        last_row = self.num_columns - 1
+        random_index = random.randint(first_row, last_row)
+        return [random_index, random_index, first_row, last_row]
 
 
-class GiantSlots(SlotMachine):
+class GiantSlots(BigSlots):
     def __init__(self):
         super().__init__()
         self.num_columns = 7
@@ -23,6 +31,7 @@ class ClassicSlots(SlotMachine):
                                  strawberry, strawberry,
                                  pear, pear,
                                  pineapple,
+                                 grapes,
                                  butt,
                                  meat,
                                  bar, bar,
@@ -56,6 +65,8 @@ class MapleSlots(SlotMachine):
                                  mushroom, mushroom,
                                  slime, slime,
                                  kumbi, kumbi,
+                                 pinky,
+                                 octopus,
                                  pepe,
                                  mesocoin,
                                  steely,

@@ -161,8 +161,8 @@ async def giantmapleslots(ctx):
 async def play_slots(ctx, slot_machine):
     author = ctx.message.author.display_name
     slot_machine.play_slot()
-    await bot.say(slot_machine.draw_slot_interface())
     report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
+    await bot.say(slot_machine.draw_slot_interface())
     await bot.say(report)
 
 

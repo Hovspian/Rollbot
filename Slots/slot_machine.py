@@ -1,45 +1,72 @@
 import random
+import math
 from typing import List
 from Slots.result_checker import ResultChecker
 from Slots.slots_feedback import SlotsFeedback
-
-BIAS_TYPE = {'row': 0, 'diagonal': 1}
 
 
 class SlotMachine:
     def __init__(self):
         self.num_columns = 3
         self.payout_multiplier = 1
+        self.default_outcomes = []
+        self.bias_index = 0
+        self.init_reel_size = int(math.ceil(self.num_columns * 1.5))
+        self.reels = []
         self.results = []
         self.winning_symbols = []
         self.winning_combos = []
-        self.default_outcomes = []
-        self.reel = []
-        self.bias_index = 0
-        self.bias_type = 0
+        self.payout_amount = 0
+        self.bias_direction = self._get_default_bias
 
     def play_slot(self) -> None:
-        self.reel = self.roll_reel(self.default_outcomes)
-        self._roll_bias_index()
-        self._determine_bias_type()
+        self._roll_first_column()
 
         def _perform_rolls():
-            self._add_result(self._roll_column())
+            self._add_result(self._roll_next_column())
 
-        [_perform_rolls() for i in range(self.num_columns)]
-        ResultChecker(self).analyze_results()
+        [_perform_rolls() for i in range(self.num_columns - 1)]
+        self.check_results()
+
+    def _get_default_bias(self):
+        return self.bias_index
+
+    def _roll_first_column(self):
+        self._roll_initial_reel()
+        self._roll_bias_index()
+        first_column = self._roll_column(self.get_first_reel())
+        self._add_result(first_column)
+
+    def get_first_reel(self):
+        return self.reels[0]
+
+    def check_results(self):
+        result_checker = ResultChecker(self)
+        result_checker.analyze_results()
+        self.payout_amount += result_checker.calculate_payout()
+
+    def _roll_initial_reel(self):
+        self.reels.append(self.roll_reel(self.default_outcomes))
+
+    def get_bias_options(self):
+        first_row = 0
+        last_row = self.num_columns - 1
+        random_index = random.randint(first_row, last_row)
+        no_bias = -1
+        return [random_index, random_index, random_index, no_bias]
 
     def _roll_bias_index(self):
         first_row = 0
         last_row = self.num_columns - 1
-        random_index = random.randint(first_row, last_row)
-        self.bias_index = self._roll([first_row, last_row, random_index])
+        self.bias_index = self._roll(self.get_bias_options())
+        if self.bias_index == first_row:
+            self._roll_bias_direction(self._top_left_diagonal)
+        elif self.bias_index == last_row:
+            self._roll_bias_direction(self._top_right_diagonal)
 
-    def _determine_bias_type(self):
-        bias_is_first_row = self.bias_index == 0
-        bias_is_last_row = self.bias_index == self.num_columns - 1
-        if bias_is_first_row or bias_is_last_row:
-            self.bias_type = self._roll([BIAS_TYPE['row'], BIAS_TYPE['diagonal'], BIAS_TYPE['diagonal']])
+    def _roll_bias_direction(self, diagonal):
+        bias_directions = [self.bias_direction, diagonal, diagonal]
+        self.bias_direction = self._roll(bias_directions)
 
     def draw_slot_interface(self) -> str:
         rows = self.get_rows()
@@ -51,90 +78,76 @@ class SlotMachine:
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
 
-    def get_payout(self):
-        return SlotsFeedback(self).get_payout()
-
-    @staticmethod
-    def get_lose_message() -> str:
-        return 'Sorry, not a winning game.'
-
     def get_rows(self) -> List[list]:
         def _get_row(i):
             return [self.results[column][i] for column in range(self.num_columns)]
         return [_get_row(i) for i in range(self.num_columns)]
 
     def roll_reel(self, symbols):
-        reel_size = self.num_columns + 2
         reel = []
 
-        def add_to_reel(i):
+        def roll_add_to_reel(i):
             symbol = self._roll(symbols)
-            if not is_previous_symbol(symbol, i):
-                reel.append(symbol)
+            if is_previous_symbol(symbol, i):
+                roll_add_to_reel(i)
             else:
-                add_to_reel(i)
+                reel.append(symbol)
 
         def is_previous_symbol(symbol, i):
             if len(reel) > 0:
                 return symbol == reel[i - 1]
 
-        [add_to_reel(i) for i in range(reel_size)]
+        [roll_add_to_reel(i) for i in range(self.init_reel_size)]
         return reel
 
     def _add_result(self, column) -> None:
         self.results.append(column)
 
-    def _roll_column(self) -> List[dict]:
-        reel = self.roll_reel(self.reel)
-        if len(self.results) > 0:
-            reel += self.results[0]
-            index = self._get_match_index(reel)
-        else:
-            index = 0
-        column = []
+    def _roll_next_column(self):
+        reel = self._rebuild_reel()
+        if self.has_bias():
+            match_index = self._get_match_index(reel)
+            return self._roll_column(reel, match_index)
+        return self._roll_column(reel)
 
+    def has_bias(self):
+        return self.bias_index > -1
+
+    def _rebuild_reel(self):
+        first_column = self.results[0]
+        exclude_symbols = self.num_columns
+        new_reel = self.roll_reel(self.get_first_reel())
+        self.reels.append(new_reel)
+        return new_reel[:exclude_symbols] + first_column
+
+    def _roll_column(self, reel, index=0) -> List[dict]:
+        column = []
         for i in range(self.num_columns):
             column.append(reel[index])
-            index += 1
-            if index > self.num_columns - 1:
-                index = 0
+            index = self._loop_reel_value(index + 1)
         return column
 
     def _get_match_index(self, reel):
         first_column = self.results[0]
         symbol_to_match = first_column[self.bias_index]
-        if self.bias_type == BIAS_TYPE['diagonal']:
-            bias_index = self._check_index_diagonals()
-        else:
-            bias_index = self.bias_index
-        return reel.index(symbol_to_match) - bias_index
+        return reel.index(symbol_to_match) - self.bias_direction()
 
-    def _get_previous_column(self) -> List[dict]:
-        previous = len(self.results) - 1
-        if previous >= 0:
-            return self.results[previous]
+    def _top_left_diagonal(self):
+        index = self.bias_index + len(self.results)
+        return self._loop_reel_value(index)
 
-    def _check_index_diagonals(self):
-        if self.bias_index == 0:
-            top_left_diagonal = self._loop_reel(self.bias_index + len(self.results))
-            return top_left_diagonal
-        if self.bias_index == self.num_columns - 1:
-            top_right_diagonal = self._loop_reel(self.bias_index - len(self.results))
-            return top_right_diagonal
-        return self.bias_index
+    def _top_right_diagonal(self):
+        index = self.bias_index - len(self.results)
+        return self._loop_reel_value(index)
 
-    def _loop_reel(self, index):
-        if index > self.num_columns - 1:
-            return index - (self.num_columns - 1)
+    def _loop_reel_value(self, index):
+        previous = len(self.reels) - 1
+        previous_reel_size = len(self.reels[previous])
+        if index > previous_reel_size - 1:
+            return index - previous_reel_size
         if index < 0:
-            return self.num_columns + index
+            return previous_reel_size + index
         return index
-
-    def _match_top_left_diagonal(self, index) -> bool:
-        return index == len(self.results)
-
-    def _match_top_right_diagonal(self, index) -> bool:
-        return len(self.results) == (self.num_columns - 1) - index
 
     @staticmethod
     def _roll(input_list: List) -> any:
