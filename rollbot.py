@@ -7,6 +7,7 @@ from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
 from Slots.slots import *
+from GridGames.scratch_card import *
 from constants import *
 from channel_manager import ChannelManager
 
@@ -164,6 +165,28 @@ async def play_slots(ctx, slot_machine):
     report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
     await bot.say(slot_machine.draw_slot_interface())
     await bot.say(report)
+
+
+@bot.command(pass_context=True)
+async def card(ctx):
+    author = ctx.message.author.display_name
+    scratch_card = ScratchCard()
+    scratch_card.initialize_card()
+    starting_message = '\n'.join(['New scratch card for {}.'.format(author),
+                                  scratch_card.draw_card(),
+                                  'Match {} symbols to win!'.format(scratch_card.matches_to_win),
+                                  'You have {} attempts remaining.'.format(scratch_card.chances_remaining)])
+    await bot.say(starting_message)
+
+    while scratch_card.in_progress:
+        await asyncio.sleep(2.0)
+        tiles = (scratch_card.parse_input('A2, B2, C1, C2, C0, B1'))
+        scratch_card.scratch_tiles(tiles)
+        in_progress_message = '\n'.join(["{}'s scratch card".format(author),
+                                         scratch_card.draw_card(),
+                                         'You have {} attempts remaining.'.format(scratch_card.chances_remaining)])
+        await bot.say(in_progress_message)
+    await bot.say(scratch_card.get_report())
 
 
 bot.remove_command('help')
