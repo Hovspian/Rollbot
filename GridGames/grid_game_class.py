@@ -4,7 +4,9 @@ from typing import List
 
 
 class GridGame:
-    def __init__(self):
+    def __init__(self, host):
+        self.host = host
+        self.host_name = self.host.display_name
         self.num_columns = 3
         self.payout_multiplier = 1
         self.results = []
@@ -16,8 +18,8 @@ class GridGame:
         return [_get_row(i) for i in range(self.num_columns)]
 
     @staticmethod
-    def remove_symbol(container, filter_symbol):
-        return [symbol for symbol in container if symbol != filter_symbol]
+    def remove_value_from(container, filter_value):
+        return [value for value in container if value != filter_value]
 
     @staticmethod
     def _roll(input_list: List) -> any:
@@ -30,10 +32,6 @@ class GridGame:
     @staticmethod
     def get_emote(symbol):
         return symbol['emote']
-
-    @staticmethod
-    def split_input(message):
-        return message.split(',')
 
     @staticmethod
     def remove_symbol(container, filter_symbol):

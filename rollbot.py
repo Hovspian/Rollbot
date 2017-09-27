@@ -14,7 +14,7 @@ from channel_manager import ChannelManager
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
-channel_manager = ChannelManager()
+channel_manager = ChannelManager(bot)
 
 
 @bot.event
@@ -61,7 +61,7 @@ async def start(ctx, mode: str, bet=100):
     await the_game.add(starter)
     channel_manager.add_game_in_progress(channel, the_game)
     await the_game.play()
-    channel_manager.remove_channel(channel)
+    channel_manager.vacate_channel(channel)
 
 
 @bot.command(pass_context=True)
@@ -167,26 +167,58 @@ async def play_slots(ctx, slot_machine):
     await bot.say(report)
 
 
-@bot.command(pass_context=True)
+@bot.group(name='card', pass_context=True)
 async def card(ctx):
-    author = ctx.message.author.display_name
-    scratch_card = ScratchCard()
+    if ctx.invoked_subcommand is None:
+        pass
+        # TODO
+    pass
+
+
+@bot.command(pass_context=True)
+async def scratch(ctx):
+    if not channel_manager.is_game_host(ctx):
+        game_host = channel_manager.get_game_host(ctx)
+        await bot.say('The current scratch card host is {}. Please make a game in another channel.'.format(game_host))
+        return
+
+    input_tiles = message_without_command(ctx.message.content)
+    scratch_card = channel_manager.get_game(ctx)
+    # TODO this will not always be a scratch card game
+    tiles = scratch_card.parse_input(input_tiles)
+    scratch_card.scratch_tiles(tiles)
+    await bot.say(scratch_card.get_card_state())
+    if scratch_card.in_progress:
+        await bot.say('You have {} attempts remaining.'.format(scratch_card.attempts_remaining))
+    else:
+        await bot.say(scratch_card.get_report())
+        channel_manager.vacate_channel(ctx.message.channel)
+
+
+@card.command(pass_context=True)
+async def new(ctx):
+
+    error = channel_manager.is_invalid_new_game(ctx)
+    if error:
+        await bot.say(error)
+        return
+
+    author = ctx.message.author
+    scratch_card = ScratchCard(host=author)
     scratch_card.initialize_card()
-    starting_message = '\n'.join(['New scratch card for {}.'.format(author),
-                                  scratch_card.draw_card(),
-                                  'Match {} symbols to win!'.format(scratch_card.matches_to_win),
-                                  'You have {} attempts remaining.'.format(scratch_card.chances_remaining)])
+    channel_manager.add_game_in_progress(ctx, scratch_card)
+    starting_message = scratch_card.get_starting_message()
     await bot.say(starting_message)
 
-    while scratch_card.in_progress:
-        await asyncio.sleep(2.0)
-        tiles = (scratch_card.parse_input('A2, B2, C1, C2, C0, B1'))
-        scratch_card.scratch_tiles(tiles)
-        in_progress_message = '\n'.join(["{}'s scratch card".format(author),
-                                         scratch_card.draw_card(),
-                                         'You have {} attempts remaining.'.format(scratch_card.chances_remaining)])
-        await bot.say(in_progress_message)
-    await bot.say(scratch_card.get_report())
+
+@card.command(pass_context=True)
+async def help(ctx):
+    help_commands = '\n'.join([
+        'Scratch card commands:',
+        '`/scratch card` - Start a new scratch card',
+        '`/scratch <coordinates>` - Scratch one or more tiles on your card, eg. `/scratch A2`, `/scratch A1, B1`'
+    ])
+    await bot.say(help_commands)
 
 
 bot.remove_command('help')

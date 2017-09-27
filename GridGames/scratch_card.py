@@ -3,22 +3,26 @@ import math
 from typing import List
 from GridGames.grid_game_class import GridGame
 from GridGames.constants import *
+from GridGames.coordinate_parser import CoordinateParser
 
 
 class ScratchCard(GridGame):
-    def __init__(self):
-        super().__init__()
+
+    def __init__(self, host):
+        super().__init__(host)
         self.num_winnable_combos = self.roll_num_winnable_combos()
-        self.symbols = []
+        self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns
-        self.chances_remaining = 6
-        self.matches_to_win = self.chances_remaining // 2
+        self.attempts_remaining = self.num_columns * 2
+        self.matches_to_win = self.attempts_remaining // 2
         self.card_grid = [neutral_tile] * self.grid_size
+        self.card_symbols = []
         self.winning_symbols = []
         self.in_progress = True
-        self.default_values = [empty,
-                               empty,
-                               empty,
+        self.input_parser = CoordinateParser(self)
+        self.default_values = [empty_tile,
+                               empty_tile,
+                               empty_tile,
                                one,
                                one,
                                three,
@@ -30,133 +34,104 @@ class ScratchCard(GridGame):
                                hundred]
 
     def initialize_card(self):
-        self.add_winnable_value()
+        self.add_winnable_combo()
         self.add_random_values()
-        random.shuffle(self.symbols)
-        print(self.symbols)
+        random.shuffle(self.card_symbols)
         self.initialize_rows()
 
     def initialize_rows(self):
-        self.symbols = self.generate_rows(self.symbols)
-        for row in self.symbols:
-            print(row)
+        self.card_symbols = self.generate_rows(self.card_symbols)
         self.card_grid = self.generate_rows(self.card_grid)
 
     def roll_num_winnable_combos(self):
         combos = [1, 1, 2]
         return self._roll(combos)
 
-    def add_winnable_value(self):
+    def get_starting_message(self):
+        return '\n'.join(['New scratch card for {}.'.format(self.host_name),
+                          self._render_card(),
+                          'Match {} symbols to win!'.format(self.matches_to_win),
+                          'You have {} attempts remaining.'.format(self.attempts_remaining)])
+
+    def add_winnable_combo(self):
         for i in range(self.num_winnable_combos):
-            self.symbols += self.roll_winnable_value()
+            self.card_symbols += self.roll_winnable_value()
 
     def roll_winnable_value(self):
-        winnable_symbols = self.remove_symbol(self.default_values, empty)
+        winnable_symbols = self.remove_value_from(container=self.default_values, filter_value=empty_tile)
         symbol = self._roll(winnable_symbols)
         return [symbol] * self.matches_to_win
 
+    def parse_input(self, input):
+        return self.input_parser.get_parse(input)
+
     def add_random_values(self):
-        symbols_remaining = self.grid_size - len(self.symbols)
+        symbols_remaining = self.grid_size - len(self.card_symbols)
         for i in range(symbols_remaining):
             symbol = self._roll(self.default_values)
-            self.symbols.append(symbol)
-
-    def generate_columns(self, symbols):
-        def create_column(i):
-            return [symbols[i*self.num_columns + j] for j in range(self.num_columns)]
-        return [create_column(i) for i in range(self.num_columns)]
+            self.card_symbols.append(symbol)
 
     def generate_rows(self, symbols):
-        # TODO skip column generation
-        columns = self.generate_columns(symbols)
-        return self.get_rows(columns)
+        def create_column(i):
+            return [symbols[i * self.num_columns + j] for j in range(self.num_columns)]
+        return [create_column(i) for i in range(self.num_columns)]
 
-    def draw_card(self):
-        horizontal_header = space.join([corner] + horizontal_labels[:self.num_columns])
+    def get_card_state(self):
+        return '\n'.join(["{}'s scratch card".format(self.host_name),
+                          self._render_card()])
+
+    def _render_card(self):
+        column_header = space.join([corner] + column_labels[:self.num_columns])
         tiles = []
         for i, row in enumerate(self.card_grid):
             row_emotes = ''.join(self.get_emotes(row))
-            tiles.append(vertical_labels[i] + row_emotes)
+            tiles.append(row_labels[i] + row_emotes)
         tile_string = '\n'.join(tiles)
-        return '\n'.join([horizontal_header, tile_string])
+        return '\n'.join([column_header, tile_string])
 
-    def parse_input(self, message):
-        split_input = self.split_input(message)
-        scratch_tiles = []
-        for input_coordinates in split_input:
-            parsed = self.parse_coordinates(input_coordinates)
-            if parsed:
-                scratch_tiles.append(parsed)
-        return scratch_tiles
-
-    def parse_coordinates(self, input_coordinates):
-        input_coordinates = input_coordinates.strip()
-        coordinates = self.get_coordinates(input_coordinates)
-        return coordinates
-
-    def get_coordinates(self, input_coordinates):
-        first_char = input_coordinates[0].lower()
-        second_char = input_coordinates[1].lower()
-        horizontal = horizontal_inputs[:self.num_columns]
-        vertical = vertical_inputs[:self.num_columns]
-        x = None
-        y = None
-        if first_char in horizontal:
-            x = horizontal.index(first_char)
-            if second_char in vertical:
-                y = vertical.index(second_char)
-        elif second_char in horizontal:
-            x = horizontal.index(second_char)
-            if first_char in vertical:
-                y = vertical.index(first_char)
-        if x is not None and y is not None:
-            return [x, y]
-        return False
-
-    def scratch_tiles(self, tiles):
+    def scratch_tiles(self, list_coordinates):
         # TODO report tiles which have already been scratched
-        for tile in tiles:
-            x = tile[0]
-            y = tile[1]
-            if self.card_grid[x][y] is neutral_tile:
-                chosen_symbol = self.symbols[x][y]
-                self.card_grid[x][y] = chosen_symbol
-                self.check_winning_symbol(chosen_symbol)
-                self.chances_remaining -= 1
+        for coordinates in list_coordinates:
+            x = coordinates[0]
+            y = coordinates[1]
+            tile = self.card_grid[x][y]
+            if self.is_scratchable(tile):
+                self.scratch(x, y)
         self.check_game_end()
 
-    def check_winning_symbol(self, symbol):
-        if symbol is not empty:
+    @staticmethod
+    def is_scratchable(tile) -> bool:
+        return tile is neutral_tile
+
+    def scratch(self, x, y):
+        chosen_symbol = self.card_symbols[x][y]
+        self.card_grid[x][y] = chosen_symbol
+        self.check_winnable_symbol(chosen_symbol)
+        self.attempts_remaining -= 1
+
+    def check_winnable_symbol(self, symbol):
+        if symbol is not empty_tile:
             self.results.append(symbol)
 
-    def invalid_input(self, split_input):
-        error = False
-        if len(split_input) > self.chances_remaining:
-            error = 'Please make up to {} choices.'.format(self.chances_remaining)
-        for message in split_input:
-            if len(message) != 2:
-                error = 'Please input the tile(s) you want to scratch. Eg: `/scratch A2`, `/scratch B1, C3`'
-        return error
-
     def check_game_end(self):
-        if self.chances_remaining <= 0:
+        if self.attempts_remaining <= 0:
             self.check_results()
             self.in_progress = False
 
     def check_results(self):
         results = self.results
-        def match_counter(results):
+
+        def match_counter():
             i = 0
             for result in results:
                 if result == results[0]:
                     i += 1
-                    print("Num of winners", i)
             if i >= self.matches_to_win:
                 self.winning_symbols.append(results[0])
+
         while len(results) > 0:
-            print("results", results)
-            match_counter(results)
-            results = self.remove_symbol(results, results[0])
+            match_counter()
+            results = self.remove_value_from(results, results[0])
 
     def get_report(self):
         if len(self.winning_symbols) >= 1:
