@@ -185,8 +185,7 @@ async def scratch(ctx):
     input_tiles = message_without_command(ctx.message.content)
     scratch_card = channel_manager.get_game(ctx)
     # TODO this will not always be a scratch card game
-    tiles = scratch_card.parse_input(input_tiles)
-    scratch_card.scratch_tiles(tiles)
+    scratch_card.scratch_tiles(input_tiles)
     await bot.say(scratch_card.draw_card_state())
     if scratch_card.in_progress:
         await bot.say('You have {} attempts remaining.'.format(scratch_card.attempts_remaining))

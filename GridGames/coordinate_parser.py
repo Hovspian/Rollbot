@@ -1,4 +1,5 @@
 from GridGames.constants import *
+from typing import List
 
 
 class CoordinateParser:
@@ -9,10 +10,10 @@ class CoordinateParser:
         self.num_columns = grid_game.num_columns
 
     @staticmethod
-    def split_input(message):
+    def split_input(message) -> str:
         return message.split(',')
 
-    def check_invalid_input(self, split_input):
+    def check_invalid_input(self, split_input) -> any:
         error = False
         valid_num_coordinates = 2
         if len(split_input) > self.attempts_remaining:
@@ -22,22 +23,19 @@ class CoordinateParser:
                 error = 'Please input the tile(s) you want to scratch. Eg: `/scratch A2`, `/scratch B1, C3`'
         return error
 
-    def get_parse(self, message):
+    def get_parse(self, message) -> List[list]:
         split_input = self.split_input(message)
         return [self.add_valid_coordinates(input_coordinates) for input_coordinates in split_input]
 
-    def add_valid_coordinates(self, input_coordinates):
-        parse = self.get_coordinates(input_coordinates)
+    def add_valid_coordinates(self, input_coordinates) -> any:
+        formatted_input = self.format_input_coordinates(input_coordinates)
+        parse = self.parse_coordinates(formatted_input)
         if self.is_valid_parse(parse):
             return parse
 
     @staticmethod
-    def is_valid_parse(parse):
+    def is_valid_parse(parse) -> bool:
         return None not in parse
-
-    def get_coordinates(self, input_coordinates):
-        formatted_input = self.format_input_coordinates(input_coordinates)
-        return self.parse_coordinates(formatted_input)
 
     @staticmethod
     def format_input_coordinates(input_coordinates):
