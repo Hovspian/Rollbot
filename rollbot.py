@@ -1,15 +1,16 @@
-import discord
-import random
 import asyncio
+
+import discord
 from discord.ext import commands
+
+from GridGames.ScratchCard.scratch_card_bot import ScratchCardBot
+from GridGames.Slots.slot_modes import *
+from HammerRace.hammer_modes import *
+from Managers.channel_manager import ChannelManager
 from RollGames.game import Game, last_roll
 from RollGames.roll import Roll
-from HammerRace.hammer_modes import *
-from discordtoken import TOKEN
-from Slots.slots import *
-from GridGames.scratch_card_bot import ScratchCardBot
 from constants import *
-from channel_manager import ChannelManager
+from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)

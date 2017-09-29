@@ -1,5 +1,5 @@
-from GridGames.constants import *
 from typing import List
+from GridGames.ScratchCard.constants import *
 
 
 class CoordinateParser:
@@ -36,8 +36,8 @@ class CoordinateParser:
     def _parse_coordinates(self, input_coordinates):
         y = None
         x = None
-        column_indexes = column_inputs[:self.num_columns]
-        row_indexes = row_inputs[:self.num_columns]
+        column_indexes = COLUMN_INPUTS[:self.num_columns]
+        row_indexes = ROW_INPUTS[:self.num_columns]
         for char in input_coordinates:
             if char in column_indexes:
                 x = column_indexes.index(char)
