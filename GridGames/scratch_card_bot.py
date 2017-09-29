@@ -1,5 +1,6 @@
 from GridGames.scratch_card import ScratchCard
 from GridGames.coordinate_parser import CoordinateParser
+from GridGames.constants import *
 import asyncio
 
 
@@ -21,16 +22,10 @@ class ScratchCardBot:
         await self.bot.say(message)
 
     async def next_turn(self, scratch_card, raw_input):
-        valid_parse = await self._validate(scratch_card, raw_input)
-        if valid_parse:
-            scratch_card.scratch_tiles(valid_parse)
+        validated = await self._validate(scratch_card, raw_input)
+        if validated:
+            scratch_card.scratch_tiles(validated)
             await self._report_turn(scratch_card)
-
-    def check_game_end(self, ctx) -> bool:
-        scratch_card = self.manager.get_game(ctx)
-        if not scratch_card.in_progress:
-            self.manager.remove_game(ctx)
-            return True
 
     async def _report_turn(self, scratch_card):
         current_card = scratch_card.announcement.get_card()
@@ -38,19 +33,47 @@ class ScratchCardBot:
         await self.bot.say(current_card)
         await self.bot.say(report)
 
+    def check_game_end(self, ctx) -> bool:
+        scratch_card = self.manager.get_game(ctx)
+        if not scratch_card.in_progress:
+            self.manager.remove_game(ctx)
+            return True
+
     async def _validate(self, scratch_card, user_input):
         formatted_input = self.parser.format_input(user_input)
         valid_attempts = self.check_attempts(scratch_card, formatted_input)
-        valid_input_tiles = self.check_input_tiles(formatted_input)
-        valid_parse = self.parser.get_parse(formatted_input)
+        parse = self.parser.get_parse(formatted_input)
+        valid_parse = self.remove_invalid_coordinates(parse)
+        valid_tiles = self.remove_revealed_tiles(scratch_card, valid_parse)
 
         if not valid_attempts:
             num_attempts = scratch_card.attempts_remaining
-            await self._invalid_attempts_error(num_attempts)
-        elif not valid_input_tiles or not valid_parse:
-            await self._invalid_input_error()
-        elif valid_parse:
-            return valid_parse
+            await self._error_invalid_attempts(num_attempts)
+        elif not valid_parse:
+            await self._error_invalid_input()
+        elif not valid_tiles:
+            await self._error_revealed_tile()
+        else:
+            return valid_tiles
+
+    @staticmethod
+    def remove_invalid_coordinates(parse):
+        return [coordinates for coordinates in parse if coordinates is not None]
+
+    @staticmethod
+    def remove_revealed_tiles(scratch_card, parse):
+
+        valid_coordinates = []
+
+        def add_valid_tile(coordinates):
+            y = coordinates[0]
+            x = coordinates[1]
+            tile = scratch_card.card_grid[y][x]
+            if tile is neutral_tile:
+                valid_coordinates.append(coordinates)
+
+        [add_valid_tile(coordinates) for coordinates in parse]
+        return valid_coordinates
 
     @staticmethod
     def check_attempts(scratch_card, formatted_input):
@@ -59,19 +82,22 @@ class ScratchCardBot:
             return True
 
     @staticmethod
-    def check_input_tiles(formatted_input):
+    def check_coordinate_length(formatted_input):
         valid_num_coordinates = 2
-        for message in formatted_input:
-            if len(message) != valid_num_coordinates:
-                return False
-        return True
+        for coordinates in formatted_input:
+            if len(coordinates) != valid_num_coordinates:
+                formatted_input.remove(coordinates)
+        return formatted_input
 
-    async def _invalid_attempts_error(self, attempts):
+    async def _error_invalid_attempts(self, attempts):
         error = f'Please make up to {attempts} choices.'
         await self.bot.say(error)
 
-    async def _invalid_input_error(self):
-        await self.bot.say('Please input valid tiles. Eg: `/scratch A2`, `/scratch B1, C2`')
+    async def _error_invalid_input(self):
+        await self.bot.say('Please input valid tiles within the board-size. Eg: `/scratch A2`, `/scratch B1, C2`')
+
+    async def _error_revealed_tile(self):
+        await self.bot.say("That tile has already been revealed.")
 
 
 class GameManager:

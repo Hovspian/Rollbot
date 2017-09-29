@@ -22,9 +22,7 @@ class CoordinateParser:
         return [_format(coordinates) for coordinates in input_coordinates]
 
     def get_parse(self, formatted_input) -> List[list]:
-        valid_coordinates = [self._add_valid_coordinates(coordinates) for coordinates in formatted_input]
-        if self._is_valid(valid_coordinates):
-            return valid_coordinates
+        return [self._add_valid_coordinates(coordinates) for coordinates in formatted_input]
 
     def _add_valid_coordinates(self, coordinates) -> any:
         parsed = self._parse_coordinates(coordinates)
@@ -36,13 +34,13 @@ class CoordinateParser:
         return None not in parse
 
     def _parse_coordinates(self, input_coordinates):
-        x = None
         y = None
+        x = None
         column_indexes = column_inputs[:self.num_columns]
         row_indexes = row_inputs[:self.num_columns]
         for char in input_coordinates:
             if char in column_indexes:
-                y = column_indexes.index(char)
+                x = column_indexes.index(char)
             elif char in row_indexes:
-                x = row_indexes.index(char)
-        return [x, y]
+                y = row_indexes.index(char)
+        return [y, x]

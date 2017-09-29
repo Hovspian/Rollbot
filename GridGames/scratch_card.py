@@ -42,11 +42,11 @@ class ScratchCard(GridGame):
 
     def scratch_tiles(self, list_coordinates) -> None:
         for coordinates in list_coordinates:
-            x = coordinates[0]
-            y = coordinates[1]
-            tile = self.card_grid[x][y]
+            y = coordinates[0]
+            x = coordinates[1]
+            tile = self.card_grid[y][x]
             if self.is_scratchable(tile):
-                self._scratch(x, y)
+                self._scratch(y, x)
         self._check_game_end()
 
     def render_card(self) -> str:
@@ -87,9 +87,9 @@ class ScratchCard(GridGame):
             return [values[i * self.num_columns + j] for j in range(self.num_columns)]
         return [create_line(i) for i in range(self.num_columns)]
 
-    def _scratch(self, x, y) -> None:
-        chosen_symbol = self.underlying_symbols[x][y]
-        self.card_grid[x][y] = chosen_symbol
+    def _scratch(self, y, x) -> None:
+        chosen_symbol = self.underlying_symbols[y][x]
+        self.card_grid[y][x] = chosen_symbol
         self._check_winnable_symbol(chosen_symbol)
         self.attempts_remaining -= 1
 
