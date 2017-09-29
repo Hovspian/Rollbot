@@ -4,45 +4,38 @@ from typing import List
 
 class CoordinateParser:
 
-    def __init__(self, grid_game):
-        self.grid_game = grid_game
-        self.attempts_remaining = grid_game.attempts_remaining
-        self.num_columns = grid_game.num_columns
+    def __init__(self, num_columns):
+        self.num_columns = num_columns
 
     @staticmethod
     def split_input(message) -> str:
         return message.split(',')
 
-    def check_invalid_input(self, split_input) -> any:
-        error = False
-        valid_num_coordinates = 2
-        if len(split_input) > self.attempts_remaining:
-            error = 'Please make up to {} choices.'.format(self.attempts_remaining)
-        for message in split_input:
-            if len(message) != valid_num_coordinates:
-                error = 'Please input the tile(s) you want to scratch. Eg: `/scratch A2`, `/scratch B1, C3`'
-        return error
+    def format_input(self, raw_input):
+        input_coordinates = self.split_input(raw_input)
 
-    def get_parse(self, message) -> List[list]:
-        split_input = self.split_input(message)
-        return [self.add_valid_coordinates(input_coordinates) for input_coordinates in split_input]
+        def _format(coordinates):
+            lower_case = coordinates.lower()
+            removed_whitespace = lower_case.strip()
+            return removed_whitespace
 
-    def add_valid_coordinates(self, input_coordinates) -> any:
-        formatted_input = self.format_input_coordinates(input_coordinates)
-        parse = self.parse_coordinates(formatted_input)
-        if self.is_valid_parse(parse):
-            return parse
+        return [_format(coordinates) for coordinates in input_coordinates]
+
+    def get_parse(self, formatted_input) -> List[list]:
+        valid_coordinates = [self._add_valid_coordinates(coordinates) for coordinates in formatted_input]
+        if self._is_valid(valid_coordinates):
+            return valid_coordinates
+
+    def _add_valid_coordinates(self, coordinates) -> any:
+        parsed = self._parse_coordinates(coordinates)
+        if self._is_valid(parsed):
+            return parsed
 
     @staticmethod
-    def is_valid_parse(parse) -> bool:
+    def _is_valid(parse) -> bool:
         return None not in parse
 
-    @staticmethod
-    def format_input_coordinates(input_coordinates):
-        input_coordinates = input_coordinates.strip()
-        return [coordinates.lower() for coordinates in input_coordinates]
-
-    def parse_coordinates(self, input_coordinates):
+    def _parse_coordinates(self, input_coordinates):
         x = None
         y = None
         column_indexes = column_inputs[:self.num_columns]
@@ -53,3 +46,18 @@ class CoordinateParser:
             elif char in row_indexes:
                 x = row_indexes.index(char)
         return [x, y]
+
+    @staticmethod
+    def check_attempts(scratch_card, formatted_input):
+        valid_num_attempts = scratch_card.attempts_remaining
+        if len(formatted_input) <= valid_num_attempts:
+            return True
+
+    @staticmethod
+    def check_input_tiles(formatted_input):
+        valid_num_coordinates = 2
+        for message in formatted_input:
+            print('message length', len(message), message)
+            if len(message) != valid_num_coordinates:
+                return False
+        return True

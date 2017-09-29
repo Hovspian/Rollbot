@@ -1,19 +1,20 @@
 class ChannelManager:
 
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self):
         self.games_in_progress = {}
 
     def is_game_host(self, ctx):
         channel = ctx.message.channel
         author_object = ctx.message.author
-        game = self.games_in_progress[channel]
-        return game.host == author_object
+        if channel in self.games_in_progress:
+            game = self.games_in_progress[channel]
+            return game.host == author_object
 
     def get_game_host(self, ctx):
         channel = ctx.message.channel
-        game = self.games_in_progress[channel]
-        return game.host.display_name
+        if channel in self.games_in_progress:
+            game = self.games_in_progress[channel]
+            return game.host.display_name
 
     def get_game(self, ctx):
         channel = ctx.message.channel

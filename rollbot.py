@@ -7,14 +7,15 @@ from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
 from Slots.slots import *
-from GridGames.scratch_card import *
+from GridGames.scratch_card_bot import ScratchCardBot
 from constants import *
 from channel_manager import ChannelManager
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
-channel_manager = ChannelManager(bot)
+channel_manager = ChannelManager()
+scratch_card_bot = ScratchCardBot(bot)
 
 
 @bot.event
@@ -178,19 +179,24 @@ async def card(ctx):
 @bot.command(pass_context=True)
 async def scratch(ctx):
     if not channel_manager.is_game_host(ctx):
-        game_host = channel_manager.get_game_host(ctx)
-        await bot.say('The current scratch card host is {}. Please make a game in another channel.'.format(game_host))
+        host = channel_manager.get_game_host(ctx)
+        if host:
+            await bot.say(f'The current game host is {host}. Please make a game in another channel.')
+            return
+
+    await attempt_scratch(ctx)
+
+
+async def attempt_scratch(ctx):
+    scratch_card = scratch_card_bot.get_game(ctx)
+    if not scratch_card:
+        await bot.say("You don't have an active scratch card.")
         return
 
-    input_tiles = message_without_command(ctx.message.content)
-    scratch_card = channel_manager.get_game(ctx)
-    # TODO this will not always be a scratch card game
-    scratch_card.scratch_tiles(input_tiles)
-    await bot.say(scratch_card.draw_card_state())
-    if scratch_card.in_progress:
-        await bot.say('You have {} attempts remaining.'.format(scratch_card.attempts_remaining))
-    else:
-        await bot.say(scratch_card.get_report())
+    raw_input = message_without_command(ctx.message.content)
+    await scratch_card_bot.next_turn(scratch_card, raw_input)
+
+    if scratch_card_bot.check_game_end(ctx):
         channel_manager.vacate_channel(ctx.message.channel)
 
 
@@ -202,12 +208,9 @@ async def new(ctx):
         await bot.say(error)
         return
 
-    author = ctx.message.author
-    scratch_card = ScratchCard(host=author)
-    scratch_card.initialize_card()
+    scratch_card = scratch_card_bot.create_scratch_card(ctx)
+    await scratch_card_bot.starting_message(scratch_card)
     channel_manager.add_game_in_progress(ctx, scratch_card)
-    starting_message = scratch_card.get_starting_message()
-    await bot.say(starting_message)
 
 
 @card.command(pass_context=True)

@@ -12,15 +12,3 @@ one = {'emote': ':one:', 'value': 1}
 three = {'emote': ':three:', 'value': 3}
 five = {'emote': ':five:', 'value': 5}
 ten = {'emote': ':keycap_ten:', 'value': 10}
-
-
-def start_message(author):
-    return 'New scratch card for {}.'.format(author)
-
-
-def attempt_message(attempts):
-    return 'You have {} attempts remaining.'.format(attempts)
-
-
-def num_matches_message(matches_to_win):
-    return 'Match {} symbols to win!'.format(matches_to_win)

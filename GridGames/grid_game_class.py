@@ -4,9 +4,9 @@ from typing import List
 
 
 class GridGame:
-    def __init__(self, host):
-        self.host = host
-        self.host_name = self.host.display_name
+    def __init__(self):
+        self._host = ''
+        self.host_name = ''
         self.num_columns = 3
         self.payout_multiplier = 1
         self.results = []
@@ -43,3 +43,12 @@ class GridGame:
             num_winning_symbols = len(self.winning_symbols)
             return sum_payout * num_winning_symbols * self.payout_multiplier
         return 0
+
+    def _set_host(self, host):
+        self._host = host
+        self.host_name = host.display_name
+
+    def _get_host(self):
+        return self._host
+
+    host = property(_get_host, _set_host)
