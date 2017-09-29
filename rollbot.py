@@ -188,7 +188,7 @@ async def scratch(ctx):
 
 
 async def attempt_scratch(ctx):
-    scratch_card = scratch_card_bot.get_game(ctx)
+    scratch_card = scratch_card_bot.manager.get_game(ctx)
     if not scratch_card:
         await bot.say("You don't have an active scratch card.")
         return
@@ -211,6 +211,10 @@ async def new(ctx):
     scratch_card = scratch_card_bot.create_scratch_card(ctx)
     await scratch_card_bot.starting_message(scratch_card)
     channel_manager.add_game_in_progress(ctx, scratch_card)
+
+    time_limit_elapsed = await scratch_card_bot.manager.set_time_limit(scratch_card)
+    if time_limit_elapsed:
+        channel_manager.vacate_channel(ctx.message.channel)
 
 
 @card.command(pass_context=True)

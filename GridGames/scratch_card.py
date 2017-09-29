@@ -128,7 +128,6 @@ class ScratchCard(GridGame):
 class ScratchCardFeedback:
 
     # String builders
-
     def __init__(self, scratch_card):
         self.scratch_card = scratch_card
 

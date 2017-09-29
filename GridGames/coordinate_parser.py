@@ -46,18 +46,3 @@ class CoordinateParser:
             elif char in row_indexes:
                 x = row_indexes.index(char)
         return [x, y]
-
-    @staticmethod
-    def check_attempts(scratch_card, formatted_input):
-        valid_num_attempts = scratch_card.attempts_remaining
-        if len(formatted_input) <= valid_num_attempts:
-            return True
-
-    @staticmethod
-    def check_input_tiles(formatted_input):
-        valid_num_coordinates = 2
-        for message in formatted_input:
-            print('message length', len(message), message)
-            if len(message) != valid_num_coordinates:
-                return False
-        return True
