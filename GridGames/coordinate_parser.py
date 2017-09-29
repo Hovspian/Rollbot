@@ -7,6 +7,10 @@ class CoordinateParser:
     def __init__(self, num_columns):
         self.num_columns = num_columns
 
+    def get_formatted_parse(self, raw_input):
+        formatted_input = self.format_input(raw_input)
+        return self.get_parse(formatted_input)
+
     @staticmethod
     def split_input(message) -> str:
         return message.split(',')
