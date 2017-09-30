@@ -43,9 +43,7 @@ class ScratchCard(GridGame):
         for coordinates in list_coordinates:
             y = coordinates[0]
             x = coordinates[1]
-            tile = self.card_grid[y][x]
-            if self.is_scratchable(tile):
-                self._scratch(y, x)
+            self._scratch(y, x)
         self._check_game_end()
 
     def render_card(self) -> str:
@@ -120,7 +118,4 @@ class ScratchCard(GridGame):
             count_match()
             results = self.remove_value_from(results, results[0])
 
-    @staticmethod
-    def is_scratchable(tile) -> bool:
-        return tile is NEUTRAL_TILE
 
