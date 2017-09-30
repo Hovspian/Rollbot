@@ -15,7 +15,7 @@ from discordtoken import TOKEN
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
-channel_manager = ChannelManager()
+channel_manager = ChannelManager(bot)
 scratch_card_bot = ScratchCardBot(bot)
 
 
@@ -204,9 +204,10 @@ async def attempt_scratch(ctx):
 @card.command(pass_context=True)
 async def new(ctx):
 
-    error = channel_manager.is_invalid_new_game(ctx)
-    if error:
-        await bot.say(error)
+    new_host = ctx.message.author
+    valid_channel = await channel_manager.check_valid_new_game(ctx)
+    valid_user = await scratch_card_bot.manager.check_valid_user(new_host)
+    if not valid_channel or not valid_user:
         return
 
     scratch_card = scratch_card_bot.create_scratch_card(ctx)

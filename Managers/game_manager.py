@@ -7,11 +7,14 @@ class GameManager:
         self.bot = bot
         self.games_in_progress = {}
 
-    def is_valid_new_game(self, host):
+    def is_valid_user(self, host):
         return host not in self.games_in_progress
 
-    async def invalid_game_error(self):
-        await self.bot.say("Please finish your current game first.")
+    async def check_valid_user(self, host):
+        if self.is_valid_user(host):
+            return True
+        else:
+            await self.bot.say("Please finish your current game first.")
 
     def add_game(self, game):
         self.games_in_progress[game.host] = game

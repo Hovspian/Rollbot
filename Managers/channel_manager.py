@@ -1,31 +1,30 @@
 class ChannelManager:
 
-    def __init__(self):
+    def __init__(self, bot):
         self.games_in_progress = {}
+        self.bot = bot
 
     def is_game_host(self, ctx):
-        channel = ctx.message.channel
-        author_object = ctx.message.author
-        if channel in self.games_in_progress:
-            game = self.games_in_progress[channel]
+        game = self.get_game(ctx)
+        if game:
+            author_object = ctx.message.author
             return game.host == author_object
 
     def get_game_host(self, ctx):
-        channel = ctx.message.channel
-        if channel in self.games_in_progress:
-            game = self.games_in_progress[channel]
+        game = self.get_game(ctx)
+        if game:
             return game.host.display_name
 
     def get_game(self, ctx):
         channel = ctx.message.channel
-        return self.games_in_progress[channel]
+        if channel in self.games_in_progress:
+            return self.games_in_progress[channel]
 
-    def is_invalid_new_game(self, ctx):
+    async def check_valid_new_game(self, ctx):
         channel = ctx.message.channel
-        error = False
         if self.is_game_in_channel(channel):
-            error = 'Another game is already underway in this channel.'
-        return error
+            await self.bot.say('Another game is already underway in this channel.')
+        return True
 
     def add_game_in_progress(self, ctx, game):
         channel = ctx.message.channel
