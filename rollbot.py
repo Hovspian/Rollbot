@@ -6,6 +6,7 @@ from RollGames.rollgame import RollGame, last_roll
 from RollGames.roll import Roll
 from HammerRace.hammer_modes import *
 from discordtoken import TOKEN
+from Slots.slots import *
 from constants import *
 from channel_manager import ChannelManager
 
@@ -114,6 +115,56 @@ async def hammer(ctx):
         await bot.say('Out of ' + options + ':\n' + hammer_manager.winner_report())
     else:
         await bot.say("Please enter 2-5 options, separated by commas. Example: ```/hammer bread, eggs, hammer```")
+
+
+
+@bot.command(pass_context=True)
+async def butts():
+    num_butts = random.randint(1, 20)
+    butts_message = [':peach:' * num_butts]
+    if num_butts > 1:
+        butts_message.append(f'```{num_butts} Butts```')
+    else:
+        butts_message.append(f'```{num_butts} Butt```')
+    await bot.say(''.join(butts_message))
+
+
+@bot.command(pass_context=True)
+async def slots(ctx):
+    await play_slots(ctx, slot_machine=ClassicSlots())
+
+
+@bot.command(pass_context=True)
+async def bigslots(ctx):
+    await play_slots(ctx, slot_machine=BigClassicSlots())
+
+
+@bot.command(pass_context=True)
+async def giantslots(ctx):
+    await play_slots(ctx, slot_machine=GiantClassicSlots())
+
+
+@bot.command(pass_context=True)
+async def mapleslots(ctx):
+    await play_slots(ctx, slot_machine=MapleSlots())
+
+
+@bot.command(pass_context=True)
+async def bigmapleslots(ctx):
+    await play_slots(ctx, slot_machine=BigMapleSlots())
+
+
+@bot.command(pass_context=True)
+async def giantmapleslots(ctx):
+    await play_slots(ctx, slot_machine=GiantMapleSlots())
+
+
+async def play_slots(ctx, slot_machine):
+    author = ctx.message.author.display_name
+    slot_machine.play_slot()
+    report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
+    await bot.say(slot_machine.draw_slot_interface())
+    await bot.say(report)
 
 
 bot.remove_command('help')

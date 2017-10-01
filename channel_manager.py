@@ -1,6 +1,5 @@
 import asyncio
 
-
 class ChannelManager:
     def __init__(self):
         self.games_in_progress = {}
