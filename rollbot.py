@@ -203,20 +203,19 @@ async def attempt_scratch(ctx):
 
 @card.command(pass_context=True)
 async def new(ctx):
-
     new_host = ctx.message.author
     valid_channel = await channel_manager.check_valid_new_game(ctx)
     valid_user = await scratch_card_bot.manager.check_valid_user(new_host)
-    if not valid_channel or not valid_user:
-        return
 
-    scratch_card = scratch_card_bot.create_scratch_card(ctx)
-    await scratch_card_bot.starting_message(scratch_card)
-    channel_manager.add_game_in_progress(ctx, scratch_card)
+    if valid_channel and valid_user:
+        scratch_card = scratch_card_bot.create_scratch_card(ctx)
+        await scratch_card_bot.starting_message(scratch_card)
+        channel_manager.add_game_in_progress(ctx, scratch_card)
+        time_limit_elapsed = await scratch_card_bot.manager.set_time_limit(scratch_card)
 
-    time_limit_elapsed = await scratch_card_bot.manager.set_time_limit(scratch_card)
-    if time_limit_elapsed:
-        channel_manager.vacate_channel(ctx.message.channel)
+        if time_limit_elapsed:
+            channel_manager.vacate_channel(ctx.message.channel)
+
 
 
 @card.command(pass_context=True)

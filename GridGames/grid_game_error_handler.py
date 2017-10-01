@@ -12,7 +12,7 @@ class GridErrorHandler:
         self.ERROR_REVEALED_TILE = "That tile has already been revealed."
 
     async def validate(self, game, parse) -> List[list]:
-        return  await self.check_valid_parse(game, parse)
+        return await self.check_valid_parse(game, parse)
 
     async def check_valid_parse(self, game, parse) -> List[list]:
         valid_parse = self._strip_invalid_coordinates(parse)

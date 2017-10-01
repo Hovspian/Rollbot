@@ -2,7 +2,6 @@ import math
 import random
 from typing import List
 from GridGames.Slots.slot_feedback import SlotsFeedback
-
 from GridGames.Slots.result_checker import ResultChecker
 
 
