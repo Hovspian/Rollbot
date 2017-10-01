@@ -68,7 +68,7 @@ class SlotMachine:
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index, random_index, no_bias, no_bias]
+        return [random_index, random_index, random_index, no_bias]
 
     def _roll_bias_index(self) -> None:
         first_row = 0
