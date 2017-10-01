@@ -1,19 +1,21 @@
-import discord
-import random
 import asyncio
+
+import discord
 from discord.ext import commands
 from RollGames.rollgame import RollGame, last_roll
-from RollGames.roll import Roll
+from GridGames.ScratchCard.scratch_card_bot import ScratchCardBot
+from GridGames.Slots.slot_modes import *
 from HammerRace.hammer_modes import *
-from discordtoken import TOKEN
-from Slots.slots import *
+from Managers.channel_manager import ChannelManager
+from RollGames.roll import Roll
 from constants import *
-from channel_manager import ChannelManager
+from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
-channel_manager = ChannelManager()
+channel_manager = ChannelManager(bot)
+scratch_card_bot = ScratchCardBot(bot)
 
 
 @bot.event
@@ -60,7 +62,7 @@ async def start(ctx, mode: str, bet=100):
     await the_game.add(starter)
     channel_manager.add_game_in_progress(channel, the_game)
     await the_game.play()
-    channel_manager.remove_channel(channel)
+    channel_manager.vacate_channel(channel)
 
 
 @bot.command(pass_context=True)
@@ -165,6 +167,65 @@ async def play_slots(ctx, slot_machine):
     report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
     await bot.say(slot_machine.draw_slot_interface())
     await bot.say(report)
+
+
+@bot.group(name='card', pass_context=True)
+async def card(ctx):
+    if ctx.invoked_subcommand is None:
+        pass
+        # TODO
+    pass
+
+
+@bot.command(pass_context=True)
+async def scratch(ctx):
+    if not channel_manager.is_game_host(ctx):
+        host = channel_manager.get_game_host(ctx)
+        if host:
+            await bot.say(f'The current game host is {host}. Please make a game in another channel.')
+            return
+
+    await attempt_scratch(ctx)
+
+
+async def attempt_scratch(ctx):
+    scratch_card = scratch_card_bot.manager.get_game(ctx)
+    if not scratch_card:
+        await bot.say("You don't have an active scratch card.")
+        return
+
+    raw_input = message_without_command(ctx.message.content)
+    await scratch_card_bot.next_turn(scratch_card, raw_input)
+
+    if scratch_card_bot.check_game_end(ctx):
+        channel_manager.vacate_channel(ctx.message.channel)
+
+
+@card.command(pass_context=True)
+async def new(ctx):
+    new_host = ctx.message.author
+    valid_channel = await channel_manager.check_valid_new_game(ctx)
+    valid_user = await scratch_card_bot.manager.check_valid_user(new_host)
+
+    if valid_channel and valid_user:
+        scratch_card = scratch_card_bot.create_scratch_card(ctx)
+        await scratch_card_bot.starting_message(scratch_card)
+        channel_manager.add_game_in_progress(ctx, scratch_card)
+        time_limit_elapsed = await scratch_card_bot.manager.set_time_limit(scratch_card)
+
+        if time_limit_elapsed:
+            channel_manager.vacate_channel(ctx.message.channel)
+
+
+
+@card.command(pass_context=True)
+async def help(ctx):
+    help_commands = '\n'.join([
+        'Scratch card commands:',
+        '`/scratch card` - Start a new scratch card',
+        '`/scratch <coordinates>` - Scratch one or more tiles on your card, eg. `/scratch A2`, `/scratch A1, B1`'
+    ])
+    await bot.say(help_commands)
 
 
 bot.remove_command('help')

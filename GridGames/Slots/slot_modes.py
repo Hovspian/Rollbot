@@ -1,7 +1,7 @@
-from Slots.symbols import *
-from Slots.slot_machine import SlotMachine
 import random
 from typing import List
+from GridGames.Slots.symbols import *
+from GridGames.Slots.slot_machine import SlotMachine
 
 
 class BigSlots(SlotMachine):
@@ -35,18 +35,18 @@ class GiantSlots(BigSlots):
 class ClassicSlots(SlotMachine):
     def __init__(self):
         super().__init__()
-        self.default_outcomes = [cherry, cherry,
-                                 strawberry, strawberry,
-                                 pear, pear,
-                                 pineapple,
-                                 grapes,
-                                 butt,
-                                 meat,
-                                 lemon,
-                                 bar, bar,
-                                 hammer,
-                                 cake,
-                                 seven]
+        self.default_outcomes = [CHERRY, CHERRY,
+                                 STRAWBERRY, STRAWBERRY,
+                                 PEAR, PEAR,
+                                 PINEAPPLE,
+                                 GRAPES,
+                                 BUTT,
+                                 MEAT,
+                                 LEMON,
+                                 BAR, BAR,
+                                 HAMMER,
+                                 CAKE,
+                                 SEVEN]
 
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:
@@ -69,18 +69,18 @@ class GiantClassicSlots(GiantSlots, ClassicSlots):
 class MapleSlots(SlotMachine):
     def __init__(self):
         super().__init__()
-        self.default_outcomes = [bubbling, bubbling,
-                                 warbow, warbow,
-                                 mushroom, mushroom,
-                                 slime, slime,
-                                 kumbi, kumbi,
-                                 pinky,
-                                 octopus,
-                                 pepe,
-                                 mesocoin,
-                                 steely,
-                                 mesobag,
-                                 panlid]
+        self.default_outcomes = [BUBBLING, BUBBLING,
+                                 WARBOW, WARBOW,
+                                 MUSHROOM, MUSHROOM,
+                                 SLIME, SLIME,
+                                 KUMBI, KUMBI,
+                                 PINKY,
+                                 OCTOPUS,
+                                 PEPE,
+                                 MESOCOIN,
+                                 STEELY,
+                                 MESOBAG,
+                                 PANLID]
 
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:

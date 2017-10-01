@@ -1,8 +1,8 @@
-import random
 import math
+import random
 from typing import List
-from Slots.result_checker import ResultChecker
-from Slots.slots_feedback import SlotsFeedback
+from GridGames.Slots.slot_feedback import SlotsFeedback
+from GridGames.Slots.result_checker import ResultChecker
 
 
 class SlotMachine:

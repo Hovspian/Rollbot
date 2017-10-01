@@ -1,16 +1,41 @@
 import asyncio
 
 class ChannelManager:
-    def __init__(self):
-        self.games_in_progress = {}
 
-    def add_game_in_progress(self, channel, game):
+    def __init__(self, bot):
+        self.games_in_progress = {}
+        self.bot = bot
+
+    def is_game_host(self, ctx):
+        game = self.get_game(ctx)
+        if game:
+            author_object = ctx.message.author
+            return game.host == author_object
+
+    def get_game_host(self, ctx):
+        game = self.get_game(ctx)
+        if game:
+            return game.host.display_name
+
+    def get_game(self, ctx):
+        channel = ctx.message.channel
+        if channel in self.games_in_progress:
+            return self.games_in_progress[channel]
+
+    async def check_valid_new_game(self, ctx):
+        channel = ctx.message.channel
+        if self.is_game_in_channel(channel):
+            await self.bot.say('Another game is already underway in this channel.')
+        return True
+
+    def add_game_in_progress(self, ctx, game):
+        channel = ctx.message.channel
         self.games_in_progress[channel] = game
 
     async def add_user_to_game(self, channel, user):
         await self.games_in_progress[channel].add(user)
 
-    def remove_channel(self, channel):
+    def vacate_channel(self, channel):
         self.games_in_progress.pop(channel)
 
     def is_game_in_channel(self, channel):
