@@ -33,6 +33,7 @@ class SlotMachine:
 
         def get_emotes(symbols) -> str:
             return ''.join([symbol['emote'] for symbol in symbols])
+
         return '\n'.join([get_emotes(row) for row in rows])
 
     def get_outcome_report(self) -> str:
@@ -41,6 +42,7 @@ class SlotMachine:
     def get_rows(self) -> List[list]:
         def _get_row(i):
             return [self.results[column][i] for column in range(self.num_columns)]
+
         return [_get_row(i) for i in range(self.num_columns)]
 
     def _get_default_bias(self) -> int:
@@ -139,11 +141,7 @@ class SlotMachine:
     def _loop_reel_value(self, index) -> int:
         previous = len(self.reels) - 1
         previous_reel_size = len(self.reels[previous])
-        if index > previous_reel_size - 1:
-            return index - previous_reel_size
-        if index < 0:
-            return previous_reel_size + index
-        return index
+        return index % previous_reel_size
 
     def _has_bias(self) -> bool:
         return self.bias_index > -1
