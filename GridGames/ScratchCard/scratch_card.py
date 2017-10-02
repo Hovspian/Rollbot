@@ -1,5 +1,4 @@
-import random
-from typing import List
+from GridGames.helper_functions import *
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card_feedback import ScratchCardFeedback
 from GridGames.grid_game_class import GridGame
@@ -60,23 +59,24 @@ class ScratchCard(GridGame):
         neutral_tiles = [NEUTRAL_TILE] * self.grid_size
         self.card_grid = self._generate_grid(neutral_tiles)
 
-    def _roll_num_winnable_combos(self) -> int:
+    @staticmethod
+    def _roll_num_winnable_combos() -> int:
         combos = [1, 1, 2]
-        return self._roll(combos)
+        return roll(combos)
 
     def _add_winnable_combo(self) -> None:
         for i in range(self.num_winnable_combos):
             self.underlying_symbols += self._roll_winnable_value()
 
     def _roll_winnable_value(self) -> List[dict]:
-        winnable_symbols = self.remove_value_from(container=self.default_values, filter_value=EMPTY_TILE)
-        symbol = self._roll(winnable_symbols)
+        winnable_symbols = remove_value(container=self.default_values, filter_value=EMPTY_TILE)
+        symbol = roll(winnable_symbols)
         return [symbol] * self.matches_to_win
 
     def _add_random_values(self) -> None:
         symbols_remaining = self.grid_size - len(self.underlying_symbols)
         for i in range(symbols_remaining):
-            symbol = self._roll(self.default_values)
+            symbol = roll(self.default_values)
             self.underlying_symbols.append(symbol)
 
     def _generate_grid(self, values: List) -> List[list]:
@@ -116,6 +116,6 @@ class ScratchCard(GridGame):
 
         while len(results) > 0:
             count_match()
-            results = self.remove_value_from(results, results[0])
+            results = remove_value(results, results[0])
 
 

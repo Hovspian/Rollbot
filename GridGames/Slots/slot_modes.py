@@ -50,10 +50,7 @@ class GiantBias(SlotsBias):
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index,
-                first_row,
-                last_row,
-                no_bias, no_bias]
+        return [random_index, random_index, first_row, last_row, no_bias, no_bias]
 
 
 class ClassicSlots(SlotMachine):

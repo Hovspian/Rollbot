@@ -2,7 +2,7 @@ import random
 from typing import List
 
 
-def remove_value_from(container, filter_value):
+def remove_value(container, filter_value):
     return [value for value in container if value != filter_value]
 
 

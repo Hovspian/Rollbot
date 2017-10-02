@@ -29,7 +29,6 @@ class SlotMachine(GridGame):
 
     def draw_slot_interface(self) -> str:
         rows = super().get_rows(self.results)
-
         return '\n'.join([self.get_emotes(row) for row in rows])
 
     def get_outcome_report(self) -> str:
@@ -44,17 +43,21 @@ class SlotMachine(GridGame):
     def _roll_reel(symbols, reel_size) -> List[dict]:
         reel = []
 
-        def roll_add_to_reel(i):
+        def roll_add_to_reel(i) -> None:
+            symbol = get_symbol(i)
+            reel.append(symbol)
+
+        def get_symbol(i) -> dict:
             previous_symbol = get_previous_symbol(i)
             if previous_symbol:
-                filtered_container = remove_value_from(symbols, previous_symbol)
+                filtered_container = remove_value(container=symbols, filter_value=previous_symbol)
                 symbol = roll(filtered_container)
             else:
                 symbol = roll(symbols)
-            reel.append(symbol)
+            return symbol
 
-        def get_previous_symbol(i):
-            if len(reel) > 0:
+        def get_previous_symbol(i) -> dict:
+            if reel:
                 previous_symbol = reel[i - 1]
                 return previous_symbol
 
@@ -80,21 +83,18 @@ class SlotMachine(GridGame):
         rerolled_reel = self._roll_reel(first_reel, include_symbols)
         return rerolled_reel + first_column
 
-    def _roll_num_included_symbols(self):
+    def _roll_num_included_symbols(self) -> int:
         return random.randint(1, self.num_columns + 1)
 
     def _generate_column(self, reel) -> List[dict]:
         column = []
-        index = self._get_starting_index(reel)
+        index = self.bias_mechanic.get_index(reel)
 
         for i in range(self.num_columns):
             column.append(reel[index])
-            increment = index + 1
-            index = loop_list_value(index=increment, container=reel)
+            index += 1
+            index = loop_list_value(index, container=reel)
         return column
-
-    def _get_starting_index(self, reel) -> int:
-        return self.bias_mechanic.get_index(reel)
 
     def _add_result(self, column) -> None:
         self.results.append(column)
