@@ -3,157 +3,104 @@ import random
 from typing import List
 from GridGames.Slots.slot_feedback import SlotsFeedback
 from GridGames.Slots.result_checker import ResultChecker
+from GridGames.grid_game_class import GridGame
+from GridGames.Slots.bias_mechanic import SlotsBias
 
 
-class SlotMachine:
+class SlotMachine(GridGame):
     def __init__(self):
-        self.num_columns = 3
-        self.payout_multiplier = 1
+        super().__init__()
         self.default_outcomes = []
-        self.bias_index = 0
-        self.init_reel_size = int(math.ceil(self.num_columns * 1.5))
+        self.first_reel_size = int(math.ceil(self.num_columns * 1.5))
         self.reels = []
-        self.results = []
-        self.winning_symbols = []
         self.winning_combos = []
         self.payout_amount = 0
-        self.bias_direction = self._get_default_bias
+        self.bias_mechanic = SlotsBias(self)
 
     def play_slot(self) -> None:
-        self._roll_first_column()
+        self.bias_mechanic.initialize()
 
-        def _perform_rolls() -> None:
-            self._add_result(self._roll_next_column())
+        def _roll_columns() -> None:
+            reel = self.generate_reel()
+            column = self._generate_column(reel)
+            self._add_result(column)
 
-        [_perform_rolls() for i in range(self.num_columns - 1)]
+        [_roll_columns() for i in range(self.num_columns)]
         self._check_results()
 
     def draw_slot_interface(self) -> str:
-        rows = self.get_rows()
+        rows = super().get_rows(self.results)
 
-        def get_emotes(symbols) -> str:
-            return ''.join([symbol['emote'] for symbol in symbols])
-
-        return '\n'.join([get_emotes(row) for row in rows])
+        return '\n'.join([self.get_emotes(row) for row in rows])
 
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
 
-    def get_rows(self) -> List[list]:
-        def _get_row(i):
-            return [self.results[column][i] for column in range(self.num_columns)]
-
-        return [_get_row(i) for i in range(self.num_columns)]
-
-    def _get_default_bias(self) -> int:
-        return self.bias_index
-
-    def _roll_first_column(self) -> None:
-        self._roll_initial_reel()
-        self._roll_bias_index()
-        first_column = self._roll_column(self._get_first_reel())
-        self._add_result(first_column)
-
-    def _get_first_reel(self) -> List[dict]:
-        return self.reels[0]
-
     def _check_results(self) -> None:
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
-        self.payout_amount += result_checker.calculate_payout()
-
-    def _roll_initial_reel(self) -> None:
-        self.reels.append(self._roll_reel(self.default_outcomes))
-
-    def get_bias_options(self) -> List[int]:
-        first_row = 0
-        last_row = self.num_columns - 1
-        random_index = random.randint(first_row, last_row)
-        no_bias = -1
-        return [random_index, random_index, random_index, no_bias]
-
-    def _roll_bias_index(self) -> None:
-        first_row = 0
-        last_row = self.num_columns - 1
-        self.bias_index = self._roll(self.get_bias_options())
-        if self.bias_index == first_row:
-            self._roll_bias_direction(self._top_left_diagonal)
-        elif self.bias_index == last_row:
-            self._roll_bias_direction(self._top_right_diagonal)
-
-    def _roll_bias_direction(self, diagonal):
-        bias_directions = [self.bias_direction, diagonal, diagonal]
-        self.bias_direction = self._roll(bias_directions)
+        self.payout_amount += self.calculate_payout()
 
     def _roll_reel(self, symbols) -> List[dict]:
         reel = []
 
         def roll_add_to_reel(i):
-            previous_symbol = has_previous_symbol(i)
+            previous_symbol = get_previous_symbol(i)
             if previous_symbol:
-                filtered_container = self.remove_symbol(symbols, previous_symbol)
+                filtered_container = self.remove_value_from(symbols, previous_symbol)
                 symbol = self._roll(filtered_container)
             else:
                 symbol = self._roll(symbols)
             reel.append(symbol)
 
-        def has_previous_symbol(i):
+        def get_previous_symbol(i):
             if len(reel) > 0:
-                return reel[i - 1]
+                previous_symbol = reel[i - 1]
+                return previous_symbol
 
-        [roll_add_to_reel(i) for i in range(self.init_reel_size)]
+        [roll_add_to_reel(i) for i in range(self.first_reel_size)]
         return reel
 
-    def _roll_next_column(self) -> List[dict]:
-        reel = self._rebuild_reel()
-        if self._has_bias():
-            match_index = self._get_match_index(reel)
-            return self._roll_column(reel, match_index)
-        return self._roll_column(reel)
+    def generate_reel(self):
+        # If no reel, create one from default values. Otherwise, reconstruct the first reel.
+        if not self.reels:
+            reel = self._roll_initial_reel()
+        else:
+            reel = self._rebuild_reel()
+        self.reels.append(reel)
+        return reel
+
+    def _roll_initial_reel(self):
+        initial_reel = self._roll_reel(self.default_outcomes)
+        self.reels.append(initial_reel)
+        return initial_reel
 
     def _rebuild_reel(self) -> List[dict]:
         first_column = self.results[0]
-        exclude_symbols = self.num_columns
-        new_reel = self._roll_reel(self._get_first_reel())
-        self.reels.append(new_reel)
-        return new_reel[:exclude_symbols] + first_column
+        first_reel = self.reels[0]
+        rerolled_reel = self._roll_reel(first_reel)
+        exclude_symbols = self._get_exclude_symbols()
+        return rerolled_reel[:exclude_symbols] + first_column
 
-    def _roll_column(self, reel, index=0) -> List[dict]:
+    def _get_exclude_symbols(self):
+        return random.randint(1, self.num_columns + 1)
+
+    def _generate_column(self, reel) -> List[dict]:
         column = []
+        index = self.get_starting_index(reel)
+
         for i in range(self.num_columns):
             column.append(reel[index])
             index = self._loop_reel_value(index + 1)
         return column
 
-    def _get_match_index(self, reel) -> int:
-        first_column = self.results[0]
-        symbol_to_match = first_column[self.bias_index]
-        return reel.index(symbol_to_match) - self.bias_direction()
-
-    def _top_left_diagonal(self) -> int:
-        index = self.bias_index + len(self.results)
-        return self._loop_reel_value(index)
-
-    def _top_right_diagonal(self) -> int:
-        index = self.bias_index - len(self.results)
-        return self._loop_reel_value(index)
+    def get_starting_index(self, reel):
+        return self.bias_mechanic.get_index(reel)
 
     def _loop_reel_value(self, index) -> int:
-        previous = len(self.reels) - 1
-        previous_reel_size = len(self.reels[previous])
+        previous_reel_index = len(self.reels) - 1
+        previous_reel_size = len(self.reels[previous_reel_index])
         return index % previous_reel_size
-
-    def _has_bias(self) -> bool:
-        return self.bias_index > -1
 
     def _add_result(self, column) -> None:
         self.results.append(column)
-
-    @staticmethod
-    def remove_symbol(container, filter_symbol):
-        return [symbol for symbol in container if symbol != filter_symbol]
-
-    @staticmethod
-    def _roll(input_list: List) -> any:
-        pick = random.randint(0, len(input_list) - 1)
-        return input_list[pick]

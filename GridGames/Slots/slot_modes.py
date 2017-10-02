@@ -2,6 +2,7 @@ import random
 import math
 from typing import List
 from GridGames.Slots.symbols import *
+from GridGames.Slots.bias_mechanic import SlotsBias
 from GridGames.Slots.slot_machine import SlotMachine
 
 
@@ -9,9 +10,19 @@ class BigSlots(SlotMachine):
     def __init__(self):
         super().__init__()
         self.num_columns = 5
+        self.payout_multiplier = 1.5
         self.init_reel_size = self.num_columns * 2
+        self.bias_mechanic = BigBias(self)
 
-    def get_bias_options(self) -> List[int]:
+    def _get_exclude_symbols(self):
+        return random.randint(1, self.num_columns)
+
+
+class BigBias(SlotsBias):
+    def __init__(self, slot_machine):
+        super().__init__(slot_machine)
+
+    def _get_bias_options(self) -> List[int]:
         first_row = 0
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
@@ -24,12 +35,25 @@ class GiantSlots(SlotMachine):
         super().__init__()
         self.num_columns = 7
         self.payout_multiplier = 2
+        self.bias_mechanic = GiantBias(self)
 
-    def get_bias_options(self) -> List[int]:
+    def _get_exclude_symbols(self):
+        return random.randint(0, self.num_columns - 1)
+
+
+class GiantBias(SlotsBias):
+    def __init__(self, slot_machine):
+        super().__init__(slot_machine)
+
+    def _get_bias_options(self) -> List[int]:
         first_row = 0
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
-        return [random_index, random_index, first_row, last_row]
+        no_bias = -1
+        return [random_index, random_index,
+                first_row,
+                last_row,
+                no_bias, no_bias]
 
 
 class ClassicSlots(SlotMachine):

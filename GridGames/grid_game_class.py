@@ -34,14 +34,15 @@ class GridGame:
         return symbol['emote']
 
     @staticmethod
-    def remove_symbol(container, filter_symbol):
-        return [symbol for symbol in container if symbol != filter_symbol]
+    def get_value(symbol):
+        return symbol['value']
 
     def calculate_payout(self) -> int:
         if self.winning_symbols:
-            sum_payout = sum([symbol['value'] for symbol in self.winning_symbols])
+            sum_payout = sum([self.get_value(symbol) for symbol in self.winning_symbols])
             num_winning_symbols = len(self.winning_symbols)
-            return sum_payout * num_winning_symbols * self.payout_multiplier
+            total_payout = sum_payout * num_winning_symbols * self.payout_multiplier
+            return int(math.floor(total_payout))
         return 0
 
     def _set_host(self, host):

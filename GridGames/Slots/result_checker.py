@@ -8,7 +8,6 @@ class ResultChecker:
         self.results = slot_machine.results
         self.winning_symbols = slot_machine.winning_symbols
         self.winning_combos = slot_machine.winning_combos
-        self.payout_multiplier = slot_machine.payout_multiplier
 
     def analyze_results(self) -> None:
         self._check_rows()
@@ -19,7 +18,7 @@ class ResultChecker:
         [self._check_combo(column, combo_name='column') for column in self.results]
 
     def _check_rows(self):
-        [self._check_combo(row, combo_name='row') for row in self.get_rows()]
+        [self._check_combo(row, combo_name='row') for row in self.get_rows(self.results)]
 
     def _check_top_left_diagonal(self) -> None:
         top_left_diagonal = self._get_diagonal(self.results)
@@ -55,10 +54,3 @@ class ResultChecker:
 
     def _add_winning_match(self, symbol: dict) -> None:
         self.winning_symbols.append(symbol)
-
-    def calculate_payout(self) -> int:
-        if self.winning_symbols:
-            sum_payout = sum([symbol['value'] for symbol in self.winning_symbols])
-            num_winning_symbols = len(self.winning_symbols)
-            return sum_payout * num_winning_symbols * self.payout_multiplier
-        return 0
