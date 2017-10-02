@@ -1,6 +1,4 @@
 import math
-import random
-from typing import List
 from GridGames.Slots.slot_feedback import SlotsFeedback
 from GridGames.Slots.result_checker import ResultChecker
 from GridGames.grid_game_class import GridGame
@@ -22,7 +20,7 @@ class SlotMachine(GridGame):
         self.bias_mechanic.initialize()
 
         def _roll_columns() -> None:
-            reel = self.generate_reel()
+            reel = self._generate_reel()
             column = self._generate_column(reel)
             self._add_result(column)
 
@@ -42,7 +40,8 @@ class SlotMachine(GridGame):
         result_checker.analyze_results()
         self.payout_amount += self.calculate_payout()
 
-    def _roll_reel(self, symbols) -> List[dict]:
+    @staticmethod
+    def _roll_reel(symbols, reel_size) -> List[dict]:
         reel = []
 
         def roll_add_to_reel(i):
@@ -59,10 +58,10 @@ class SlotMachine(GridGame):
                 previous_symbol = reel[i - 1]
                 return previous_symbol
 
-        [roll_add_to_reel(i) for i in range(self.first_reel_size)]
+        [roll_add_to_reel(i) for i in range(reel_size)]
         return reel
 
-    def generate_reel(self) -> List[dict]:
+    def _generate_reel(self) -> List[dict]:
         # If no reel, create one from default values. Otherwise, reconstruct the first reel.
         if not self.reels:
             reel = self._roll_initial_reel()
@@ -72,21 +71,21 @@ class SlotMachine(GridGame):
         return reel
 
     def _roll_initial_reel(self) -> List[dict]:
-        return self._roll_reel(self.default_outcomes)
+        return self._roll_reel(self.default_outcomes, self.first_reel_size)
 
     def _rebuild_reel(self) -> List[dict]:
         first_column = self.results[0]
         first_reel = self.reels[0]
-        rerolled_reel = self._roll_reel(first_reel)
-        exclude_symbols = self._get_exclude_symbols()
-        return rerolled_reel[:exclude_symbols] + first_column
+        include_symbols = self._roll_num_included_symbols()
+        rerolled_reel = self._roll_reel(first_reel, include_symbols)
+        return rerolled_reel + first_column
 
-    def _get_exclude_symbols(self):
+    def _roll_num_included_symbols(self):
         return random.randint(1, self.num_columns + 1)
 
     def _generate_column(self, reel) -> List[dict]:
         column = []
-        index = self.get_starting_index(reel)
+        index = self._get_starting_index(reel)
 
         for i in range(self.num_columns):
             column.append(reel[index])
@@ -94,7 +93,7 @@ class SlotMachine(GridGame):
             index = loop_list_value(index=increment, container=reel)
         return column
 
-    def get_starting_index(self, reel) -> int:
+    def _get_starting_index(self, reel) -> int:
         return self.bias_mechanic.get_index(reel)
 
     def _add_result(self, column) -> None:
