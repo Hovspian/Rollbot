@@ -5,6 +5,7 @@ from GridGames.Slots.slot_feedback import SlotsFeedback
 from GridGames.Slots.result_checker import ResultChecker
 from GridGames.grid_game_class import GridGame
 from GridGames.Slots.bias_mechanic import SlotsBias
+from GridGames.helper_functions import *
 
 
 class SlotMachine(GridGame):
@@ -47,10 +48,10 @@ class SlotMachine(GridGame):
         def roll_add_to_reel(i):
             previous_symbol = get_previous_symbol(i)
             if previous_symbol:
-                filtered_container = self.remove_value_from(symbols, previous_symbol)
-                symbol = self._roll(filtered_container)
+                filtered_container = remove_value_from(symbols, previous_symbol)
+                symbol = roll(filtered_container)
             else:
-                symbol = self._roll(symbols)
+                symbol = roll(symbols)
             reel.append(symbol)
 
         def get_previous_symbol(i):
@@ -61,7 +62,7 @@ class SlotMachine(GridGame):
         [roll_add_to_reel(i) for i in range(self.first_reel_size)]
         return reel
 
-    def generate_reel(self):
+    def generate_reel(self) -> List[dict]:
         # If no reel, create one from default values. Otherwise, reconstruct the first reel.
         if not self.reels:
             reel = self._roll_initial_reel()
@@ -70,10 +71,8 @@ class SlotMachine(GridGame):
         self.reels.append(reel)
         return reel
 
-    def _roll_initial_reel(self):
-        initial_reel = self._roll_reel(self.default_outcomes)
-        self.reels.append(initial_reel)
-        return initial_reel
+    def _roll_initial_reel(self) -> List[dict]:
+        return self._roll_reel(self.default_outcomes)
 
     def _rebuild_reel(self) -> List[dict]:
         first_column = self.results[0]
@@ -91,16 +90,12 @@ class SlotMachine(GridGame):
 
         for i in range(self.num_columns):
             column.append(reel[index])
-            index = self._loop_reel_value(index + 1)
+            increment = index + 1
+            index = loop_list_value(index=increment, container=reel)
         return column
 
-    def get_starting_index(self, reel):
+    def get_starting_index(self, reel) -> int:
         return self.bias_mechanic.get_index(reel)
-
-    def _loop_reel_value(self, index) -> int:
-        previous_reel_index = len(self.reels) - 1
-        previous_reel_size = len(self.reels[previous_reel_index])
-        return index % previous_reel_size
 
     def _add_result(self, column) -> None:
         self.results.append(column)

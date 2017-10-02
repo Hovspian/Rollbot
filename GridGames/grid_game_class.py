@@ -17,15 +17,6 @@ class GridGame:
             return [columns[column][i] for column in range(self.num_columns)]
         return [_get_row(i) for i in range(self.num_columns)]
 
-    @staticmethod
-    def remove_value_from(container, filter_value):
-        return [value for value in container if value != filter_value]
-
-    @staticmethod
-    def _roll(input_list: List) -> any:
-        pick = random.randint(0, len(input_list) - 1)
-        return input_list[pick]
-
     def get_emotes(self, symbols) -> str:
         return ''.join([self.get_emote(symbol) for symbol in symbols])
 
