@@ -18,7 +18,10 @@ class GridGame:
         return [_get_row(i) for i in range(self.num_columns)]
 
     def get_emotes(self, symbols) -> str:
-        return ''.join([self.get_emote(symbol) for symbol in symbols])
+        return ''.join(self.get_emote_list(symbols))
+
+    def get_emote_list(self, symbols):
+        return [self.get_emote(symbol) for symbol in symbols]
 
     @staticmethod
     def get_emote(symbol):

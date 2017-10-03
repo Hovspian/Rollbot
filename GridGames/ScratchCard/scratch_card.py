@@ -2,6 +2,7 @@ from GridGames.helper_functions import *
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card_feedback import ScratchCardFeedback
 from GridGames.grid_game_class import GridGame
+from GridGames.ScratchCard.render_card import RenderCard
 
 
 class ScratchCard(GridGame):
@@ -46,13 +47,10 @@ class ScratchCard(GridGame):
         self._check_game_end()
 
     def render_card(self) -> str:
-        column_header = SPACE.join([CORNER] + COLUMN_LABELS[:self.num_columns])
-        tiles = []
-        for i, row in enumerate(self.card_grid):
-            row_emotes = ''.join(self.get_emotes(row))
-            tiles.append(ROW_LABELS[i] + row_emotes)
-        tile_string = '\n'.join(tiles)
-        return '\n'.join([column_header, tile_string])
+        card_render = RenderCard(self)
+        code_tag = '```'
+        card = [code_tag, card_render.render_card(), code_tag]
+        return '\n'.join(card)
 
     def _initialize_grids(self) -> None:
         self.underlying_symbols = self._generate_grid(self.underlying_symbols)
@@ -103,7 +101,7 @@ class ScratchCard(GridGame):
     def _check_results(self) -> None:
         results = self.results
 
-        def count_match():
+        def count_match() -> None:
             i = 0
             for result in results:
                 if result == results[0]:

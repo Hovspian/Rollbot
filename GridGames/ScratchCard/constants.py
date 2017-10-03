@@ -1,14 +1,39 @@
-COLUMN_LABELS = ['`A`', '`B`', '`C`', '`D`', '`E`', '`F`', '`G`', '`H`', '`I`', '`J`']
+COLUMN_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 COLUMN_INPUTS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-CORNER = '.'
-SPACE = '    '
-ROW_LABELS = ['`0`', '`1`', '`2`', '`3`', '`4`', '`5`', '`6`', '`7`', '`8`', '`9`']
+
+ROW_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 ROW_INPUTS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-NEUTRAL_TILE = {'emote': ':white_medium_square:', 'value': 0}
-EMPTY_TILE = {'emote': ':zero:', 'value': 0}
-HUNDRED = {'emote': ':100:', 'value': 100}
-ONE = {'emote': ':one:', 'value': 1}
-THREE = {'emote': ':three:', 'value': 3}
-FIVE = {'emote': ':five:', 'value': 5}
-TEN = {'emote': ':keycap_ten:', 'value': 10}
+NEUTRAL_TILE = {'emote': ' ', 'value': 0}
+EMPTY_TILE = {'emote': '0', 'value': 0}
+
+HUNDRED = {'emote': '100', 'value': 100}
+ONE = {'emote': '1', 'value': 1}
+TWO = {'emote': '2', 'value': 2}
+THREE = {'emote': '3', 'value': 3}
+FOUR = {'emote': '4', 'value': 4}
+FIVE = {'emote': '5', 'value': 5}
+SIX = {'emote': '6', 'value': 6}
+SEVEN = {'emote': '7', 'value': 7}
+EIGHT = {'emote': '8', 'value': 8}
+NINE = {'emote': '9', 'value': 9}
+TEN = {'emote': '10', 'value': 10}
+
+TOP_LEFT_INTERSECTION = '╬'
+TOP_MIDDLE_INTERSECTION = '╪'
+TOP_RIGHT_INTERSECTION = '╣'
+
+BOTTOM_LEFT_INTERSECTION = '╩'
+BOTTOM_MIDDLE_INTERSECTION = '╧'
+BOTTOM_RIGHT_CORNER = '╝'
+
+ROW_LEFT_INTERSECTION = '╫'
+ROW_RIGHT_INTERSECTION = '╢'
+
+COLUMN_DIVIDER = '─'
+COLUMN_BORDER = '═'
+ROW_DIVIDER = '│'
+ROW_INTERSECTION = '┼'
+ROW_BORDER = '║'
+
+SPACE = ' '
