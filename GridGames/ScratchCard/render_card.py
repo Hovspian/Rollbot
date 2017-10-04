@@ -58,9 +58,9 @@ class RenderCard:
 
     def get_row_placeholders(self):
         # Eg. {} ║ {} │ {} │ {} ║
-        cell = ''.join([' {} ', ROW_DIVIDER])
-        last_cell = ''.join([' {} ', ROW_BORDER])
         placeholder = '{}'
+        cell = ''.join([placeholder, ROW_DIVIDER])
+        last_cell = ''.join([placeholder, ROW_BORDER])
         row = [placeholder,
                SPACE,
                ROW_BORDER,

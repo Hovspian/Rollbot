@@ -21,15 +21,17 @@ class ScratchCard(GridGame):
         self.default_values = [EMPTY_TILE,
                                EMPTY_TILE,
                                EMPTY_TILE,
-                               ONE,
-                               ONE,
-                               THREE,
-                               THREE,
+                               FIVE,
                                FIVE,
                                FIVE,
                                TEN,
                                TEN,
-                               HUNDRED]
+                               TEN,
+                               FIFTY,
+                               FIFTY,
+                               HUNDRED,
+                               HUNDRED,
+                               TWO_HUNDRED]
         self.announcement = ScratchCardFeedback(self)
         self.initialize_card()
 

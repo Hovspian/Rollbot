@@ -1,23 +1,25 @@
-COLUMN_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+COLUMN_LABELS = [' A ', ' B ', ' C ', ' D ', ' E ', ' F ', ' G ', ' H ', ' I ', ' J ']
 COLUMN_INPUTS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
 ROW_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 ROW_INPUTS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-NEUTRAL_TILE = {'emote': ' ', 'value': 0}
-EMPTY_TILE = {'emote': '0', 'value': 0}
+NEUTRAL_TILE = {'emote': '   ', 'value': 0}
+EMPTY_TILE = {'emote': ' 0 ', 'value': 0}
 
+ONE = {'emote': ' 1 ', 'value': 1}
+TWO = {'emote': ' 2 ', 'value': 2}
+THREE = {'emote': ' 3 ', 'value': 3}
+FOUR = {'emote': ' 4 ', 'value': 4}
+FIVE = {'emote': ' 5 ', 'value': 5}
+SIX = {'emote': ' 6 ', 'value': 6}
+SEVEN = {'emote': ' 7 ', 'value': 7}
+EIGHT = {'emote': ' 8 ', 'value': 8}
+NINE = {'emote': ' 9 ', 'value': 9}
+TEN = {'emote': ' 10', 'value': 10}
+FIFTY = {'emote': ' 50', 'value': 50}
 HUNDRED = {'emote': '100', 'value': 100}
-ONE = {'emote': '1', 'value': 1}
-TWO = {'emote': '2', 'value': 2}
-THREE = {'emote': '3', 'value': 3}
-FOUR = {'emote': '4', 'value': 4}
-FIVE = {'emote': '5', 'value': 5}
-SIX = {'emote': '6', 'value': 6}
-SEVEN = {'emote': '7', 'value': 7}
-EIGHT = {'emote': '8', 'value': 8}
-NINE = {'emote': '9', 'value': 9}
-TEN = {'emote': '10', 'value': 10}
+TWO_HUNDRED = {'emote': '200', 'value': 200}
 
 TOP_LEFT_INTERSECTION = '╬'
 TOP_MIDDLE_INTERSECTION = '╪'
