@@ -109,7 +109,7 @@ class ScratchCard(GridGame):
             for result in results:
                 if result == results[0]:
                     i += 1
-                    add_if_match(i)
+            add_if_match(i)
 
         def add_if_match(i):
             if i >= self.matches_to_win:
