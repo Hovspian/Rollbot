@@ -40,4 +40,4 @@ class ScratchCardFeedback:
 
     def _get_progress_report(self):
         num = self.scratch_card.attempts_remaining
-        return f'You have {num} attempts remaining.'
+        return f'{num} attempts remaining.'
