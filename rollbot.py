@@ -169,8 +169,8 @@ async def play_slots(ctx, slot_machine):
     await bot.say(report)
 
 
-@bot.group(name='card', pass_context=True)
-async def card(ctx):
+@bot.group(name='new', pass_context=True)
+async def new(ctx):
     if ctx.invoked_subcommand is None:
         pass
         # TODO
@@ -190,6 +190,7 @@ async def scratch(ctx):
 
 async def attempt_scratch(ctx):
     scratch_card = scratch_card_bot.manager.get_game(ctx)
+
     if not scratch_card:
         await bot.say("You don't have an active scratch card.")
         return
@@ -197,12 +198,9 @@ async def attempt_scratch(ctx):
     raw_input = message_without_command(ctx.message.content)
     await scratch_card_bot.next_turn(scratch_card, raw_input)
 
-    if scratch_card_bot.check_game_end(ctx):
-        channel_manager.vacate_channel(ctx.message.channel)
 
-
-@card.command(pass_context=True)
-async def new(ctx):
+@new.command(pass_context=True)
+async def scratchcard(ctx):
     new_host = ctx.message.author
     valid_channel = await channel_manager.check_valid_new_game(ctx)
     valid_user = await scratch_card_bot.manager.check_valid_user(new_host)
