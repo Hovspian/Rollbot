@@ -27,6 +27,7 @@ class ScratchCard(GridGame):
                                TEN,
                                TEN,
                                TEN,
+                               TEN,
                                TWENTY_FIVE,
                                TWENTY_FIVE,
                                FIFTY,
