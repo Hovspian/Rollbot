@@ -39,7 +39,7 @@ class GameManager:
             if time_left == 0:
                 await self.time_out(game)
                 break
-        return True
+        return self.end_game(game)
 
     async def low_time_warning(self, game):
         host = game.host_name
@@ -48,8 +48,9 @@ class GameManager:
     async def time_out(self, game):
         host = game.host_name
         await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
-        await self.end_game(game)
-
-    async def end_game(self, game):
         game.in_progress = False
+        self.end_game(game)
+
+    def end_game(self, game):
         self.games_in_progress.pop(game.host)
+        return True
