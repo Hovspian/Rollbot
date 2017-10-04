@@ -16,9 +16,9 @@ SIX = {'emote': ' 6 ', 'value': 6}
 SEVEN = {'emote': ' 7 ', 'value': 7}
 EIGHT = {'emote': ' 8 ', 'value': 8}
 NINE = {'emote': ' 9 ', 'value': 9}
-TEN = {'emote': '1 0', 'value': 10}
-TWENTY_FIVE = {'emote': '2 5', 'value': 25}
-FIFTY = {'emote': '5 0', 'value': 50}
+TEN = {'emote': '10 ', 'value': 10}
+TWENTY_FIVE = {'emote': '25 ', 'value': 25}
+FIFTY = {'emote': '50 ', 'value': 50}
 HUNDRED = {'emote': '100', 'value': 100}
 TWO_HUNDRED = {'emote': '200', 'value': 200}
 
