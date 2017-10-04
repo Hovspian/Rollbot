@@ -30,11 +30,10 @@ class ScratchCardBot:
             scratch_card.scratch_tiles(validated_tiles)
             await self._report_turn(scratch_card)
 
-    def check_game_end(self, ctx) -> bool:
+    def check_game_end(self, ctx):
         scratch_card = self.manager.get_game(ctx)
         if not scratch_card.in_progress:
             self.manager.remove_game(ctx)
-            return True
 
     async def _report_turn(self, scratch_card):
         current_card = scratch_card.announcement.get_card()

@@ -211,21 +211,10 @@ async def new(ctx):
         scratch_card = scratch_card_bot.create_scratch_card(ctx)
         await scratch_card_bot.starting_message(scratch_card)
         channel_manager.add_game_in_progress(ctx, scratch_card)
-        time_limit_elapsed = await scratch_card_bot.manager.set_time_limit(scratch_card)
 
-        if time_limit_elapsed:
-            channel_manager.vacate_channel(ctx.message.channel)
-
-
-
-@card.command(pass_context=True)
-async def help(ctx):
-    help_commands = '\n'.join([
-        'Scratch card commands:',
-        '`/scratch card` - Start a new scratch card',
-        '`/scratch <coordinates>` - Scratch one or more tiles on your card, eg. `/scratch A2`, `/scratch A1, B1`'
-    ])
-    await bot.say(help_commands)
+        game_ended = await scratch_card_bot.manager.set_time_limit(scratch_card)
+        if game_ended:
+            channel_manager.vacate_channel(ctx)
 
 
 bot.remove_command('help')

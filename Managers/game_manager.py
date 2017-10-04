@@ -29,10 +29,27 @@ class GameManager:
         self.games_in_progress.pop(author)
 
     async def set_time_limit(self, game):
-        host = game.host_name
-        await asyncio.sleep(100.0)
-        await self.bot.say(f"{host} has 20 seconds left!")
-        await asyncio.sleep(20.0)
-        await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
-        self.games_in_progress.pop(game.host)
+        time_left = game.max_time_left
+
+        while game.in_progress:
+            await asyncio.sleep(1.0)
+            time_left -= 1
+            if time_left == 20:
+                await self.low_time_warning(game)
+            if time_left == 0:
+                await self.time_out(game)
+                break
         return True
+
+    async def low_time_warning(self, game):
+        host = game.host_name
+        await self.bot.say(f"{host} has 20 seconds left!")
+
+    async def time_out(self, game):
+        host = game.host_name
+        await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
+        await self.end_game(game)
+
+    async def end_game(self, game):
+        game.in_progress = False
+        self.games_in_progress.pop(game.host)

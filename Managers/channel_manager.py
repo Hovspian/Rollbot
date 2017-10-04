@@ -26,6 +26,7 @@ class ChannelManager:
         channel = ctx.message.channel
         if self.is_game_in_channel(channel):
             await self.bot.say('Another game is already underway in this channel.')
+            return False
         return True
 
     def add_game_in_progress(self, ctx, game):
@@ -35,7 +36,8 @@ class ChannelManager:
     async def add_user_to_game(self, channel, user):
         await self.games_in_progress[channel].add(user)
 
-    def vacate_channel(self, channel):
+    def vacate_channel(self, ctx):
+        channel = ctx.message.channel
         self.games_in_progress.pop(channel)
 
     def is_game_in_channel(self, channel):

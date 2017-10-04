@@ -9,6 +9,7 @@ class ScratchCard(GridGame):
     # Mechanics
     def __init__(self):
         super().__init__()
+        self.max_time_left = 120
         self.num_winnable_combos = self._roll_num_winnable_combos()
         self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns
