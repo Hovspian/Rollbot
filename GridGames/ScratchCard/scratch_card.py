@@ -21,16 +21,17 @@ class ScratchCard(GridGame):
         self.in_progress = True
         self.default_values = [EMPTY_TILE,
                                EMPTY_TILE,
-                               EMPTY_TILE,
                                FIVE,
                                FIVE,
                                FIVE,
                                TEN,
                                TEN,
                                TEN,
+                               TWENTY_FIVE,
+                               TWENTY_FIVE,
+                               TWENTY_FIVE,
                                FIFTY,
                                FIFTY,
-                               HUNDRED,
                                HUNDRED,
                                TWO_HUNDRED]
         self.announcement = ScratchCardFeedback(self)
@@ -62,7 +63,7 @@ class ScratchCard(GridGame):
 
     @staticmethod
     def _roll_num_winnable_combos() -> int:
-        combos = [1, 1, 2]
+        combos = [1, 2]
         return roll(combos)
 
     def _add_winnable_combo(self) -> None:
