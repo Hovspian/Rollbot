@@ -2,12 +2,13 @@ import asyncio
 
 import discord
 from discord.ext import commands
-from RollGames.rollgame import RollGame, last_roll
-from GridGames.ScratchCard.scratch_card_bot import ScratchCardBot
-from GridGames.Slots.slot_modes import *
+
+from GridGames.Slots.modes import *
 from HammerRace.hammer_modes import *
 from Managers.channel_manager import ChannelManager
+from Managers.scratch_card_bot import ScratchCardBot
 from RollGames.roll import Roll
+from RollGames.rollgame import RollGame, last_roll
 from constants import *
 from discordtoken import TOKEN
 
@@ -102,7 +103,7 @@ async def askhammer(ctx):
 
 
 @bot.command(pass_context=True)
-async def hammer(ctx):
+async def compare(ctx):
     options = message_without_command(ctx.message.content)
     hammer_manager = ComparisonHammer(options)
 
@@ -116,8 +117,7 @@ async def hammer(ctx):
 
         await bot.say('Out of ' + options + ':\n' + hammer_manager.winner_report())
     else:
-        await bot.say("Please enter 2-5 options, separated by commas. Example: ```/hammer bread, eggs, hammer```")
-
+        await bot.say("Please enter 2-5 options, separated by commas. Example: ```/compare bread, eggs, hammer```")
 
 
 @bot.command(pass_context=True)
@@ -177,42 +177,50 @@ async def new(ctx):
     pass
 
 
-@bot.command(pass_context=True)
-async def scratch(ctx):
-    if not channel_manager.is_game_host(ctx):
-        host = channel_manager.get_game_host(ctx)
-        if host:
-            await bot.say(f'The current game host is {host}. Please make a game in another channel.')
-            return
-
-    await attempt_scratch(ctx)
-
-
-async def attempt_scratch(ctx):
-    scratch_card = scratch_card_bot.manager.get_game(ctx)
-
-    if not scratch_card:
-        await bot.say("You don't have an active scratch card.")
-        return
-
-    raw_input = message_without_command(ctx.message.content)
-    await scratch_card_bot.next_turn(scratch_card, raw_input)
+@new.command(pass_context=True)
+async def hammerpot(ctx):
+    if await is_valid_new_game(ctx, scratch_card_bot):
+        hammerpot = await scratch_card_bot.create_hammerpot(ctx)
+        channel_manager.add_game_in_progress(ctx, hammerpot)
+        game_ended = await scratch_card_bot.set_time_limit(hammerpot)
+        if game_ended:
+            channel_manager.vacate_channel(ctx)
 
 
 @new.command(pass_context=True)
 async def scratchcard(ctx):
-    new_host = ctx.message.author
-    valid_channel = await channel_manager.check_valid_new_game(ctx)
-    valid_user = await scratch_card_bot.manager.check_valid_user(new_host)
-
-    if valid_channel and valid_user:
-        scratch_card = scratch_card_bot.create_scratch_card(ctx)
-        await scratch_card_bot.starting_message(scratch_card)
+    if await is_valid_new_game(ctx, scratch_card_bot):
+        scratch_card = await scratch_card_bot.create_scratch_card(ctx)
         channel_manager.add_game_in_progress(ctx, scratch_card)
-
-        game_ended = await scratch_card_bot.manager.set_time_limit(scratch_card)
+        game_ended = await scratch_card_bot.set_time_limit(scratch_card)
         if game_ended:
             channel_manager.vacate_channel(ctx)
+
+
+@bot.command(pass_context=True)
+async def pick(ctx):
+    valid_channel_host = await channel_manager.is_valid_channel_host(ctx)
+    game = await scratch_card_bot.get_game(ctx)
+    if valid_channel_host and game:
+        raw_input = message_without_command(ctx.message.content)
+        await scratch_card_bot.pick_line(game, raw_input)
+
+
+@bot.command(pass_context=True)
+async def scratch(ctx):
+    valid_channel_host = await channel_manager.is_valid_channel_host(ctx)
+    game = await scratch_card_bot.get_game(ctx)
+    if valid_channel_host and game:
+        raw_input = message_without_command(ctx.message.content)
+        await scratch_card_bot.next_turn(game, raw_input)
+
+
+async def is_valid_new_game(ctx, game_manager) -> bool:
+    # Check channel and game manager
+    host = ctx.message.author
+    valid_channel = await channel_manager.check_valid_new_game(ctx)
+    valid_user = await game_manager.check_valid_user(host)
+    return valid_channel and valid_user
 
 
 bot.remove_command('help')

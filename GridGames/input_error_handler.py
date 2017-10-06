@@ -2,7 +2,9 @@ from GridGames.ScratchCard.constants import *
 from typing import List
 
 
-class GridErrorHandler:
+class InputErrorHandler:
+    # TODO change error handling at the string level
+
     def __init__(self, bot):
         self.bot = bot
         self.ERROR_INVALID_INPUT = "Please input valid tiles within the board size. " \
@@ -10,9 +12,21 @@ class GridErrorHandler:
         self.ERROR_INVALID_ATTEMPT = "Please make 1 choice."
         self.ERROR_INVALID_ATTEMPTS = "Please make up to {} choices."
         self.ERROR_REVEALED_TILE = "That tile has already been revealed."
+        self.ERROR_TILES_TO_REVEAL = "Please finish revealing your tiles first."
+        self.ERROR_NO_ATTEMPTS = "You've revealed all the available tiles. " \
+                                 "Please `/pick` a column, row, or diagonal."
+        self.ERROR_INCORRECT_GAME_COMMAND = "That command is for another kind of game."
 
     async def validate(self, game, parse) -> List[list]:
         return await self.check_valid_parse(game, parse)
+
+    async def check_can_pick_line(self, game):
+        if not hasattr(game, 'pick_line'):
+            await self.bot.say(self.ERROR_INCORRECT_GAME_COMMAND)
+        elif game.attempts_remaining > 0:
+            await self.bot.say(self.ERROR_TILES_TO_REVEAL)
+        else:
+            return True
 
     async def check_valid_parse(self, game, parse) -> List[list]:
         valid_parse = self._strip_invalid_coordinates(parse)
@@ -37,7 +51,9 @@ class GridErrorHandler:
 
     async def _error_invalid_attempts(self, attempts_remaining) -> None:
 
-        if attempts_remaining > 1:
+        if attempts_remaining == 0:
+            error = self.ERROR_NO_ATTEMPTS
+        elif attempts_remaining > 1:
             error = self.ERROR_INVALID_ATTEMPTS.format(attempts_remaining)
         else:
             error = self.ERROR_INVALID_ATTEMPT
@@ -48,7 +64,7 @@ class GridErrorHandler:
         return [coordinates for coordinates in parse if coordinates is not None]
 
     def _strip_occupied_tiles(self, game, parse) -> List[list]:
-
+        # Remove non-neutral tiles, including tiles which have already been revealed
         valid_coordinates = []
 
         def add_vacant_tile(coordinates):

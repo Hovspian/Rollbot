@@ -3,7 +3,7 @@ from typing import List
 
 
 class RenderCard:
-    # Box drawing methods
+    # Box drawing methods for scratchcard
 
     def __init__(self, card):
         self.card = card
@@ -11,15 +11,20 @@ class RenderCard:
         self.card_grid = card.card_grid
 
     def render_card(self):
+        linebreak = '\n'
+        card_rows = self.get_card_rows()
+        return linebreak.join(card_rows)
+
+    def get_card_rows(self):
         column_header = self.get_column_header()
         top_row_border = self.draw_top_border()
         row_placeholders = self.get_row_placeholders()
-        rows = [column_header, top_row_border]
+        card_rows = [column_header, top_row_border]
 
         def construct_grid(i, row):
             formatted_row = get_row(i, row)
-            rows.append(formatted_row)
-            rows.append(add_divider(i))
+            card_rows.append(formatted_row)
+            card_rows.append(add_divider(i))
 
         def get_row(i, row):
             coordinate = ROW_LABELS[i]
@@ -36,7 +41,7 @@ class RenderCard:
             return i == self.num_columns - 1
 
         [construct_grid(i, row) for i, row in enumerate(self.card_grid)]
-        return '\n'.join(rows)
+        return card_rows
 
     def get_emote_list(self, symbols) -> List[str]:
         return [self.get_emote(symbol) for symbol in symbols]

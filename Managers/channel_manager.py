@@ -6,6 +6,14 @@ class ChannelManager:
         self.games_in_progress = {}
         self.bot = bot
 
+    async def is_valid_channel_host(self, ctx):
+        if not self.is_game_host(ctx):
+            host = self.get_game_host(ctx)
+            if host:
+                await self.bot.say(f'The current game host is {host}. Please make a game in another channel.')
+            return False
+        return True
+
     def is_game_host(self, ctx):
         game = self.get_game(ctx)
         if game:

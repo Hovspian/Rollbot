@@ -5,7 +5,7 @@ ROW_LABELS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 ROW_INPUTS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 NEUTRAL_TILE = {'emote': '   ', 'value': 0}
-EMPTY_TILE = {'emote': ' 0 ', 'value': 0}
+EMPTY_TILE = {'emote': ' X ', 'value': 0}
 
 ONE = {'emote': ' 1 ', 'value': 1}
 TWO = {'emote': ' 2 ', 'value': 2}
@@ -20,7 +20,6 @@ TEN = {'emote': '10 ', 'value': 10}
 TWENTY_FIVE = {'emote': '25 ', 'value': 25}
 FIFTY = {'emote': '50 ', 'value': 50}
 HUNDRED = {'emote': '100', 'value': 100}
-TWO_HUNDRED = {'emote': '200', 'value': 200}
 
 TOP_LEFT_INTERSECTION = '╬'
 TOP_MIDDLE_INTERSECTION = '╪'
@@ -40,3 +39,5 @@ ROW_INTERSECTION = '┼'
 ROW_BORDER = '║'
 
 SPACE = ' '
+CODE_TAG = '```'
+LINEBREAK = '\n'

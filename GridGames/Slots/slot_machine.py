@@ -1,5 +1,5 @@
 import math
-from GridGames.Slots.slot_feedback import SlotsFeedback
+from GridGames.Slots.feedback import SlotsFeedback
 from GridGames.Slots.result_checker import ResultChecker
 from GridGames.grid_game_class import GridGame
 from GridGames.Slots.bias_mechanic import SlotsBias

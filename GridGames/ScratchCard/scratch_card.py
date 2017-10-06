@@ -1,8 +1,8 @@
-from GridGames.helper_functions import *
 from GridGames.ScratchCard.constants import *
-from GridGames.ScratchCard.scratch_card_feedback import ScratchCardFeedback
+from GridGames.ScratchCard.feedback import ScratchCardFeedback
 from GridGames.grid_game_class import GridGame
-from GridGames.ScratchCard.render_card import RenderCard
+from GridGames.helper_functions import *
+from GridGames.render_card import RenderCard
 
 
 class ScratchCard(GridGame):
@@ -10,15 +10,60 @@ class ScratchCard(GridGame):
     def __init__(self):
         super().__init__()
         self.max_time_left = 120
-        self.num_winnable_combos = self._roll_num_winnable_combos()
         self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns
         self.attempts_remaining = self.num_columns * 2
-        self.matches_to_win = self.attempts_remaining // 2
         self.card_grid = []
         self.underlying_symbols = []
-        self.winning_symbols = []
+        self.winnings = 0
         self.in_progress = True
+        self.announcement = None
+        self.card_render = None
+
+    def initialize_card(self) -> None:
+        self._initialize_grids()
+        random.shuffle(self.underlying_symbols)
+
+    def scratch_tiles(self, list_coordinates) -> None:
+        for coordinates in list_coordinates:
+            y = coordinates[0]
+            x = coordinates[1]
+            self._scratch(y, x)
+
+    def render_card(self) -> str:
+        card = [CODE_TAG, self.card_render.render_card(), CODE_TAG]
+        return LINEBREAK.join(card)
+
+    def _initialize_grids(self) -> None:
+        self.underlying_symbols = self._generate_grid(self.underlying_symbols)
+        neutral_tiles = [NEUTRAL_TILE] * self.grid_size
+        self.card_grid = self._generate_grid(neutral_tiles)
+
+    def _generate_grid(self, values: List) -> List[list]:
+        def create_line(i):
+            return [values[i * self.num_columns + j] for j in range(self.num_columns)]
+
+        return [create_line(i) for i in range(self.num_columns)]
+
+    def _scratch(self, y, x) -> None:
+        self._reveal_tile(y, x)
+        self.attempts_remaining -= 1
+
+    def _reveal_tile(self, y, x):
+        chosen_symbol = self._get_symbol(y, x)
+        self.card_grid[y][x] = chosen_symbol
+
+    def _get_symbol(self, y, x):
+        return self.underlying_symbols[y][x]
+
+
+class ClassicScratchCard(ScratchCard):
+    def __init__(self):
+        super().__init__()
+        self.num_winnable_combos = self._roll_num_winnable_combos()
+        self.matches_to_win = self.attempts_remaining // 2
+        self.winning_symbols = []
+        self.announcement = ScratchCardFeedback(self)
         self.default_values = [EMPTY_TILE,
                                EMPTY_TILE,
                                FIVE,
@@ -33,38 +78,18 @@ class ScratchCard(GridGame):
                                FIFTY,
                                FIFTY,
                                HUNDRED,
-                               TWO_HUNDRED]
-        self.announcement = ScratchCardFeedback(self)
-        self.initialize_card()
-
-    def initialize_card(self) -> None:
-        self._add_winnable_combo()
-        self._add_random_values()
-        random.shuffle(self.underlying_symbols)
-        self._initialize_grids()
-
-    def scratch_tiles(self, list_coordinates) -> None:
-        for coordinates in list_coordinates:
-            y = coordinates[0]
-            x = coordinates[1]
-            self._scratch(y, x)
-        self._check_game_end()
-
-    def render_card(self) -> str:
-        card_render = RenderCard(self)
-        code_tag = '```'
-        card = [code_tag, card_render.render_card(), code_tag]
-        return '\n'.join(card)
-
-    def _initialize_grids(self) -> None:
-        self.underlying_symbols = self._generate_grid(self.underlying_symbols)
-        neutral_tiles = [NEUTRAL_TILE] * self.grid_size
-        self.card_grid = self._generate_grid(neutral_tiles)
+                               HUNDRED]
 
     @staticmethod
     def _roll_num_winnable_combos() -> int:
         combos = [1, 2]
         return roll(combos)
+
+    def initialize_card(self):
+        self._add_winnable_combo()
+        self._add_random_values()
+        super().initialize_card()
+        self.card_render = RenderCard(self)
 
     def _add_winnable_combo(self) -> None:
         for i in range(self.num_winnable_combos):
@@ -81,26 +106,23 @@ class ScratchCard(GridGame):
             symbol = roll(self.default_values)
             self.underlying_symbols.append(symbol)
 
-    def _generate_grid(self, values: List) -> List[list]:
-        def create_line(i):
-            return [values[i * self.num_columns + j] for j in range(self.num_columns)]
-
-        return [create_line(i) for i in range(self.num_columns)]
-
-    def _scratch(self, y, x) -> None:
-        chosen_symbol = self.underlying_symbols[y][x]
-        self.card_grid[y][x] = chosen_symbol
-        self._check_winnable_symbol(chosen_symbol)
-        self.attempts_remaining -= 1
-
-    def _check_winnable_symbol(self, symbol) -> None:
-        if symbol is not EMPTY_TILE:
-            self.results.append(symbol)
+    def scratch_tiles(self, list_coordinates):
+        super().scratch_tiles(list_coordinates)
+        self._check_game_end()
 
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
             self.in_progress = False
+
+    def _scratch(self, y, x):
+        super()._scratch(y, x)
+        chosen_symbol = self.underlying_symbols[y][x]
+        self._check_winnable_symbol(chosen_symbol)
+
+    def _check_winnable_symbol(self, symbol) -> None:
+        if symbol is not EMPTY_TILE:
+            self.results.append(symbol)
 
     def _check_results(self) -> None:
         results = self.results
@@ -116,8 +138,6 @@ class ScratchCard(GridGame):
             if i >= self.matches_to_win:
                 self.winning_symbols.append(results[0])
 
-        while len(results) > 0:
+        while results:
             count_match()
             results = remove_value(results, results[0])
-
-

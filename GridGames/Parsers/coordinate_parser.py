@@ -17,13 +17,13 @@ class CoordinateParser:
 
     def format_input(self, raw_input):
         input_coordinates = self.split_input(raw_input)
+        return [self._format(coordinates) for coordinates in input_coordinates]
 
-        def _format(coordinates):
-            lower_case = coordinates.lower()
-            removed_whitespace = lower_case.strip()
-            return removed_whitespace
-
-        return [_format(coordinates) for coordinates in input_coordinates]
+    @staticmethod
+    def _format(coordinates):
+        lower_case = coordinates.lower()
+        removed_whitespace = lower_case.strip()
+        return removed_whitespace
 
     def get_parse(self, formatted_input) -> List[list]:
         return [self._add_valid_coordinates(coordinates) for coordinates in formatted_input]
