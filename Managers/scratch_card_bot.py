@@ -1,6 +1,6 @@
 from GridGames.Parsers.line_parser import LineParser
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
-from GridGames.ScratchCard.scratch_card import ClassicScratchCard
+from GridGames.ScratchCard.classic_mode import ClassicScratchCard
 from GridGames.input_error_handler import InputErrorHandler
 from Managers.game_manager import GameManager
 
