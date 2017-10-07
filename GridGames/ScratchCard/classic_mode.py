@@ -13,19 +13,14 @@ class ClassicScratchCard(ScratchCard):
         self.winning_symbols = []
         self.announcement = ScratchCardFeedback(self)
         self.default_values = [EMPTY_TILE,
-                               EMPTY_TILE,
                                FIVE,
                                FIVE,
-                               FIVE,
-                               TEN,
-                               TEN,
                                TEN,
                                TEN,
                                TWENTY_FIVE,
                                TWENTY_FIVE,
                                FIFTY,
                                FIFTY,
-                               HUNDRED,
                                HUNDRED]
 
     @staticmethod

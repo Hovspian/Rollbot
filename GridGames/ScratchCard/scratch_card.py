@@ -45,7 +45,7 @@ class ScratchCard(GridGame):
             return values[next_index]
 
         def create_row(i):
-            return [get_next_value for j in range(self.num_columns)]
+            return [get_next_value(i, j) for j in range(self.num_columns)]
 
         return [create_row(i) for i in range(self.num_columns)]
 

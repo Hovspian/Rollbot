@@ -11,9 +11,8 @@ class RenderCard:
         self.card_grid = card.card_grid
 
     def render_card(self):
-        linebreak = '\n'
         card_rows = self.get_card_rows()
-        return linebreak.join(card_rows)
+        return LINEBREAK.join(card_rows)
 
     def get_card_rows(self):
         column_header = self.get_column_header()
