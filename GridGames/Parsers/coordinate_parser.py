@@ -4,12 +4,8 @@ from GridGames.ScratchCard.constants import *
 
 class CoordinateParser:
 
-    def __init__(self, num_columns):
-        self.num_columns = num_columns
-
-    def get_formatted_parse(self, raw_input):
-        formatted_input = self.format_input(raw_input)
-        return self.get_parse(formatted_input)
+    def __init__(self):
+        pass
 
     @staticmethod
     def split_input(message) -> str:
@@ -37,11 +33,12 @@ class CoordinateParser:
     def _is_valid(parse) -> bool:
         return None not in parse
 
-    def _parse_coordinates(self, input_coordinates):
+    @staticmethod
+    def _parse_coordinates(input_coordinates):
         y = None
         x = None
-        column_indexes = COLUMN_INPUTS[:self.num_columns]
-        row_indexes = ROW_INPUTS[:self.num_columns]
+        column_indexes = COLUMN_INPUTS
+        row_indexes = ROW_INPUTS
         for char in input_coordinates:
             if char in column_indexes:
                 x = column_indexes.index(char)

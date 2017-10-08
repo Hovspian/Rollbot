@@ -178,6 +178,16 @@ async def new(ctx):
 
 
 @new.command(pass_context=True)
+async def megahammerpot(ctx):
+    if await is_valid_new_game(ctx, scratch_card_bot):
+        hammerpot = await scratch_card_bot.create_megahammerpot(ctx)
+        channel_manager.add_game_in_progress(ctx, hammerpot)
+        game_ended = await scratch_card_bot.set_time_limit(hammerpot)
+        if game_ended:
+            channel_manager.vacate_channel(ctx)
+
+
+@new.command(pass_context=True)
 async def hammerpot(ctx):
     if await is_valid_new_game(ctx, scratch_card_bot):
         hammerpot = await scratch_card_bot.create_hammerpot(ctx)

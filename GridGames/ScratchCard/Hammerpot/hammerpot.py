@@ -25,8 +25,9 @@ class Hammerpot(ScratchCard):
         self.card_render = RenderHammerpot(self)
 
     def pick_line(self, line: List[list]):
-        self._reveal_line(line)
-        tiles = self._get_tiles(line)
+        fitted_line = line[:self.num_columns]
+        self._reveal_line(fitted_line)
+        tiles = self._get_tiles(fitted_line)
         self.chosen_sum = self._get_chosen_sum(tiles)
         self._end_game()
 
@@ -94,3 +95,13 @@ class Hammerpot(ScratchCard):
 
     def _get_payout(self):
         return self.payouts[self.chosen_sum]
+
+
+class MegaHammerpot(Hammerpot):
+    def __init__(self):
+        super().__init__()
+        self.num_columns = 4
+        self.grid_size = self.num_columns * self.num_columns
+        self.underlying_symbols = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, ELEVEN, TWELVE,
+                                   THIRTEEN, FOURTEEN, FIFTEEN, SIXTEEN]
+        self.attempts_remaining = 6

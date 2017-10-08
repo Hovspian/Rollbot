@@ -1,7 +1,7 @@
+from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
-from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
-from GridGames.ScratchCard.classic_mode import ClassicScratchCard
-from GridGames.input_error_handler import InputErrorHandler
+from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
+from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot, MegaHammerpot
 from Managers.game_manager import GameManager
 
 
@@ -9,7 +9,7 @@ class ScratchCardBot(GameManager):
     # Handles user-game relationship for scratch cards / hammerpot
     def __init__(self, bot):
         super().__init__(bot)
-        self.parser = LineParser(num_columns=3)
+        self.parser = LineParser()
         self.error_handler = InputErrorHandler(bot)
 
     async def create_scratch_card(self, ctx):
@@ -19,6 +19,11 @@ class ScratchCardBot(GameManager):
 
     async def create_hammerpot(self, ctx):
         hammerpot = Hammerpot()
+        await self.initialize_game(hammerpot, ctx)
+        return hammerpot
+
+    async def create_megahammerpot(self, ctx):
+        hammerpot = MegaHammerpot()
         await self.initialize_game(hammerpot, ctx)
         return hammerpot
 
@@ -40,8 +45,7 @@ class ScratchCardBot(GameManager):
         await self.bot.say(message)
 
     async def next_turn(self, game, raw_input):
-        formatted_parse = self.parser.get_formatted_parse(raw_input)
-        validated_tiles = await self.error_handler.validate(game, formatted_parse)
+        validated_tiles = await self.error_handler.validate(game, raw_input)
 
         if validated_tiles:
             game.scratch_tiles(validated_tiles)

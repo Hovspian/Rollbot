@@ -4,11 +4,9 @@ from GridGames.ScratchCard.constants import *
 
 class LineParser(CoordinateParser):
     # A CoordinateParser which can also return a line of tiles (column, row or diagonal) based on user input
-    def __init__(self, num_columns):
-        super().__init__(num_columns)
-        self.num_columns = num_columns
-        self.column_inputs = COLUMN_INPUTS[:self.num_columns]
-        self.row_inputs = ROW_INPUTS[:self.num_columns]
+    def __init__(self):
+        super().__init__()
+        self.num_columns = len(COLUMN_INPUTS)
 
     def get_line(self, raw_input):
         # Eg. a = [ [0][0], [0][1], [0][2] ]
@@ -21,16 +19,16 @@ class LineParser(CoordinateParser):
 
     def check_column(self, first_character):
         column = []
-        if first_character in self.column_inputs:
-            x = self.column_inputs.index(first_character)
+        if first_character in COLUMN_INPUTS:
+            x = COLUMN_INPUTS.index(first_character)
             for y in range(self.num_columns):
                 column.append([y, x])
-        return column
+            return column
 
     def check_row(self, first_character):
         row = []
-        if first_character in self.row_inputs:
-            y = self.row_inputs.index(first_character)
+        if first_character in ROW_INPUTS:
+            y = ROW_INPUTS.index(first_character)
             for x in range(self.num_columns):
                 row.append([y, x])
         return row
