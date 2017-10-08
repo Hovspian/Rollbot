@@ -1,7 +1,7 @@
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
-from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot, MegaHammerpot
+from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from Managers.game_manager import GameManager
 
 
@@ -19,11 +19,6 @@ class ScratchCardBot(GameManager):
 
     async def create_hammerpot(self, ctx):
         hammerpot = Hammerpot()
-        await self.initialize_game(hammerpot, ctx)
-        return hammerpot
-
-    async def create_megahammerpot(self, ctx):
-        hammerpot = MegaHammerpot()
         await self.initialize_game(hammerpot, ctx)
         return hammerpot
 

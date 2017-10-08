@@ -50,7 +50,7 @@ class SlotMachine(GridGame):
         def get_symbol(i) -> dict:
             previous_symbol = get_previous_symbol(i)
             if previous_symbol:
-                filtered_container = remove_value(container=symbols, filter_value=previous_symbol)
+                filtered_container = filter_value(container=symbols, value_to_filter=previous_symbol)
                 symbol = roll(filtered_container)
             else:
                 symbol = roll(symbols)

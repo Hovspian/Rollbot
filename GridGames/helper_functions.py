@@ -2,8 +2,8 @@ import random
 from typing import List
 
 
-def remove_value(container, filter_value):
-    return [value for value in container if value != filter_value]
+def filter_value(container, value_to_filter):
+    return [value for value in container if value != value_to_filter]
 
 
 def roll(input_list: List) -> any:

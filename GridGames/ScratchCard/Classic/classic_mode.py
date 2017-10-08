@@ -39,7 +39,7 @@ class ClassicScratchCard(ScratchCard):
             self.underlying_symbols += self._roll_winnable_value()
 
     def _roll_winnable_value(self) -> List[dict]:
-        winnable_symbols = remove_value(container=self.default_values, filter_value=EMPTY_TILE)
+        winnable_symbols = filter_value(container=self.default_values, value_to_filter=EMPTY_TILE)
         symbol = roll(winnable_symbols)
         return [symbol] * self.matches_to_win
 
@@ -83,4 +83,4 @@ class ClassicScratchCard(ScratchCard):
 
         while results:
             count_match()
-            results = remove_value(results, results[0])
+            results = filter_value(results, results[0])
