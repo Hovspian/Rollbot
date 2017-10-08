@@ -1,6 +1,6 @@
 from GridGames.ScratchCard.constants import *
 from GridGames.grid_game_class import GridGame
-from GridGames.helper_functions import *
+from helper_functions import *
 
 
 class ScratchCard(GridGame):

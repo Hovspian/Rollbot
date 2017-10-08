@@ -1,9 +1,10 @@
 import math
+
+from GridGames.Slots.bias_mechanic import SlotsBias
 from GridGames.Slots.feedback import SlotsFeedback
 from GridGames.Slots.result_checker import ResultChecker
 from GridGames.grid_game_class import GridGame
-from GridGames.Slots.bias_mechanic import SlotsBias
-from GridGames.helper_functions import *
+from helper_functions import *
 
 
 class SlotMachine(GridGame):

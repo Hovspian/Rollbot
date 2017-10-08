@@ -2,7 +2,10 @@ import asyncio
 
 
 class GameManager:
-    # Manage ongoing games of a type, including storage, add and removal
+
+    # Manage ongoing games of a type, including storage, add and removal.
+    # Ie. users cannot create multiples of the same game before finishing their current one.
+
     def __init__(self, bot):
         self.bot = bot
         self.games_in_progress = {}

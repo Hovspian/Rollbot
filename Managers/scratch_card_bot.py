@@ -12,17 +12,7 @@ class ScratchCardBot(GameManager):
         self.parser = LineParser()
         self.error_handler = InputErrorHandler(bot)
 
-    async def create_scratch_card(self, ctx):
-        scratch_card = ClassicScratchCard()
-        await self.initialize_game(scratch_card, ctx)
-        return scratch_card
-
-    async def create_hammerpot(self, ctx):
-        hammerpot = Hammerpot()
-        await self.initialize_game(hammerpot, ctx)
-        return hammerpot
-
-    async def initialize_game(self, game, ctx):
+    async def initialize_game(self, ctx, game):
         game.initialize_card()
         game.host = ctx.message.author
         await self.say_starting_message(game)

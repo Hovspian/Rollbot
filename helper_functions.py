@@ -14,3 +14,8 @@ def roll(input_list: List) -> any:
 def loop_list_value(index, container) -> int:
     list_size = len(container)
     return index % list_size
+
+
+def message_without_command(full_string):
+    command, space, message_body = str(full_string).partition(' ')
+    return message_body

@@ -1,22 +1,21 @@
 import asyncio
-
 import discord
 from discord.ext import commands
-
 from GridGames.Slots.modes import *
 from HammerRace.hammer_modes import *
 from Managers.channel_manager import ChannelManager
-from Managers.scratch_card_bot import ScratchCardBot
+from Managers.session_manager import SessionManager
 from RollGames.roll import Roll
 from RollGames.rollgame import RollGame, last_roll
 from constants import *
 from discordtoken import TOKEN
+from helper_functions import *
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 channel_manager = ChannelManager(bot)
-scratch_card_bot = ScratchCardBot(bot)
+session_manager = SessionManager(bot)
 
 
 @bot.event
@@ -79,10 +78,6 @@ async def join(ctx):
         await channel_manager.add_user_to_game(channel, author)
         await bot.say("{} joined the game.".format(author.display_name))
 
-
-def message_without_command(full_string):
-    command, space, message_body = str(full_string).partition(' ')
-    return message_body
 
 
 @bot.command(pass_context=True)
@@ -169,57 +164,24 @@ async def play_slots(ctx, slot_machine):
     await bot.say(report)
 
 
-@bot.group(name='new', pass_context=True)
-async def new(ctx):
-    if ctx.invoked_subcommand is None:
-        pass
-        # TODO
-    pass
-
-@new.command(pass_context=True)
+@bot.command(pass_context=True)
 async def hammerpot(ctx):
-    if await is_valid_new_game(ctx, scratch_card_bot):
-        hammerpot = await scratch_card_bot.create_hammerpot(ctx)
-        channel_manager.add_game_in_progress(ctx, hammerpot)
-        game_ended = await scratch_card_bot.set_time_limit(hammerpot)
-        if game_ended:
-            channel_manager.vacate_channel(ctx)
+    await session_manager.create_hammerpot(ctx)
 
 
-@new.command(pass_context=True)
+@bot.command(pass_context=True)
 async def scratchcard(ctx):
-    if await is_valid_new_game(ctx, scratch_card_bot):
-        scratch_card = await scratch_card_bot.create_scratch_card(ctx)
-        channel_manager.add_game_in_progress(ctx, scratch_card)
-        game_ended = await scratch_card_bot.set_time_limit(scratch_card)
-        if game_ended:
-            channel_manager.vacate_channel(ctx)
+    await session_manager.create_scratch_card(ctx)
 
 
 @bot.command(pass_context=True)
 async def pick(ctx):
-    valid_channel_host = await channel_manager.is_valid_channel_host(ctx)
-    game = await scratch_card_bot.get_game(ctx)
-    if valid_channel_host and game:
-        raw_input = message_without_command(ctx.message.content)
-        await scratch_card_bot.pick_line(game, raw_input)
+    await session_manager.pick_line(ctx)
 
 
 @bot.command(pass_context=True)
 async def scratch(ctx):
-    valid_channel_host = await channel_manager.is_valid_channel_host(ctx)
-    game = await scratch_card_bot.get_game(ctx)
-    if valid_channel_host and game:
-        raw_input = message_without_command(ctx.message.content)
-        await scratch_card_bot.next_turn(game, raw_input)
-
-
-async def is_valid_new_game(ctx, game_manager) -> bool:
-    # Check channel and game manager
-    host = ctx.message.author
-    valid_channel = await channel_manager.check_valid_new_game(ctx)
-    valid_user = await game_manager.check_valid_user(host)
-    return valid_channel and valid_user
+    await session_manager.scratch(ctx)
 
 
 bot.remove_command('help')
@@ -232,8 +194,8 @@ async def help():
 
 @bot.command(alias='8ball')
 async def eightball():
-    pick = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
-    await bot.say(EIGHTBALL_RESPONSES[pick])
+    pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
+    await bot.say(EIGHTBALL_RESPONSES[pick_random])
 
 
 bot.run(TOKEN)

@@ -1,10 +1,11 @@
-from GridGames.ScratchCard.scratch_card import ScratchCard
-from GridGames.helper_functions import *
-from GridGames.ScratchCard.constants import *
-from GridGames.ScratchCard.Hammerpot.render_hammerpot import RenderHammerpot
-from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
-from typing import List
 import random
+from typing import List
+
+from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
+from GridGames.ScratchCard.Hammerpot.render_hammerpot import RenderHammerpot
+from GridGames.ScratchCard.constants import *
+from GridGames.ScratchCard.scratch_card import ScratchCard
+from helper_functions import *
 
 
 class Hammerpot(ScratchCard):

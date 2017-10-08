@@ -2,6 +2,8 @@
 
 class ChannelManager:
 
+    # Applies the restriction of one ongoing game per channel.
+
     def __init__(self, bot):
         self.games_in_progress = {}
         self.bot = bot

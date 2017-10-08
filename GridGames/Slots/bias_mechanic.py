@@ -1,6 +1,4 @@
-from typing import List
-import random
-from GridGames.helper_functions import *
+from helper_functions import *
 
 
 class SlotsBias:

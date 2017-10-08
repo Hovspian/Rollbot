@@ -1,8 +1,8 @@
 from GridGames.ScratchCard.Classic.feedback import ScratchCardFeedback
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card import ScratchCard
-from GridGames.helper_functions import *
 from GridGames.render_card import RenderCard
+from helper_functions import *
 
 
 class ClassicScratchCard(ScratchCard):
