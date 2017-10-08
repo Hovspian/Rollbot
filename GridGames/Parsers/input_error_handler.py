@@ -44,7 +44,7 @@ class InputErrorHandler:
             return validator.valid_entries
 
     async def _check_ignored_warning(self, validator):
-        # Outputs invalid entries from running the filters
+        # Outputs invalid entries from running the filter
         if validator.ignored_entries:
             invalid_entries = ", ".join(validator.ignored_entries)
             skip_message = SPACE.join(["Skipped invalid:", invalid_entries])

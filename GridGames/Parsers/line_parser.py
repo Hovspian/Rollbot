@@ -1,64 +1,62 @@
 from GridGames.Parsers.coordinate_parser import CoordinateParser
 from GridGames.ScratchCard.constants import *
+from typing import List
 
 
 class LineParser(CoordinateParser):
-    # A CoordinateParser which can also return a line of tiles (column, row or diagonal) based on user input
+    # Returns a line of tiles (column, row or diagonal) based on user input and game board size
     def __init__(self):
         super().__init__()
-        self.num_columns = len(COLUMN_INPUTS)
 
-    def get_line(self, raw_input):
-        # Eg. a = [ [0][0], [0][1], [0][2] ]
+    def get_line(self, game, raw_input) -> List[List[int]]:
+        # Eg. 'a' outputs [ [0][0], [0][1], [0][2] ]
+        num_columns = game.num_columns
         formatted_input = self._format(raw_input)
-        diagonal = self.check_diagonal(formatted_input)
-        column = self.check_column(formatted_input)
-        row = self.check_row(formatted_input)
 
-        return diagonal or column or row or None
+        if formatted_input in COLUMN_INPUTS:
+            return self.get_column(formatted_input, num_columns)
 
-    def check_column(self, first_character):
-        column = []
-        if first_character in COLUMN_INPUTS:
-            x = COLUMN_INPUTS.index(first_character)
-            for y in range(self.num_columns):
-                column.append([y, x])
-            return column
+        if formatted_input in ROW_INPUTS:
+            return self.get_row(formatted_input, num_columns)
 
-    def check_row(self, first_character):
-        row = []
-        if first_character in ROW_INPUTS:
-            y = ROW_INPUTS.index(first_character)
-            for x in range(self.num_columns):
-                row.append([y, x])
-        return row
+        diagonal = self.check_diagonal(formatted_input, num_columns)
+        if diagonal:
+            return diagonal
 
-    def check_diagonal(self, formatted_input):
-        split_input = self.split_input(formatted_input)
-        parse = self.get_parse(split_input)
-        if parse and len(formatted_input) == 2:
-            coordinates = parse[0]
-            return self.get_diagonal(coordinates)
+    def check_diagonal(self, formatted_input, num_columns) -> List[List[int]]:
+        parse = self._get_valid_coordinates(formatted_input)
+        if parse:
+            return self.get_diagonal(parse, num_columns)
 
-    def get_diagonal(self, parse):
-        # Returns the proper diagonal based on the sum of the parsed coordinates
-        start = 0
-        last_of_row_or_column = self.num_columns - 1
+    def get_diagonal(self,  parse, num_columns) -> List[List[int]]:
+        # Returns a diagonal based on the sum of the parsed coordinates
         sum_value = sum(parse)
+        start = 0
+        last_of_row_or_column = num_columns - 1
         if sum_value == start:
-            return self.get_left_diagonal_coordinates()
+            return self.get_left_diagonal(num_columns)
         elif sum_value == last_of_row_or_column:
-            return self.get_right_diagonal_coordinates()
+            return self.get_right_diagonal(num_columns)
 
-    def get_left_diagonal_coordinates(self):
-        line = []
-        for i in range(self.num_columns):
-            line.append([i, i])
-        return line
+    @staticmethod
+    def get_column(formatted_input, num_columns) -> List[List[int]]:
+        x = COLUMN_INPUTS.index(formatted_input)
+        return [[y, x] for y in range(num_columns)]
 
-    def get_right_diagonal_coordinates(self):
-        line = []
-        for i in range(self.num_columns):
-            row = (self.num_columns - 1) - i
-            line.append([row, i])
-        return line
+    @staticmethod
+    def get_row(formatted_input, num_columns) -> List[List[int]]:
+        y = ROW_INPUTS.index(formatted_input)
+        return [[y, x] for x in range(num_columns)]
+
+    @staticmethod
+    def get_left_diagonal(num_columns) -> List[List[int]]:
+        return [[i, i] for i in range(num_columns)]
+
+    @staticmethod
+    def get_right_diagonal(num_columns) -> List[List[int]]:
+
+        def get_coordinates(i):
+            row = (num_columns - 1) - i
+            return [row, i]
+
+        return [get_coordinates(i) for i in range(num_columns)]

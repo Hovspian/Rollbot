@@ -22,9 +22,9 @@ class CoordinateParser:
         return removed_whitespace
 
     def get_parse(self, formatted_input) -> List[list]:
-        return [self._add_valid_coordinates(coordinates) for coordinates in formatted_input]
+        return [self._get_valid_coordinates(coordinates) for coordinates in formatted_input]
 
-    def _add_valid_coordinates(self, coordinates) -> any:
+    def _get_valid_coordinates(self, coordinates) -> any:
         parsed = self._parse_coordinates(coordinates)
         if self._is_valid(parsed):
             return parsed

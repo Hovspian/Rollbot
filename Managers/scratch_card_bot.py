@@ -29,7 +29,7 @@ class ScratchCardBot(GameManager):
         self.add_game(game)
 
     async def pick_line(self, game, raw_input):
-        line = self.parser.get_line(raw_input)
+        line = self.parser.get_line(game, raw_input)
         can_pick = await self.error_handler.check_can_pick_line(game)
         if line and can_pick:
             game.pick_line(line)
