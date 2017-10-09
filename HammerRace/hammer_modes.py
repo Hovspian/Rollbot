@@ -1,7 +1,7 @@
 from HammerRace.hammer_manager import *
+from constants import LINEBREAK
 
-
-class ClassicHammer(HammerRaceManager):
+class ClassicHammer(HammerRace):
 
     def __init__(self):
         super().__init__()
@@ -25,7 +25,7 @@ class ClassicHammer(HammerRaceManager):
         return 'The answer is ' + answer
 
 
-class ComparisonHammer(HammerRaceManager):
+class ComparisonHammer(HammerRace):
     """Game mode compares inputted choices.
     Example: /hammer eggs, bread, banana"""
 
@@ -46,48 +46,28 @@ class ComparisonHammer(HammerRaceManager):
         first_letter = option[0]
         super()._init_participant(short_name=first_letter, name=option)
 
-    def valid_num_participants(self) -> bool:
-        if (len(self.race.participants) > 1) and (len(self.race.participants) <= 5):
-            return True
 
-
-class VersusHammer(HammerRaceManager):
+class VersusHammer(HammerRace):
     """TODO game mode allows users to join in the race.
     eg. /start race
     """
     def __init__(self, game_starter):
         super().__init__()
-        self.users = []
-
-    def sign_up(self, participant):
-        self.add_user(participant)
-        short_name = participant[0]
-        name = participant
-        super()._init_participant(short_name, name)
-        print(name + "joined the game as + " + short_name)
+        self.players = []
+        self.add_user(game_starter)
 
     def add_user(self, user):
-        self.users.append(user)
-
-    def valid_participant(self, user):
-        if user not in self.users:
-            return True
-
-    def valid_max_participants(self):
-        if self.race.num_participants <= 5:
-            return True
-
-    def valid_min_participants(self):
-        if self.race.num_participants > 1:
-            return True
+        self.players.append(user)
+        short_name = user[0]
+        name = user
+        super()._init_participant(short_name, name)
 
     def winner_report(self):
         return super().winner_report() + self.report_gold_owed()
 
     def report_gold_owed(self):
-        linebreak = '\n'
         reports = [self.gold_owed(loser) for loser in self.race.losers]
-        return linebreak.join(reports)
+        return LINEBREAK.join(reports)
 
     def gold_owed(self, participant: Participant):
         steps_left = self.race.get_steps_left(participant.progress)

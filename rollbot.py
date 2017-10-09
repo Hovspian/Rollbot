@@ -76,43 +76,22 @@ async def join(ctx):
         await bot.say(error)
     else:
         await channel_manager.add_user_to_game(channel, author)
-        await bot.say("{} joined the game.".format(author.display_name))
-
+        await bot.say("{} joined the game.".format(author))
 
 
 @bot.command(pass_context=True)
 async def askhammer(ctx):
-    question = message_without_command(ctx.message.content)
-    hammer_manager = ClassicHammer()
-    await bot.say(hammer_manager.round_report())
-
-    while hammer_manager.race_in_progress:
-        await asyncio.sleep(2.0)
-        hammer_manager.next_round()
-        await bot.say(hammer_manager.round_report())
-
-    if question != '':
-        await bot.say(question + ':')
-
-    await bot.say(hammer_manager.winner_report())
+    await session_manager.create_askhammer(ctx)
 
 
 @bot.command(pass_context=True)
-async def compare(ctx):
-    options = message_without_command(ctx.message.content)
-    hammer_manager = ComparisonHammer(options)
+async def testcompare(ctx):
+    await session_manager.create_comparisonhammer(ctx)
 
-    if hammer_manager.valid_num_participants():
-        await bot.say(hammer_manager.round_report())
 
-        while hammer_manager.race_in_progress:
-            await asyncio.sleep(2.0)
-            hammer_manager.next_round()
-            await bot.say(hammer_manager.round_report())
-
-        await bot.say('Out of ' + options + ':\n' + hammer_manager.winner_report())
-    else:
-        await bot.say("Please enter 2-5 options, separated by commas. Example: ```/compare bread, eggs, hammer```")
+@bot.command(pass_context=True)
+async def versushammer(ctx):
+    await session_manager.create_versushammer(ctx)
 
 
 @bot.command(pass_context=True)

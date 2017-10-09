@@ -31,3 +31,7 @@ ROLLBOT_COMMANDS = "```Rollbot commands: " \
                    "\n   countdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous" \
                    " roll until someone rolls 1 and loses. The winnings are split between everyone else. " \
                    "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```"
+
+SPACE = ' '
+CODE_TAG = '```'
+LINEBREAK = '\n'

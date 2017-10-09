@@ -1,8 +1,11 @@
 from Managers.channel_manager import ChannelManager
 from Managers.scratch_card_bot import ScratchCardBot
+from Managers.hammer_race_bot import HammerRaceBot
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
+from HammerRace.hammer_modes import *
 from helper_functions import *
+import asyncio
 
 
 class SessionManager:
@@ -14,6 +17,7 @@ class SessionManager:
         self.bot = bot
         self.channel_manager = ChannelManager(bot)
         self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
+        self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
 
     # Game creation
     async def create_scratch_card(self, ctx) -> None:
@@ -32,6 +36,41 @@ class SessionManager:
         game_ended = await self.scratch_card_bot.set_time_limit(game)
         if game_ended:
             self.channel_manager.vacate_channel(ctx)
+
+    async def create_askhammer(self, ctx):
+        question = message_without_command(ctx.message.content)
+        hammer_race = ClassicHammer()
+        await self.hammer_race_bot.run_race(hammer_race)
+
+        if question != '':
+            await self.bot.say(question + ':')
+        await self.bot.say(hammer_race.winner_report())
+
+    async def create_comparisonhammer(self, ctx):
+        options = message_without_command(ctx.message.content)
+        hammer_race = ComparisonHammer(options)
+
+        if hammer_race.valid_num_participants():
+            await self.hammer_race_bot.run_race(hammer_race)
+            await self.bot.say('Out of ' + options + ':\n' + hammer_race.winner_report())
+        else:
+            await self.bot.say("Please enter 2-5 options, separated by commas. "
+                               "Example: ```/compare bread, eggs, hammer```")
+
+    async def create_versushammer(self, ctx):
+        user = ctx.message.author
+        hammer_race = VersusHammer(user)
+        await self.set_join_waiting_period()
+        if hammer_race.valid_num_participants():
+            await self.hammer_race_bot.run_race(hammer_race)
+            await self.bot.say("The winner is " + hammer_race.winner_report())
+        else:
+            await self.bot.say("Not enough players.")
+
+    async def set_join_waiting_period(self):
+        await asyncio.sleep(15)
+        await self.bot.say("Starting in 5 seconds.")
+        await asyncio.sleep(5)
 
     # Game actions
     async def pick_line(self, ctx) -> None:

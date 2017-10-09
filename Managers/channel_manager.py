@@ -44,7 +44,7 @@ class ChannelManager:
         self.games_in_progress[channel] = game
 
     async def add_user_to_game(self, channel, user):
-        await self.games_in_progress[channel].add(user)
+        await self.games_in_progress[channel].add_user(user)
 
     def vacate_channel(self, ctx):
         channel = ctx.message.channel
