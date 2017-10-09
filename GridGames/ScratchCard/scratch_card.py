@@ -19,8 +19,8 @@ class ScratchCard(GridGame):
         self.card_render = None
 
     def initialize_card(self) -> None:
-        self._initialize_grids()
         random.shuffle(self.underlying_symbols)
+        self._initialize_grids()
 
     def render_card(self) -> str:
         card = [CODE_TAG, self.card_render.render_card(), CODE_TAG]
