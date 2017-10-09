@@ -8,6 +8,7 @@ from helper_functions import *
 
 
 class SlotMachine(GridGame):
+
     def __init__(self):
         super().__init__()
         self.default_outcomes = []
@@ -88,6 +89,7 @@ class SlotMachine(GridGame):
         return random.randint(1, self.num_columns + 1)
 
     def _generate_column(self, reel) -> List[dict]:
+        # A column, the tiles visible to the player, is a subsection of a reel
         column = []
         index = self.bias_mechanic.get_index(reel)
 
