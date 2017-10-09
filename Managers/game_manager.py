@@ -37,12 +37,18 @@ class GameManager:
         while game.in_progress:
             await asyncio.sleep(1.0)
             time_left -= 1
+            if time_left == 60:
+                await self.medium_time_warning(game)
             if time_left == 20:
                 await self.low_time_warning(game)
             if time_left == 0:
                 await self.time_out(game)
                 break
         return self.end_game(game)
+
+    async def medium_time_warning(self, game):
+        host = game.host_name
+        await self.bot.say(f"{host} has 1 minute left.")
 
     async def low_time_warning(self, game):
         host = game.host_name
@@ -52,7 +58,6 @@ class GameManager:
         host = game.host_name
         await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
         game.in_progress = False
-        self.end_game(game)
 
     def end_game(self, game):
         self.games_in_progress.pop(game.host)
