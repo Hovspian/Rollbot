@@ -8,9 +8,13 @@ class HammerpotFeedback:
                           self.hammerpot.render_card()])
 
     def get_starting_message(self):
-        return '\n'.join([f":hammer: Welcome to HAMMERPOT :hammer:",
+        title = self.hammerpot.title
+        num_attempts = self.hammerpot.attempts_remaining
+        numbers = self.hammerpot.num_columns * self.hammerpot.num_columns
+        return '\n'.join([f":hammer: Welcome to {title} :hammer:",
                           self.hammerpot.render_card(),
-                          "1. Reveal 3 tiles with `/scratch`",
+                          f"This card contains unique numbers from 1 to {numbers}.",
+                          f"1. Reveal {num_attempts} tiles with `/scratch`",
                           "2. Then `/pick` a line (row, column, or diagonal)",
                           "The sum of the numbers across your selected line "
                           "matches a payout in the chart!"])

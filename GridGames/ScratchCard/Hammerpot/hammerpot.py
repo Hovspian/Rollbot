@@ -1,6 +1,3 @@
-import random
-from typing import List
-
 from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
 from GridGames.ScratchCard.Hammerpot.render_hammerpot import RenderHammerpot
 from GridGames.ScratchCard.constants import *
@@ -11,6 +8,7 @@ from helper_functions import *
 class Hammerpot(ScratchCard):
     def __init__(self):
         super().__init__()
+        self.title = "HAMMERPOT"
         self.max_time_left = 180
         self.underlying_symbols = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
         self.attempts_remaining = 3

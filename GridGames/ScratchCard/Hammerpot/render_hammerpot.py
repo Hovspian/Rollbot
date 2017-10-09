@@ -4,6 +4,7 @@ from typing import List
 
 
 class RenderHammerpot(RenderCard):
+
     # Renders the payout table next to the card
 
     def __init__(self, card):
@@ -75,8 +76,8 @@ class RenderHammerpot(RenderCard):
         # Format the card's sum : payout dictionary
         sums_to_payouts = self.card.payouts.items()
         formatted_payouts = []
-        for sum, payout in sorted(sums_to_payouts):
-            respaced_sum = self._respace_sum(str(sum))
+        for sum_value, payout in sorted(sums_to_payouts):
+            respaced_sum = self._respace_sum(str(sum_value))
             respaced_payout = self._respace_payout(str(payout))
             entry = DIVIDER.join([respaced_sum, respaced_payout])
             formatted_payouts.append(entry)
