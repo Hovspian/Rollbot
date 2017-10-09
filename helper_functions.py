@@ -2,7 +2,7 @@ import random
 from typing import List
 
 
-def filter_value(container, value_to_filter):
+def filter_value(container, value_to_filter) -> List[any]:
     return [value for value in container if value != value_to_filter]
 
 
@@ -16,6 +16,6 @@ def loop_list_value(index, container) -> int:
     return index % list_size
 
 
-def message_without_command(full_string):
+def message_without_command(full_string) -> str:
     command, space, message_body = str(full_string).partition(' ')
     return message_body

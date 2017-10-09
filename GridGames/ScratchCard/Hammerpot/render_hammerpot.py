@@ -10,7 +10,7 @@ class RenderHammerpot(RenderCard):
         super().__init__(card)
         self.payout_table = self._get_payout_table()
 
-    def render_card(self):
+    def render_card(self) -> str:
         card = self.get_card_rows()
         combined_rows = []
         for i in range(len(card)):
@@ -19,15 +19,15 @@ class RenderHammerpot(RenderCard):
         combined_rows = LINEBREAK.join(combined_rows)
         return combined_rows
 
-    def _get_payout_table(self):
+    def _get_payout_table(self) -> List[str]:
         # Number of rows should be equal to the scratch card
         rows = self._get_payout_rows()
         table_bottom = self._get_table_bottom(rows)
         table = [TABLE_HEADER, TABLE_WHITESPACE] + rows + table_bottom
         return table
 
-    def _get_table_bottom(self, rows):
-        # Depending on the number of rows for sum : payout entries, the bottom of the table needs to be taller
+    def _get_table_bottom(self, rows) -> List[str]:
+        # Depending on the number of rows for sum : payout entries, expand the bottom of the table
         rows_needed = self.card.num_columns * 2 - len(rows)
         table_bottom = []
         for i in range(rows_needed):
@@ -37,7 +37,7 @@ class RenderHammerpot(RenderCard):
                 table_bottom.append(TABLE_WHITESPACE)
         return table_bottom
 
-    def _get_payout_rows(self):
+    def _get_payout_rows(self) -> List[str]:
         entries = self._get_payout_pairs()
         rows = []
         for entry in entries:
@@ -45,7 +45,7 @@ class RenderHammerpot(RenderCard):
             rows.append(payout_row)
         return rows
 
-    def _get_payout_pairs(self):
+    def _get_payout_pairs(self) -> List[List[dict]]:
         # A sum-payout entry has 8 characters, eg. 21 : 500
         formatted_payouts = self._get_formatted_payouts()
         entries = self._check_odd_num_entries(formatted_payouts)
@@ -53,20 +53,23 @@ class RenderHammerpot(RenderCard):
         pairs = []
 
         for i in range(num_rows):
-            slice_start = 0 + i * 2
-            slice_end = 2 + i * 2
-            pairs.append(entries[slice_start:slice_end])
+            start = 0 + i * 2
+            end = 2 + i * 2
+            pairs.append(entries[start:end])
 
         return pairs
 
-    @staticmethod
-    def _check_odd_num_entries(formatted_payouts):
-        # Add an 8-character space if num_entries is not an even number
+    def _check_odd_num_entries(self, formatted_payouts) -> List[dict]:
         empty_entry = SPACE * 8
         num_entries = len(formatted_payouts)
-        if num_entries % 2 != 0:
+        if not self._is_even_number(num_entries):
+            # Add an 8-character space
             formatted_payouts.append(empty_entry)
         return formatted_payouts
+
+    @staticmethod
+    def _is_even_number(num_entries) -> bool:
+        return num_entries % 2 == 0
 
     def _get_formatted_payouts(self) -> List[str]:
         # Format the card's sum : payout dictionary
@@ -79,10 +82,10 @@ class RenderHammerpot(RenderCard):
             formatted_payouts.append(entry)
         return formatted_payouts
 
-    def _respace_sum(self, sum_value):
+    def _respace_sum(self, sum_value) -> str:
         chars_needed = '{:2}'
         return chars_needed.format(sum_value)
 
-    def _respace_payout(self, payout):
+    def _respace_payout(self, payout) -> str:
         chars_needed = '{:3}'
         return chars_needed.format(payout)
