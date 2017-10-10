@@ -32,6 +32,9 @@ class HammerRace:
     def get_start_message(self):
         return None
 
+    def is_winner(self, participant: Participant) -> bool:
+        return self._get_steps_left(participant.progress) <= 0
+
     def _init_participant(self, short_name: str, name: str):
         participant = Participant(short_name, name)
         self._add_participant(participant)
@@ -39,7 +42,7 @@ class HammerRace:
 
     def _participant_turn(self, participant: Participant) -> None:
         participant.make_move()
-        if self._is_winner(participant):
+        if self.is_winner(participant):
             self._add_winner(participant)
 
     def _check_race_end(self) -> None:
@@ -49,10 +52,6 @@ class HammerRace:
     def _get_steps_left(self, progress: int) -> int:
         character_space = 1
         return self.distance_to_finish - progress - character_space
-
-    def _is_winner(self, participant: Participant) -> bool:
-        if self._get_steps_left(participant.progress) <= 0:
-            return True
 
     def _add_participant(self, participant: Participant) -> None:
         self.participants.append(participant)

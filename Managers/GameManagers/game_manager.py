@@ -60,5 +60,6 @@ class GameManager:
         game.in_progress = False
 
     def end_game(self, game):
+        print("End game")
         self.games_in_progress.pop(game.host)
         return True
