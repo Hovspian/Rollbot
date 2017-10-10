@@ -31,45 +31,46 @@ class SessionManager:
             await self._create_scratch_game(ctx, hammerpot)
 
     async def _create_scratch_game(self, ctx, game) -> None:
-        self.channel_manager.add_game_in_progress(ctx, game)
+        self.channel_manager.add_game_in_session(ctx, game)
         await self.scratch_card_bot.initialize_game(ctx, game)
         game_ended = await self.scratch_card_bot.set_time_limit(game)
         if game_ended:
             self.channel_manager.vacate_channel(ctx)
 
-    async def create_askhammer(self, ctx):
-        question = message_without_command(ctx.message.content)
-        hammer_race = ClassicHammer()
-        await self.hammer_race_bot.run_race(hammer_race)
+    async def create_askhammer(self, ctx) -> None:
+        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
+            question = message_without_command(ctx.message.content)
+            hammer_race = ComparisonHammer(question)
+            self.create_hammer_race(ctx, hammer_race)
 
-        if question != '':
-            await self.bot.say(question + ':')
-        await self.bot.say(hammer_race.winner_report())
+    async def create_comparisonhammer(self, ctx) -> None:
+        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
+            options = message_without_command(ctx.message.content)
+            hammer_race = ComparisonHammer(options)
+            await self.create_hammer_race(ctx, hammer_race)
 
-    async def create_comparisonhammer(self, ctx):
-        options = message_without_command(ctx.message.content)
-        hammer_race = ComparisonHammer(options)
+    async def create_versushammer(self, ctx) -> None:
+        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
+            user = ctx.message.author
+            hammer_race = VersusHammer(user)
+            self.channel_manager.add_game_in_session(ctx, game=hammer_race)
+            await self.say_join_message(game=hammer_race)
+            await self.set_join_waiting_period()
+            await self.hammer_race_bot.setup_race(hammer_race)
+            self.channel_manager.vacate_channel(ctx)
 
-        if hammer_race.valid_num_participants():
-            await self.hammer_race_bot.run_race(hammer_race)
-            await self.bot.say('Out of ' + options + ':\n' + hammer_race.winner_report())
-        else:
-            await self.bot.say("Please enter 2-5 options, separated by commas. "
-                               "Example: ```/compare bread, eggs, hammer```")
+    async def create_hammer_race(self, ctx, hammer_race):
+        self.channel_manager.add_game_in_session(ctx, game=hammer_race)
+        await self.hammer_race_bot.setup_race(hammer_race)
+        self.channel_manager.vacate_channel(ctx)
 
-    async def create_versushammer(self, ctx):
-        user = ctx.message.author
-        hammer_race = VersusHammer(user)
-        await self.set_join_waiting_period()
-        if hammer_race.valid_num_participants():
-            await self.hammer_race_bot.run_race(hammer_race)
-            await self.bot.say("The winner is " + hammer_race.winner_report())
-        else:
-            await self.bot.say("Not enough players.")
+    async def say_join_message(self, game):
+        starting_message = SPACE.join([game.starting_message, "Type /join in the next 20 seconds to join."])
+        await self.bot.say(starting_message)
 
     async def set_join_waiting_period(self):
         await asyncio.sleep(15)
-        await self.bot.say("Starting in 5 seconds.")
+        await self.bot.say("Starting in 5 seconds. Last call to sign up.")
         await asyncio.sleep(5)
 
     # Game actions

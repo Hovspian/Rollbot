@@ -60,7 +60,7 @@ async def start(ctx, mode: str, bet=100):
 
     the_game = RollGame(bot, mode, bet, channel)
     await the_game.add(starter)
-    channel_manager.add_game_in_progress(channel, the_game)
+    channel_manager.add_game_in_session(channel, the_game)
     await the_game.play()
     channel_manager.vacate_channel(channel)
 
@@ -70,13 +70,12 @@ async def join(ctx):
     """Allows the user to join the current game"""
     channel = ctx.message.channel
     author = ctx.message.author
-    error = channel_manager.is_invalid_user_error(channel, author)
+    error = session_manager.channel_manager.is_invalid_user_error(channel, author)
 
     if error:
         await bot.say(error)
     else:
-        await channel_manager.add_user_to_game(channel, author)
-        await bot.say("{} joined the game.".format(author))
+        await session_manager.channel_manager.add_user_to_game(channel, author)
 
 
 @bot.command(pass_context=True)
@@ -85,7 +84,7 @@ async def askhammer(ctx):
 
 
 @bot.command(pass_context=True)
-async def testcompare(ctx):
+async def compare(ctx):
     await session_manager.create_comparisonhammer(ctx)
 
 

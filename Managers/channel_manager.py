@@ -39,12 +39,13 @@ class ChannelManager:
             return False
         return True
 
-    def add_game_in_progress(self, ctx, game):
+    def add_game_in_session(self, ctx, game):
         channel = ctx.message.channel
         self.games_in_progress[channel] = game
 
     async def add_user_to_game(self, channel, user):
-        await self.games_in_progress[channel].add_user(user)
+        self.games_in_progress[channel].add_user(user)
+        await self.bot.say("{} joined the game.".format(user.display_name))
 
     def vacate_channel(self, ctx):
         channel = ctx.message.channel
