@@ -8,7 +8,7 @@ class ChannelManager:
         self.active_games = {}
         self.bot = bot
 
-    async def is_valid_channel_host(self, ctx):
+    async def is_valid_channel_host(self, ctx) -> bool:
         if not self.is_game_host(ctx):
             host = self.get_game_host(ctx)
             if host:
@@ -16,13 +16,12 @@ class ChannelManager:
             return False
         return True
 
-    def is_game_host(self, ctx):
-        game = self.get_game(ctx)
-        if game:
-            author_object = ctx.message.author
-            return game.host == author_object
+    def is_game_host(self, ctx) -> bool:
+        game_host = self.get_game_host(ctx)
+        author_object = ctx.message.author
+        return game_host == author_object
 
-    def get_game_host(self, ctx):
+    def get_game_host(self, ctx) -> str:
         game = self.get_game(ctx)
         if game:
             return game.host.display_name
@@ -43,7 +42,9 @@ class ChannelManager:
         channel = ctx.message.channel
         self.active_games[channel] = game
 
-    async def add_user_to_game(self, channel, user):
+    async def add_user_to_game(self, ctx):
+        channel = ctx.message.channel
+        user = ctx.message.author
         self.active_games[channel].add_user(user)
         await self.bot.say("{} joined the game.".format(user.display_name))
 
@@ -51,21 +52,30 @@ class ChannelManager:
         channel = ctx.message.channel
         self.active_games.pop(channel)
 
-    def is_game_in_channel(self, channel):
+    def is_game_in_channel(self, channel) -> bool:
         return channel in self.active_games.keys()
 
-    def is_game_in_progress(self, channel):
+    def is_game_in_progress(self, channel) -> bool:
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
             return game.in_progress
 
-    def is_user_in_game(self, channel, user):
+    def is_user_in_game(self, channel, user) -> bool:
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
             return user in game.players
 
-    def is_invalid_user_error(self, channel, user):
-        error = False
+    async def check_valid_user(self, ctx) -> bool:
+        error = self._check_invalid_user_error(ctx)
+        if error:
+            await self.bot.say(error)
+        else:
+            return True
+
+    def _check_invalid_user_error(self, ctx):
+        channel = ctx.message.channel
+        user = ctx.message.author
+        error = None
         if not self.is_game_in_channel(channel):
             error = "No game in this channel."
         elif self.is_game_in_progress(channel):

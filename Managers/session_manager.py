@@ -75,6 +75,11 @@ class SessionManager:
         await asyncio.sleep(5)
 
     # Game actions
+    async def join_game(self, ctx):
+        user_can_join = await self.channel_manager.check_valid_user(ctx)
+        if user_can_join:
+            await self.channel_manager.add_user_to_game(ctx)
+
     async def pick_line(self, ctx) -> None:
         action = self.scratch_card_bot.pick_line
         await self._make_scratch_game_action(ctx, action)

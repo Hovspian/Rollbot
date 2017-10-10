@@ -67,15 +67,13 @@ async def start(ctx, mode: str, bet=100):
 
 @bot.command(pass_context=True)
 async def join(ctx):
-    """Allows the user to join the current game"""
-    channel = ctx.message.channel
-    author = ctx.message.author
-    error = session_manager.channel_manager.is_invalid_user_error(channel, author)
+    """ Allows the user to join the current game """
+    await session_manager.join_game(ctx)
 
-    if error:
-        await bot.say(error)
-    else:
-        await session_manager.channel_manager.add_user_to_game(channel, author)
+
+@bot.command(pass_context=True)
+async def quit(ctx):
+    """ TODO leave the current game """
 
 
 @bot.command(pass_context=True)
