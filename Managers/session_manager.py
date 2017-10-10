@@ -66,7 +66,6 @@ class SessionManager:
         setup_message = SPACE.join([game.setup_message, "Type /join in the next 20 seconds to join."])
         await self.bot.say(setup_message)
         await self.set_join_waiting_period()
-        await self.bot.say(game.get_start_message())
 
     async def set_join_waiting_period(self):
         await asyncio.sleep(15)

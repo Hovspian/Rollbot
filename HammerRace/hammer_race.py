@@ -27,6 +27,9 @@ class HammerRace:
         report = "The winners are {}" if self._has_multiple_winners() else "The winner is {}"
         return report.format(winners)
 
+    def get_start_message(self):
+        return None
+
     def _init_participant(self, short_name: str, name: str):
         participant = Participant(short_name, name)
         self._add_participant(participant)
