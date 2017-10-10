@@ -1,11 +1,11 @@
+import asyncio
 from Managers.channel_manager import ChannelManager
-from Managers.scratch_card_bot import ScratchCardBot
-from Managers.hammer_race_bot import HammerRaceBot
+from Managers.GameManagers.hammer_race_bot import HammerRaceBot
+from Managers.GameManagers.scratch_card_bot import ScratchCardBot
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from HammerRace.hammer_modes import *
 from helper_functions import *
-import asyncio
 
 
 class SessionManager:
@@ -58,16 +58,13 @@ class SessionManager:
             user = ctx.message.author
             hammer_race = VersusHammer(user)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self.setup_competitive_game(game=hammer_race)
+            await self._set_join_waiting_period(game=hammer_race)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
-    async def setup_competitive_game(self, game):
+    async def _set_join_waiting_period(self, game):
         setup_message = SPACE.join([game.setup_message, "Type /join in the next 20 seconds to join."])
         await self.bot.say(setup_message)
-        await self.set_join_waiting_period()
-
-    async def set_join_waiting_period(self):
         await asyncio.sleep(15)
         await self.bot.say("Starting in 5 seconds. Last call to sign up.")
         await asyncio.sleep(5)

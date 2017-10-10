@@ -1,5 +1,6 @@
-from Managers.game_manager import GameManager
 import asyncio
+
+from Managers.GameManagers.game_manager import GameManager
 
 
 class HammerRaceBot(GameManager):
@@ -13,7 +14,7 @@ class HammerRaceBot(GameManager):
 
     async def start_race(self, hammer_race):
         if hammer_race.valid_num_participants():
-            self.say_start_message(hammer_race)
+            await self.say_start_message(hammer_race)
             await self.run_race(hammer_race)
             await self.bot.say(hammer_race.winner_report())
         else:
