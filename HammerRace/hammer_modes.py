@@ -86,7 +86,10 @@ class VersusHammer(HammerRace):
         self.players.append(user)
 
     def winner_report(self):
-        return LINEBREAK.join([super().winner_report(), self.report_gold_owed()])
+        if not self.losers:
+            return "Tie!"
+        else:
+            return LINEBREAK.join([super().winner_report(), self.report_gold_owed()])
 
     def report_gold_owed(self):
         reports = [self.gold_owed(loser) for loser in self.losers]
@@ -104,6 +107,6 @@ class VersusHammer(HammerRace):
             self._add_losers()
 
     def _add_losers(self):
-        for participant in self.players:
+        for participant in self.participants:
             if participant not in self.winners:
                 self.losers.append(participant)

@@ -41,13 +41,17 @@ class SessionManager:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
             question = message_without_command(ctx.message.content)
             hammer_race = ComparisonHammer(question)
-            self.create_hammer_race(ctx, hammer_race)
+            self.channel_manager.add_game_in_session(ctx, game=hammer_race)
+            await self.hammer_race_bot.start_race(hammer_race)
+            self.channel_manager.vacate_channel(ctx)
 
     async def create_comparisonhammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
             options = message_without_command(ctx.message.content)
             hammer_race = ComparisonHammer(options)
-            await self.create_hammer_race(ctx, hammer_race)
+            self.channel_manager.add_game_in_session(ctx, game=hammer_race)
+            await self.hammer_race_bot.start_race(hammer_race)
+            self.channel_manager.vacate_channel(ctx)
 
     async def create_versushammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
@@ -57,11 +61,6 @@ class SessionManager:
             await self.setup_competitive_game(game=hammer_race)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
-
-    async def create_hammer_race(self, ctx, hammer_race):
-        self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-        await self.hammer_race_bot.start_race(hammer_race)
-        self.channel_manager.vacate_channel(ctx)
 
     async def setup_competitive_game(self, game):
         setup_message = SPACE.join([game.setup_message, "Type /join in the next 20 seconds to join."])
