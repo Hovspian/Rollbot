@@ -18,16 +18,16 @@ class ClassicHammer(HammerRace):
 
     def winner_report(self) -> str:
         answer = self._get_answer()
-        report = ["The answer is", answer]
+        report = SPACE.join(["The answer is", answer])
         if self.question != '':
-            report.insert(0, self.question)
-        return SPACE.join(report)
+            report = LINEBREAK.join([self.question, report])
+        return report
 
     def _get_answer(self):
-        answer_list = self.get_winner_name_list()
+        answer_list = self._get_winner_names()
         if self.overriding_answer in answer_list:
             answer = self.overriding_answer
-        elif self.has_multiple_winners():
+        elif self._has_multiple_winners():
             answer = "maybe"
         else:
             answer = answer_list
