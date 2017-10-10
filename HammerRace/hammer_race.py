@@ -17,7 +17,9 @@ class HammerRace:
         self._check_race_end()
 
     def valid_num_participants(self) -> bool:
-        return (len(self.participants) > 1) and (len(self.participants) <= 5)
+        is_min_participants = len(self.participants) > 1
+        is_max_participants = len(self.participants) <= 5
+        return is_min_participants and is_max_participants
 
     def round_report(self) -> str:
         return self.race_track.draw_track()

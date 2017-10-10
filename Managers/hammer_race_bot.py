@@ -1,7 +1,5 @@
 from Managers.game_manager import GameManager
-from helper_functions import *
 import asyncio
-from HammerRace.hammer_modes import *
 
 
 class HammerRaceBot(GameManager):

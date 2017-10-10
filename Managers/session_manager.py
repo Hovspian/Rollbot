@@ -40,7 +40,7 @@ class SessionManager:
     async def create_askhammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
             question = message_without_command(ctx.message.content)
-            hammer_race = ComparisonHammer(question)
+            hammer_race = ClassicHammer(question)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
@@ -86,16 +86,16 @@ class SessionManager:
         action = self.scratch_card_bot.next_turn
         await self._make_scratch_game_action(ctx, action)
 
-    async def _is_valid_new_game(self, ctx, game_manager) -> bool:
-        # Check channel and game manager
-        host = ctx.message.author
-        valid_channel = await self.channel_manager.check_valid_new_game(ctx)
-        valid_user = await game_manager.check_valid_user(host)
-        return valid_channel and valid_user
-
     async def _make_scratch_game_action(self, ctx, action: classmethod) -> None:
         valid_channel_host = await self.channel_manager.is_valid_channel_host(ctx)
         game = await self.scratch_card_bot.get_game(ctx)
         if valid_channel_host and game:
             raw_input = message_without_command(ctx.message.content)
             await action(game, raw_input)
+
+    async def _is_valid_new_game(self, ctx, game_manager) -> bool:
+        # Check channel and game manager
+        host = ctx.message.author
+        valid_channel = await self.channel_manager.check_valid_new_game(ctx)
+        valid_user = await game_manager.check_valid_user(host)
+        return valid_channel and valid_user
