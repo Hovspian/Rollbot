@@ -54,19 +54,20 @@ class SessionManager:
             user = ctx.message.author
             hammer_race = VersusHammer(user)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self.say_join_message(game=hammer_race)
-            await self.set_join_waiting_period()
-            await self.hammer_race_bot.setup_race(hammer_race)
+            await self.setup_competitive_game(game=hammer_race)
+            await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
     async def create_hammer_race(self, ctx, hammer_race):
         self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-        await self.hammer_race_bot.setup_race(hammer_race)
+        await self.hammer_race_bot.start_race(hammer_race)
         self.channel_manager.vacate_channel(ctx)
 
-    async def say_join_message(self, game):
-        starting_message = SPACE.join([game.starting_message, "Type /join in the next 20 seconds to join."])
-        await self.bot.say(starting_message)
+    async def setup_competitive_game(self, game):
+        setup_message = SPACE.join([game.setup_message, "Type /join in the next 20 seconds to join."])
+        await self.bot.say(setup_message)
+        await self.set_join_waiting_period()
+        await self.bot.say(game.get_start_message())
 
     async def set_join_waiting_period(self):
         await asyncio.sleep(15)

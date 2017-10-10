@@ -70,15 +70,20 @@ class VersusHammer(HammerRace):
 
     def __init__(self, game_starter):
         super().__init__()
-        self.joining_message = "A race is starting."
-        self.invalid_participants_error = "Not enough players."
-        self.starting_message = SPACE.join(["Race between ", SPACE.join(self.players)])
+        self.players = []
+        self.losers = []
         self.add_user(game_starter)
+        self.setup_message = f"{game_starter.display_name} has started a race."
+        self.invalid_participants_error = "A race needs at least two players."
+
+    def get_start_message(self):
+        return SPACE.join(["Race between", self._get_player_names()])
 
     def add_user(self, user):
         short_name = user.display_name[0]
         name = user.display_name
         super()._init_participant(short_name, name)
+        self.players.append(user)
 
     def winner_report(self):
         return LINEBREAK.join([super().winner_report(), self.report_gold_owed()])
@@ -88,7 +93,17 @@ class VersusHammer(HammerRace):
         return LINEBREAK.join(reports)
 
     def gold_owed(self, participant: Participant):
-        steps_left = self.get_steps_left(participant.progress)
+        steps_left = self._get_steps_left(participant.progress)
         gold = steps_left * 2 + 5
         gold = gold // len(self.winners)
         return f'{participant.name} owes {gold} gold to each winner.'
+
+    def _check_race_end(self) -> None:
+        if self.is_race_end():
+            self.in_progress = False
+            self._add_losers()
+
+    def _add_losers(self):
+        for participant in self.players:
+            if participant not in self.winners:
+                self.losers.append(participant)
