@@ -16,7 +16,6 @@ class HammerRaceBot(GameManager):
         if hammer_race.valid_num_participants():
             await self.say_start_message(hammer_race)
             await self.run_race(hammer_race)
-            await self.bot.say(hammer_race.winner_report())
         else:
             await self.bot.say(hammer_race.invalid_participants_error)
 
@@ -28,3 +27,5 @@ class HammerRaceBot(GameManager):
             await asyncio.sleep(2.0)
             hammer_race.next_round()
             await self.bot.say(hammer_race.round_report())
+
+        await self.bot.say(hammer_race.winner_report())

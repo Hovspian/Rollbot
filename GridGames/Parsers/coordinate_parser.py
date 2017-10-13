@@ -9,7 +9,7 @@ class CoordinateParser:
 
     @staticmethod
     def split_input(message) -> str:
-        return message.split(',')
+        return message.check_split(',')
 
     def format_input(self, raw_input):
         input_coordinates = self.split_input(raw_input)

@@ -35,7 +35,7 @@ class ScratchCardBot(GameManager):
             await self.report_turn(game)
 
     async def report_turn(self, game):
-        current_card = game.announcement.get_card()
+        current_card = game.announcement.draw_card()
         report = game.announcement.get_report()
         await self.bot.say(current_card)
         await self.bot.say(report)

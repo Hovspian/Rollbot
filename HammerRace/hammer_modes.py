@@ -1,13 +1,13 @@
 from HammerRace.hammer_race import *
 from constants import *
 from typing import List
+from player_avatar import PlayerAvatar
 
 
 class ClassicHammer(HammerRace):
-    def __init__(self, question):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.overriding_answer = ""
-        self.question = question
         self.init_participants()
 
     def init_participants(self) -> None:
@@ -19,8 +19,8 @@ class ClassicHammer(HammerRace):
     def winner_report(self) -> str:
         answer = self._get_answer()
         report = SPACE.join(["The answer is", answer])
-        if self.question != '':
-            report = LINEBREAK.join([self.question, report])
+        if self.message != '':
+            report = LINEBREAK.join([self.message, report])
         return report
 
     def _get_answer(self):
@@ -38,10 +38,9 @@ class ComparisonHammer(HammerRace):
     """Game mode compares inputted choices.
     Example: /hammer eggs, bread, banana"""
 
-    def __init__(self, message: str):
-        super().__init__()
-        self._options_message = message
-        self._options = self._set_options(message)
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self._options = self._set_options(self.message)
         self.invalid_participants_error = "Please enter 2-5 options, separated by commas. " \
                                           "Example: ```/compare bread, eggs, hammer```"
         self._init_participants()
@@ -60,7 +59,7 @@ class ComparisonHammer(HammerRace):
 
     def winner_report(self):
         return SPACE.join(["Out of",
-                           self._options_message,
+                           self.message,
                            ":\n",
                            super().winner_report()])
 
@@ -68,12 +67,13 @@ class ComparisonHammer(HammerRace):
 class VersusHammer(HammerRace):
     """Game mode allows users to join the race."""
 
-    def __init__(self, game_starter):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.host = ctx.message.author
         self.players = []
         self.losers = []
-        self.add_user(game_starter)
-        self.setup_message = f"{game_starter.display_name} has started a race."
+        self.add_user(self.host)
+        self.setup_message = f"{self.host.display_name} has started a race."
         self.invalid_participants_error = "A race needs at least two players."
 
     def get_start_message(self):
@@ -82,8 +82,9 @@ class VersusHammer(HammerRace):
     def add_user(self, user):
         short_name = user.display_name[0]
         name = user.display_name
-        super()._init_participant(short_name, name)
-        self.players.append(user)
+        participant = super()._init_participant(short_name, name)
+        player_avatar = PlayerAvatar(user, avatar=participant)
+        self.players.append(player_avatar)
 
     def winner_report(self):
         if not self.losers:

@@ -1,25 +1,27 @@
 from HammerRace.race_track import RaceTrack
 from HammerRace.participant import Participant
+from helper_functions import message_without_command
 
 
 class HammerRace:
     # Manage relationship between feedback, participants and race
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.distance_to_finish = 40
         self.winners = []
         self.participants = []
         self.race_track = RaceTrack(self)
         self.in_progress = False
+        self.message = message_without_command(ctx.message.content)
 
     def next_round(self) -> None:
         [self._participant_turn(participant) for participant in self.participants]
         self._check_race_end()
 
     def valid_num_participants(self) -> bool:
-        is_min_participants = len(self.participants) > 1
-        is_max_participants = len(self.participants) <= 5
-        return is_min_participants and is_max_participants
+        within_min_participants = len(self.participants) > 1
+        within_max_participants = len(self.participants) <= 5
+        return within_min_participants and within_max_participants
 
     def round_report(self) -> str:
         return self.race_track.draw_track()
