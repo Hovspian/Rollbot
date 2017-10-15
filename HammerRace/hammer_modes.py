@@ -73,7 +73,6 @@ class VersusHammer(HammerRace):
         self.players = []
         self.losers = []
         self.add_user(self.host)
-        self.setup_message = f"{self.host.display_name} has started a race."
         self.invalid_participants_error = "A race needs at least two players."
 
     def get_start_message(self):

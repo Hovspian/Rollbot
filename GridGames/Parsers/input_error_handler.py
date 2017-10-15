@@ -68,7 +68,7 @@ class InputErrorHandler:
 
     @staticmethod
     def split_input(message) -> str:
-        return message.check_split(',')
+        return message.split(',')
 
 
 class InitialFilter:

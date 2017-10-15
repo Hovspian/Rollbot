@@ -33,5 +33,6 @@ ROLLBOT_COMMANDS = "```Rollbot commands: " \
                    "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```"
 
 SPACE = ' '
+DOUBLE_SPACE = '  '
 CODE_TAG = '```'
 LINEBREAK = '\n'

@@ -78,12 +78,12 @@ async def quit(ctx):
 
 @bot.command(pass_context=True)
 async def askhammer(ctx):
-    await session_manager.create_askhammer(ctx)
+    await session_manager.askhammer(ctx)
 
 
 @bot.command(pass_context=True)
 async def compare(ctx):
-    await session_manager.create_comparisonhammer(ctx)
+    await session_manager.comparison_hammer(ctx)
 
 
 @bot.command(pass_context=True)

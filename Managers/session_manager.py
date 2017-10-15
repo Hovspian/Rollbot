@@ -38,40 +38,33 @@ class SessionManager:
         if game_ended:
             self.channel_manager.vacate_channel(ctx)
 
-    async def create_askhammer(self, ctx) -> None:
+    async def askhammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = ClassicHammer(ctx)
+            hammer_race = self.hammer_race_bot.create_askhammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
-    async def create_comparisonhammer(self, ctx) -> None:
+    async def comparison_hammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = ComparisonHammer(ctx)
+            hammer_race = self.hammer_race_bot.create_comparisonhammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
     async def create_versushammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = VersusHammer(ctx)
+            hammer_race = self.hammer_race_bot.create_versushammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self._set_join_waiting_period(game=hammer_race)
+            await self.hammer_race_bot.set_join_waiting_period(ctx)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
-
-    async def _set_join_waiting_period(self, game):
-        setup_message = SPACE.join([game.setup_message, "Type /join in the next 20 seconds to join."])
-        await self.bot.say(setup_message)
-        await asyncio.sleep(15)
-        await self.bot.say("Starting in 5 seconds. Last call to sign up.")
-        await asyncio.sleep(5)
 
     # Game actions
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)
         if user_can_join:
-            await self.channel_manager.add_user_to_game(ctx)
+            await self.user_manager.add_user_to_game(ctx)
 
     async def pick_line(self, ctx) -> None:
         action = self.scratch_card_bot.pick_line

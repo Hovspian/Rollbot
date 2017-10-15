@@ -5,16 +5,17 @@ from Managers.GameManagers.game_manager import GameManager
 
 class ScratchCardBot(GameManager):
     # Handles user-game relationship for scratch cards / hammerpot
+
     def __init__(self, bot):
         super().__init__(bot)
         self.parser = LineParser()
         self.error_handler = InputErrorHandler(bot)
 
     async def initialize_game(self, ctx, game):
+        self.add_game(game)
         game.initialize_card()
         game.host = ctx.message.author
         await self.say_starting_message(game)
-        self.add_game(game)
 
     async def pick_line(self, game, raw_input):
         line = self.parser.get_line(game, raw_input)

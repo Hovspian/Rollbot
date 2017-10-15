@@ -37,7 +37,7 @@ class ChannelManager:
 
 class UserManager:
 
-    """ User enrollment and retrieval in games """
+    """ User enrollment and retrieval in channel games """
 
     def __init__(self, channel_manager, bot):
         self.active_games = channel_manager.active_games
