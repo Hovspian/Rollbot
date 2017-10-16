@@ -35,12 +35,15 @@ class GameManager:
     async def set_join_waiting_period(self, ctx):
         await self.say_setup_message(ctx)
         await asyncio.sleep(15)
-        await self.bot.say("Starting in 5 seconds. Last call to sign up.")
+        await self.say_last_call_message()
         await asyncio.sleep(5)
+
+    async def say_last_call_message(self):
+        await self.bot.say("Starting in 5 seconds. Last call to sign up.")
 
     async def say_setup_message(self, ctx):
         host_name = ctx.message.author.display_name
-        setup_message = self._get_setup_message(host_name, "a game")
+        setup_message = f"{host_name} is starting a game. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)
 
     async def set_time_limit(self, game):
@@ -74,7 +77,3 @@ class GameManager:
     def _end_game(self, game):
         self.active_games.pop(game.host)
         return True
-
-    @staticmethod
-    def _get_setup_message(host_name, game_name):
-        return SPACE.join([f"{host_name} is starting {game_name}.", "Type /join in the next 20 seconds to join."])

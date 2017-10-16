@@ -2,9 +2,9 @@ import asyncio
 from Managers.channel_manager import *
 from Managers.GameManagers.hammer_race_bot import HammerRaceBot
 from Managers.GameManagers.scratch_card_bot import ScratchCardBot
+from Managers.GameManagers.blackjack_bot import BlackjackBot
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
-from HammerRace.hammer_modes import *
 from helper_functions import *
 
 

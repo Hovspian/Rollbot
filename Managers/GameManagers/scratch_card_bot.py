@@ -1,6 +1,7 @@
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
 from Managers.GameManagers.game_manager import GameManager
+import asyncio
 
 
 class ScratchCardBot(GameManager):

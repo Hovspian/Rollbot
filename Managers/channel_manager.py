@@ -71,10 +71,10 @@ class UserManager:
             return game.host.display_name or "Rollbot"
 
     def is_user_in_game(self, channel, user) -> bool:
-        # Enrolled users are a PlayerAvatar object
+        # Enrolled users are a PlayerAvatar object with a user attribute
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
-            return any(player.user for player in game.players if player.user == user)
+            return any(player.user for player in game.players if player.user is user)
 
     def get_player_avatar(self, ctx) -> object:
         # Returns a PlayerAvatar based on the user
