@@ -1,22 +1,41 @@
+from typing import List
+
+
 class Hand:
     def __init__(self):
-        self.cards = []
+        self._cards = []
         self.is_active = True
         self.plays_made = 0
+        self._value = 0
 
-    def stand(self):
-        self.end_turn()
+    def hit(self, card):
+        self.add_card(card)
+        self.plays_made += 1
 
     def add_card(self, card):
-        self.cards.append(card)
-        self.plays_made += 1
+        self._cards.append(card)
 
     def end_turn(self):
         self.is_active = False
         self.plays_made += 1
 
     def get_first_card(self):
-        return self.cards[0]
+        return self._cards[0]
+
+    def update_value(self, value):
+        self._value = value
+
+    def get_value(self):
+        return self._value
+
+    def is_bust(self) -> bool:
+        return self._value > 21
+
+    def get_cards(self) -> List[dict]:
+        return self._cards
+
+    def can_make_turn(self) -> bool:
+        return self.is_active
 
 
 class PlayerHand(Hand):
@@ -36,11 +55,10 @@ class PlayerHand(Hand):
 
     def double_down(self, card) -> None:
         self._wager *= 2
-        self.add_card(card)
-        self.end_turn()
+        self.hit(card)
 
     def split(self) -> dict:
-        card = self.cards.pop(1)
+        card = self._cards.pop(1)
         return card
 
     def blackjack_win(self) -> None:
