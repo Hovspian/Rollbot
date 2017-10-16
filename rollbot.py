@@ -16,6 +16,7 @@ bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
+blackjack_bot = session_manager.blackjack_bot
 
 
 @bot.event
@@ -70,6 +71,29 @@ async def join(ctx):
     """ Allows the user to join the current game """
     await session_manager.join_game(ctx)
 
+
+# Blackjack commands
+
+@bot.command(pass_context=True)
+async def hit(ctx):
+    await blackjack_bot.perform_action(ctx, "hit")
+
+
+@bot.command(pass_context=True)
+async def stand(ctx):
+    await blackjack_bot.perform_action(ctx, "stand")
+
+
+@bot.command(pass_context=True)
+async def split(ctx):
+    await blackjack_bot.perform_action(ctx, "split")
+
+
+@bot.command(pass_context=True)
+async def doubledown(ctx):
+    await blackjack_bot.perform_action(ctx, "doubledown")
+
+# End Blackjack commands
 
 @bot.command(pass_context=True)
 async def quit(ctx):

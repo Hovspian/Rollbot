@@ -19,8 +19,15 @@ class SessionManager:
         self.user_manager = UserManager(self.channel_manager, bot)
         self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
+        self.blackjack_bot = BlackjackBot(bot) # GameManager
 
     # Game creation
+    async def create_blackjack(self, ctx) -> None:
+        if await self._is_valid_new_game(ctx, self.blackjack_bot):
+            self.blackjack_bot.create_blackjack(ctx)
+            await self.blackjack_bot.set_join_waiting_period(ctx)
+            await self.blackjack_bot.start_game(ctx)
+
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
             scratch_card = ClassicScratchCard()
