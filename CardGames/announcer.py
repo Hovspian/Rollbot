@@ -12,17 +12,15 @@ class BlackjackAnnouncer:
 
     """
 
-    def __init__(self, bot, executor):
+    def __init__(self, bot, host_name):
         self.bot = bot
         self.renderer = RenderCard()
-        self.players = executor.players
-        self.standing_players = executor.standing_players
-        self.host_name = executor.host.display_name
+        self.host_name = host_name
 
     async def player_cards(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
-        await self.bot.say(f"Dealt to {player_name}: {rendered_hand}")
-        asyncio.sleep(2.0)
+        await self.bot.say(f"{player_name} is dealt: {rendered_hand}")
+        await asyncio.sleep(2.0)
 
     async def next_hand_options(self, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
@@ -31,22 +29,14 @@ class BlackjackAnnouncer:
                    "Options: `/hit`  `/stand`  `/doubledown`  `/split`"]
         await self.bot.say(LINEBREAK.join(message))
 
-    async def announce_options(self):
-        options = ["Blackjack commands:",
-                   "`/hit` : Receive a card. If your hand's value exceeds 21 points, it's a bust.",
-                   "`/stand` : End your turn with your hand as-is."
-                   "`/doubledown` : Double your wager, receive one more card, and stand.",
-                   "`/split` : If you hold two cards of equal value, split them into separate hands."]
-        await self.bot.say(LINEBREAK.join(options))
-
     async def player_hand(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
-        messages = [f"{player_name}'s hand: \n {rendered_hand}"]
+        messages = [f"{player_name}'s hand: {rendered_hand}"]
         await self.stagger_messages(messages)
 
     async def next_turn(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
-        messages = [f"{player_name}'s turn. Your hand is: \n {rendered_hand}"]
+        messages = [f"{player_name}'s turn. Your hand is: {rendered_hand}"]
         await self.stagger_messages(messages)
 
     async def dealer_card(self, card):
@@ -55,12 +45,12 @@ class BlackjackAnnouncer:
 
     async def dealer_turn(self, hand):
         dealer_hand = await self.dealer_reveal_hand(hand)
-        messages = ["It's the dealer's turn.", dealer_hand]
-        await self.stagger_messages(messages)
+        message = LINEBREAK.join(["It's the dealer's turn.", dealer_hand])
+        await self.bot.say(message)
 
     async def dealer_reveal_hand(self, hand):
         rendered_hand = self.renderer.render_hand(hand)
-        return f"{self.host_name} shows their hand: \n {rendered_hand}"
+        return f"{self.host_name} shows their hand: {rendered_hand}"
 
     async def report_hit(self, hand, new_card):
         rendered_hand = self.renderer.render_hand(hand)
@@ -73,6 +63,9 @@ class BlackjackAnnouncer:
         rendered_card = self.renderer.render_card(new_card)
         messages = [f"{self.host_name} drew {rendered_card}."]
         await self.stagger_messages(messages)
+
+    async def dealer_stand(self):
+        await self.bot.say("The dealer is now standing. Hands will be compared.")
 
     async def stagger_messages(self, messages: List[str]) -> None:
         for message in messages:
@@ -93,7 +86,7 @@ class BlackjackAnnouncer:
         await self.bot.say("It's a bust! The host has acquired your wager.")
 
     async def declare_dealer_bust(self):
-        await self.bot.say("The dealer's hand has busted!")
+        await self.bot.say(f"{self.host_name}'s hand has busted!")
 
     async def ask_hit_again(self):
         await self.bot.say("Hit again?")
@@ -102,13 +95,13 @@ class BlackjackAnnouncer:
         await self.bot.say("Blackjack!")
 
     async def stand_off(self, wager: int):
-        await self.bot.say(f"It's a stand-off with the dealer. Your {wager} gold wager has been returned.")
+        await self.bot.say(f"Stand-off with the dealer. Your {wager} gold wager has been returned.")
 
     async def win(self, winnings: int):
-        await self.bot.say(f"You won {winnings} gold.")
+        await self.bot.say(f":dollar: Winner! Payout is {winnings} gold. :dollar:")
 
     async def loss(self, wager: int):
-        await self.bot.say(f"The dealer has acquired your wager of {wager} gold.")
+        await self.bot.say(f"You lost your wager of {wager} gold.")
 
     async def double_down_success(self, wager):
         await self.bot.say(f"Your wager is now {wager}. A face-down card has been added to your hand.")
