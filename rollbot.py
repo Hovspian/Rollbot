@@ -75,6 +75,11 @@ async def join(ctx):
 # Blackjack commands
 
 @bot.command(pass_context=True)
+async def blackjack(ctx):
+    await session_manager.create_blackjack(ctx)
+
+
+@bot.command(pass_context=True)
 async def hit(ctx):
     await blackjack_bot.perform_action(ctx, "hit")
 

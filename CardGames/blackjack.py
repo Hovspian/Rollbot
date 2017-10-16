@@ -13,7 +13,7 @@ class Blackjack:
         self.default_cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         self.values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10,
                        'K': 10}
-        self.suits = [':diamond:', ':club:', ':heart:', ':spade:']
+        self.suits = [':diamonds:', ':clubs:', ':hearts:', ':spades:']
         self.deck = {}
         self.generate_deck()
 

@@ -5,8 +5,8 @@ from helper_functions import *
 
 class ScratchCard(GridGame):
     # Mechanics
-    def __init__(self):
-        super().__init__()
+    def __init__(self, host):
+        super().__init__(host)
         self.max_time_left = 120
         self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns

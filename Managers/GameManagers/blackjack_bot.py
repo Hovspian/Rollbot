@@ -4,53 +4,48 @@ from constants import *
 import asyncio
 
 
-class RollbotHost:
-    """ A fake host for Blackjack """
-
-    def __init__(self):
-        self.display_name = "Rollbot"
-        self.gold = 10000
-
-
 class BlackjackBot(GameManager):
     # Game input, creation and deletion for Blackjack
 
     def __init__(self, bot):
         super().__init__(bot)
 
-    def create_blackjack(self, ctx):
+    async def create_blackjack(self, ctx):
         game_starter = ctx.message.author
-        executor = BlackjackExecutor(self.bot, host=RollbotHost())
+        executor = BlackjackExecutor(self.bot, host=game_starter)
         executor.add_user(game_starter)
         self.initialize_game(executor)
+        return executor
 
     def initialize_game(self, game):
         self.add_game(game)
 
-    async def start_game(self, ctx) -> None:
-        game = await self.get_game(ctx)
-        game.in_progress = True
-        host = game.host_name
-        await self.bot.say(f"Your dealer is {host}. Starting Blackjack.")
-        game.start_game()
+    async def start_game(self, blackjack: BlackjackExecutor) -> None:
+        blackjack.in_progress = True
+        dealer = blackjack.dealer_name
+        await self.bot.say(f"Your dealer is {dealer}. Starting Blackjack.")
+        await blackjack.start_game()
 
     async def perform_action(self, ctx, perform_action: str):
         user = ctx.message.author
         blackjack = await self.get_game(ctx)
-        if blackjack and self.can_make_move(blackjack, user):
+        can_make_move = await self.can_make_move(blackjack, user)
+        if blackjack and can_make_move:
+
             actions = {
                 "hit": blackjack.hit,
                 "stand": blackjack.stand,
-                "split": blackjack.split,
-                "doubledown": blackjack.double_down
+                "split": blackjack.attempt_split,
+                "doubledown": blackjack.attempt_double_down
             }
 
-            actions[perform_action]()
+            await actions[perform_action]()
 
-    def can_make_move(self, game: BlackjackExecutor, user):
+    async def can_make_move(self, game: BlackjackExecutor, user):
+        game_underway = game.in_progress
         user_in_game = self.check_in_game(game, user)
-        valid_turn = self.check_turn(game, user)
-        return user_in_game and valid_turn
+        valid_turn = await self.check_turn(game, user)
+        return game_underway and user_in_game and valid_turn
 
     async def check_in_game(self, game, user):
         if self.is_in_game(game, user):
@@ -93,7 +88,8 @@ class BlackjackBot(GameManager):
         if game:
             return game
         else:
-            await self.bot.say("This channel doesn't have a round of Blackjack going.")
+            await self.bot.say("You aren't part of a Blackjack game. Join the next one?")
+
 
     async def _medium_time_warning(self, game):
         await self.bot.say(f"One minute left.")
@@ -116,7 +112,7 @@ class BlackjackBot(GameManager):
     async def say_blackjack_rules(self):
         options = ["Blackjack commands:",
                    "`/hit` : Receive a card. If your hand's value exceeds 21 points, it's a bust.",
-                   "`/stand` : End your turn with your hand as-is."
+                   "`/stand` : End your turn with your hand as-is.",
                    "`/doubledown` : Double your wager, receive one more card, and stand.",
                    "`/split` : If you are dealt two cards of equal value, split them into separate hands."]
         await self.bot.say(LINEBREAK.join(options))

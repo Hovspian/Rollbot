@@ -24,13 +24,18 @@ class GameManager:
         self.active_games[game.host] = game
 
     def get_game(self, ctx):
-        author = ctx.message.author
-        if author in self.active_games:
-            return self.active_games[author]
+        user = ctx.message.author
+        return self.search_active_games(user)
+
+    def search_active_games(self, user):
+        for game in self.active_games.values():
+            for registrant in game.registrants:
+                if registrant is user:
+                    return game
 
     def remove_game(self, ctx):
-        author = ctx.message.author
-        self.active_games.pop(author)
+        host = ctx.message.author
+        self.active_games.pop(host)
 
     async def set_join_waiting_period(self, ctx):
         await self.say_setup_message(ctx)

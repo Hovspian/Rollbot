@@ -24,18 +24,24 @@ class SessionManager:
     # Game creation
     async def create_blackjack(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.blackjack_bot):
-            self.blackjack_bot.create_blackjack(ctx)
+            blackjack = await self.blackjack_bot.create_blackjack(ctx)
+            self.channel_manager.add_game_in_session(ctx, blackjack)
             await self.blackjack_bot.set_join_waiting_period(ctx)
-            await self.blackjack_bot.start_game(ctx)
+            await self.blackjack_bot.start_game(blackjack)
+            game_ended = await self.blackjack_bot.set_time_limit(blackjack)
+            if game_ended:
+                self.channel_manager.vacate_channel(ctx)
 
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
-            scratch_card = ClassicScratchCard()
+            user = ctx.message.author
+            scratch_card = ClassicScratchCard(host=user)
             await self._create_scratch_game(ctx, scratch_card)
 
     async def create_hammerpot(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
-            hammerpot = Hammerpot()
+            user = ctx.message.author
+            hammerpot = Hammerpot(host=user)
             await self._create_scratch_game(ctx, hammerpot)
 
     async def _create_scratch_game(self, ctx, game) -> None:
@@ -75,13 +81,13 @@ class SessionManager:
 
     async def pick_line(self, ctx) -> None:
         action = self.scratch_card_bot.pick_line
-        await self._make_scratch_game_action(ctx, action)
+        await self._scratch_card_action(ctx, action)
 
     async def scratch(self, ctx) -> None:
         action = self.scratch_card_bot.next_turn
-        await self._make_scratch_game_action(ctx, action)
+        await self._scratch_card_action(ctx, action)
 
-    async def _make_scratch_game_action(self, ctx, action: classmethod) -> None:
+    async def _scratch_card_action(self, ctx, action: classmethod) -> None:
         valid_channel_host = await self.user_manager.check_channel_host(ctx)
         game = await self.scratch_card_bot.get_game(ctx)
         if valid_channel_host and game:

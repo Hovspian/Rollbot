@@ -68,7 +68,7 @@ class UserManager:
     def get_game_host(self, ctx) -> str:
         game = self.get_game(ctx)
         if game:
-            return game.host.display_name or "Rollbot"
+            return game.host
 
     def is_user_in_game(self, channel, user) -> bool:
         # Enrolled users are a PlayerAvatar object with a user attribute

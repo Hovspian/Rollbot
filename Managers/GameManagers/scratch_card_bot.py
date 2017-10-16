@@ -15,7 +15,6 @@ class ScratchCardBot(GameManager):
     async def initialize_game(self, ctx, game):
         self.add_game(game)
         game.initialize_card()
-        game.host = ctx.message.author
         await self.say_starting_message(game)
 
     async def pick_line(self, game, raw_input):
@@ -37,7 +36,7 @@ class ScratchCardBot(GameManager):
             await self.report_turn(game)
 
     async def report_turn(self, game):
-        current_card = game.announcement.draw_card()
+        current_card = game.announcement.get_card()
         report = game.announcement.get_report()
         await self.bot.say(current_card)
         await self.bot.say(report)
