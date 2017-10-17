@@ -5,7 +5,6 @@ from Managers.GameManagers.scratch_card_bot import ScratchCardBot
 from Managers.GameManagers.blackjack_bot import BlackjackBot
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
-from helper_functions import *
 
 
 class SessionManager:
@@ -73,26 +72,10 @@ class SessionManager:
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
-    # Game actions
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)
         if user_can_join:
             await self.user_manager.add_user_to_game(ctx)
-
-    async def pick_line(self, ctx) -> None:
-        action = self.scratch_card_bot.pick_line
-        await self._scratch_card_action(ctx, action)
-
-    async def scratch(self, ctx) -> None:
-        action = self.scratch_card_bot.next_turn
-        await self._scratch_card_action(ctx, action)
-
-    async def _scratch_card_action(self, ctx, action: classmethod) -> None:
-        valid_channel_host = await self.user_manager.check_channel_host(ctx)
-        game = await self.scratch_card_bot.get_game(ctx)
-        if valid_channel_host and game:
-            raw_input = message_without_command(ctx.message.content)
-            await action(game, raw_input)
 
     async def _is_valid_new_game(self, ctx, game_manager) -> bool:
         # Check channel and game manager

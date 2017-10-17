@@ -46,29 +46,11 @@ class UserManager:
         self.is_game_in_progress = channel_manager.is_game_in_progress
         self.bot = bot
 
-    async def check_channel_host(self, ctx) -> bool:
-        if not self.is_game_host(ctx):
-            host = self.get_game_host(ctx)
-            if host:
-                await self.bot.say(f'The current game host is {host}. Please make a game in another channel.')
-            return False
-        return True
-
     async def add_user_to_game(self, ctx):
         channel = ctx.message.channel
         user = ctx.message.author
         self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
-
-    def is_game_host(self, ctx) -> bool:
-        game_host = self.get_game_host(ctx)
-        user = ctx.message.author
-        return game_host == user
-
-    def get_game_host(self, ctx) -> str:
-        game = self.get_game(ctx)
-        if game:
-            return game.host
 
     def is_user_in_game(self, channel, user) -> bool:
         # Search the registrants attribute for the user

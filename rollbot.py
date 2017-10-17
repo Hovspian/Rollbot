@@ -17,6 +17,7 @@ client = discord.Client()
 channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
 blackjack_bot = session_manager.blackjack_bot
+scratch_card_bot = session_manager.scratch_card_bot
 
 
 @bot.event
@@ -192,12 +193,12 @@ async def scratchcard(ctx):
 
 @bot.command(pass_context=True)
 async def pick(ctx):
-    await session_manager.pick_line(ctx)
+    await scratch_card_bot.make_action(ctx, "pick")
 
 
 @bot.command(pass_context=True)
 async def scratch(ctx):
-    await session_manager.scratch(ctx)
+    await scratch_card_bot.make_action(ctx, "scratch")
 
 
 bot.remove_command('help')
