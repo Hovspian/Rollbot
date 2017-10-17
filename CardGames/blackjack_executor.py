@@ -271,7 +271,7 @@ class BlackjackExecutor(JoinableGame):
     async def resolve_normal_win(self, player_hand: PlayerHand):
         player_hand.normal_win()
         winnings = player_hand.get_winnings()
-        self.announcer.win(winnings)
+        await self.announcer.win(winnings)
 
     async def resolve_standoff(self, player_hand: PlayerHand):
         wager = player_hand.get_wager()
