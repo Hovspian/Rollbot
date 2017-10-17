@@ -19,7 +19,7 @@ class BlackjackAnnouncer:
     async def player_cards(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
         await self.bot.say(f"Dealt to {player_name}: {rendered_hand}")
-        await asyncio.sleep(2.0)
+        await asyncio.sleep(2.5)
 
     async def next_hand_options(self, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
@@ -118,5 +118,5 @@ class BlackjackAnnouncer:
 
     async def stagger_messages(self, messages: List[str]) -> None:
         for message in messages:
-            await asyncio.sleep(2.0)
+            await asyncio.sleep(1.5)
             await self.bot.say(message)
