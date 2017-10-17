@@ -8,24 +8,21 @@ class Hand:
         self.plays_made = 0
         self._value = 0
 
-    def hit(self, card):
+    def hit(self, card) -> None:
         self.add_card(card)
         self.plays_made += 1
 
-    def add_card(self, card):
+    def add_card(self, card) -> None:
         self._cards.append(card)
 
     def end_turn(self):
         self.is_active = False
         self.plays_made += 1
 
-    def get_first_card(self):
-        return self._cards[0]
-
-    def set_value(self, value):
+    def set_value(self, value) -> None:
         self._value = value
 
-    def get_value(self):
+    def get_value(self) -> int:
         return self._value
 
     def is_bust(self) -> bool:
@@ -33,6 +30,9 @@ class Hand:
 
     def get_cards(self) -> List[dict]:
         return self._cards
+
+    def get_first_card(self) -> dict:
+        return self._cards[0]
 
     def can_make_turn(self) -> bool:
         return self.is_active

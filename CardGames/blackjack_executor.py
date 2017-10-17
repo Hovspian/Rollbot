@@ -306,7 +306,7 @@ class BlackjackExecutor(JoinableGame):
         else:
             return hand_value > dealer_value
 
-    async def check_bust(self, hand):
+    async def check_bust(self, hand) -> bool:
         if hand.is_bust():
             await self.announcer.declare_player_bust()
             return True
