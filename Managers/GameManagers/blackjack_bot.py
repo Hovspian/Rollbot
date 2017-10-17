@@ -1,6 +1,7 @@
 from Managers.GameManagers.game_manager import GameManager
 from CardGames.blackjack_executor import BlackjackExecutor
 from constants import *
+from helper_functions import roll
 import asyncio
 
 
@@ -23,7 +24,7 @@ class BlackjackBot(GameManager):
     async def start_game(self, blackjack: BlackjackExecutor) -> None:
         blackjack.in_progress = True
         dealer = blackjack.dealer_name
-        await self.bot.say(f"Your dealer is {dealer}, and plays are made against their hand. Starting Blackjack.")
+        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
         await blackjack.start_game()
 
     async def perform_action(self, ctx, perform_action: str):
@@ -102,24 +103,22 @@ class BlackjackBot(GameManager):
 
     async def set_join_waiting_period(self, ctx):
         await self.say_setup_message(ctx)
-        await asyncio.sleep(5)
-        await self.say_blackjack_rules()
-        await asyncio.sleep(10)
+        await asyncio.sleep(15)
         await self.say_last_call_message()
         await asyncio.sleep(5)
 
-    async def say_blackjack_rules(self):
-        options = ["Blackjack commands:",
-                   "`/hit` : Receive a card. If your hand's value exceeds 21 points, it's a bust.",
-                   "`/stand` : End your turn with your hand as-is.",
-                   "`/doubledown` : Double your wager, receive one more card, and stand.",
-                   "`/split` : If you are dealt two cards of equal value, split them into separate hands."]
-        await self.bot.say(LINEBREAK.join(options))
-
     async def say_setup_message(self, ctx):
         user_name = ctx.message.author.display_name
-        setup_message = f"{user_name} is starting a round of Blackjack! Type /join in the next 20 seconds to join."
+        setup_message = f"{user_name} is starting a round of Blackjack! Type `/join` to join. \n" \
+                        f"For information on commands, try `/blackjackhelp`."
         await self.bot.say(setup_message)
 
     async def say_last_call_message(self):
-        await self.bot.say("Generating a deck from thin air. Last call to sign up!")
+        random_messages = ["Generating a deck from thin air.",
+                           "Assembling a precarious house of cards.",
+                           "Structuring the deck into a static order.",
+                           "Getting ready to shoot random cards at players.",
+                           "Not planning your demise with nefarious cheats."]
+        random_message = roll(random_messages)
+        message = SPACE.join([random_message, "Last call to sign up!"])
+        await self.bot.say(message)

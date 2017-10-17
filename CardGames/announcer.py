@@ -62,19 +62,14 @@ class BlackjackAnnouncer:
 
     async def dealer_hit(self, new_card: dict):
         rendered_card = self.renderer.render_card(new_card)
-        messages = [f"{self.dealer} drew {rendered_card}."]
+        messages = [f"{self.dealer} drew {rendered_card}"]
         await self.stagger_messages(messages)
 
     async def dealer_stand(self):
-        await self.bot.say("The dealer is now standing. Hands will be compared.")
+        await self.bot.say("The dealer is now standing. Comparing hands...")
 
     async def no_players_left(self):
-        await self.bot.say("There are no more competitors left in the round. The game has ended.")
-
-    async def stagger_messages(self, messages: List[str]) -> None:
-        for message in messages:
-            await asyncio.sleep(2.0)
-            await self.bot.say(message)
+        await self.bot.say("There are no more competitors left. The game has ended.")
 
     async def split_successful(self, hand: PlayerHand):
         await self.bot.say("Your cards have been split into two hands.")
@@ -98,6 +93,9 @@ class BlackjackAnnouncer:
     async def announce_blackjack(self):
         await self.bot.say("Blackjack!")
 
+    async def announce_player_blackjack(self, winnings):
+        await self.bot.say(f":moneybag: Blackjack! Payout is {winnings} gold. :moneybag:")
+
     async def stand_off(self, wager: int):
         await self.bot.say(f"Stand-off with the dealer. Your {wager} gold wager has been returned.")
 
@@ -117,3 +115,8 @@ class BlackjackAnnouncer:
 
     async def progressing(self):
         await self.bot.say("Moving on...")
+
+    async def stagger_messages(self, messages: List[str]) -> None:
+        for message in messages:
+            await asyncio.sleep(2.0)
+            await self.bot.say(message)

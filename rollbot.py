@@ -75,6 +75,16 @@ async def join(ctx):
 # Blackjack commands
 
 @bot.command(pass_context=True)
+async def blackjackhelp():
+    options = ["Blackjack commands:",
+               "`/hit` : Receive a card. If your hand's value exceeds 21 points, it's a bust.",
+               "`/stand` : End your turn with your hand as-is.",
+               "`/doubledown` : Double your wager, receive one more card, and stand.",
+               "`/split` : If you are dealt two cards of equal value, split them into separate hands."]
+    await bot.say(LINEBREAK.join(options))
+
+
+@bot.command(pass_context=True)
 async def blackjack(ctx):
     await session_manager.create_blackjack(ctx)
 
@@ -97,6 +107,7 @@ async def split(ctx):
 @bot.command(pass_context=True)
 async def doubledown(ctx):
     await blackjack_bot.perform_action(ctx, "doubledown")
+
 
 # End Blackjack commands
 
