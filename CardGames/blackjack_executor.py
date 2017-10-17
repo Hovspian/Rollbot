@@ -266,7 +266,7 @@ class BlackjackExecutor(JoinableGame):
     async def resolve_blackjack_win(self, player_hand: PlayerHand):
         player_hand.blackjack_win()
         winnings = player_hand.get_winnings()
-        self.announcer.announce_player_blackjack(winnings)
+        await self.announcer.announce_player_blackjack(winnings)
 
     async def resolve_normal_win(self, player_hand: PlayerHand):
         player_hand.normal_win()

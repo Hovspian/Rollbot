@@ -114,7 +114,8 @@ class BlackjackAnnouncer:
         await self.stagger_messages(messages)
 
     async def progressing(self):
-        await self.bot.say("Moving on...")
+        messages = ["Moving on..."]
+        await self.stagger_messages(messages)
 
     async def stagger_messages(self, messages: List[str]) -> None:
         for message in messages:
