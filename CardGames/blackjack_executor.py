@@ -1,8 +1,8 @@
 from CardGames.blackjack import Blackjack
-from typing import List
 from CardGames.hand import Hand, PlayerHand
 from CardGames.announcer import BlackjackAnnouncer
 from player_avatar import *
+from joinable_game_class import JoinableGame
 
 
 class RollbotHost:
@@ -13,7 +13,7 @@ class RollbotHost:
         self.gold = 10000
 
 
-class BlackjackExecutor:
+class BlackjackExecutor(JoinableGame):
 
     """
     Maps user commands to game mechanics and feedback.
@@ -21,23 +21,18 @@ class BlackjackExecutor:
     """
 
     def __init__(self, bot, host=None):
+        super().__init__(host)
         self.blackjack = Blackjack()
         self.avatar_handler = BlackjackAvatarHandler()
-        self.registrants = []  # Every user who has joined the game
         self.dealer = self.init_dealer(RollbotHost())
         self.dealer_name = self.dealer.display_name
-        self.host = host
-        self.players = []  # The turn goes to the person at the start of the list.
         self.standing_players = []  # Match against the dealer's hand at the end of the game
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
-        self.in_progress = False
         self.max_time_left = 10 * 60  # 10 minutes
 
-    def add_user(self, user):
+    def get_avatar(self, user):
         # Players own a list of hands: initially one hand, but can be multiple after a split
-        player = self.avatar_handler.create_avatar(user, hand=PlayerHand())
-        self.players.append(player)
-        self.registrants.append(user)
+        return PlayerHand()
 
     async def start_game(self):
         self.dispense_cards()

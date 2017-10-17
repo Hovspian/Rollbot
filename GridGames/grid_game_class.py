@@ -3,10 +3,7 @@ from typing import List
 
 
 class GridGame:
-    def __init__(self, host):
-        self.host = host
-        self.host_name = host.display_name
-        self.registrants = [host]
+    def __init__(self):
         self.num_columns = 3
         self.payout_multiplier = 1
         self.results = []

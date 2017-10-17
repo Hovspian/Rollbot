@@ -1,7 +1,7 @@
 from HammerRace.hammer_race import *
 from constants import *
 from typing import List
-from player_avatar import PlayerAvatar
+from joinable_game_class import JoinableGame
 
 
 class ClassicHammer(HammerRace):
@@ -64,26 +64,23 @@ class ComparisonHammer(HammerRace):
                            super().winner_report()])
 
 
-class VersusHammer(HammerRace):
+class VersusHammer(HammerRace, JoinableGame):
     """Game mode allows users to join the race."""
 
     def __init__(self, ctx):
-        super().__init__(ctx)
-        self.host = ctx.message.author
-        self.players = []
+        HammerRace.__init__(self, ctx=ctx)
+        JoinableGame.__init__(self, host=ctx.message.author)
         self.losers = []
         self.add_user(self.host)
         self.invalid_participants_error = "A race needs at least two players."
 
-    def get_start_message(self):
-        return SPACE.join(["Race between", self._get_player_names()])
-
-    def add_user(self, user):
+    def get_avatar(self, user):
         short_name = user.display_name[0]
         name = user.display_name
-        participant = super()._init_participant(short_name, name)
-        player_avatar = PlayerAvatar(user, avatar=participant)
-        self.players.append(player_avatar)
+        return super()._init_participant(short_name, name)
+
+    def get_start_message(self):
+        return SPACE.join(["Race between", self._get_player_names()])
 
     def winner_report(self):
         if not self.losers:

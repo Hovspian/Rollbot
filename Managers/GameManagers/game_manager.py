@@ -9,10 +9,11 @@ class GameManager:
 
     def __init__(self, bot):
         self.bot = bot
-        self.active_games = {}
+        self.active_games = []
 
     def is_valid_user(self, host):
-        return host not in self.active_games
+        is_in_game = self.get_user_game(host)
+        return not is_in_game
 
     async def check_valid_user(self, host):
         if self.is_valid_user(host):
@@ -21,21 +22,17 @@ class GameManager:
             await self.bot.say("Please finish your current game first.")
 
     def add_game(self, game):
-        self.active_games[game.host] = game
+        self.active_games.append(game)
 
     def get_game(self, ctx):
         user = ctx.message.author
-        return self.search_active_games(user)
+        return self.get_user_game(user)
 
-    def search_active_games(self, user):
-        for game in self.active_games.values():
+    def get_user_game(self, user):
+        for game in self.active_games:
             for registrant in game.registrants:
                 if registrant is user:
                     return game
-
-    def remove_game(self, ctx):
-        host = ctx.message.author
-        self.active_games.pop(host)
 
     async def set_join_waiting_period(self, ctx):
         await self.say_setup_message(ctx)
@@ -80,5 +77,5 @@ class GameManager:
         game.in_progress = False
 
     def _end_game(self, game):
-        self.active_games.pop(game.host)
+        self.active_games.remove(game)
         return True

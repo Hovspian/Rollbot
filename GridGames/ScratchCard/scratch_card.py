@@ -1,9 +1,10 @@
 from GridGames.ScratchCard.constants import *
 from GridGames.grid_game_class import GridGame
 from helper_functions import *
+from joinable_game_class import JoinableGame
 
 
-class ScratchCard(GridGame):
+class ScratchCard(GridGame, JoinableGame):
     # Mechanics
     def __init__(self, host):
         super().__init__(host)

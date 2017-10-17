@@ -34,6 +34,7 @@ class HammerRaceBot(GameManager):
         if hammer_race.valid_num_participants():
             await self.say_start_message(hammer_race)
             await self.run_race(hammer_race)
+            self._end_game(hammer_race)
         else:
             await self.bot.say(hammer_race.invalid_participants_error)
 

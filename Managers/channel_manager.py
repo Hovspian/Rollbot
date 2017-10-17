@@ -71,21 +71,10 @@ class UserManager:
             return game.host
 
     def is_user_in_game(self, channel, user) -> bool:
-        # Enrolled users are a PlayerAvatar object with a user attribute
+        # Search the registrants attribute for the user
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
-            return any(player.user for player in game.players if player.user is user)
-
-    def get_player_avatar(self, ctx) -> object:
-        # Returns a PlayerAvatar based on the user
-        channel = ctx.message.channel
-        user = ctx.message.author
-        if self.is_user_in_game(channel, user):
-            game_players = self.get_game(ctx).players
-            player_avatar = next((player for player in game_players if player.user == user), None)
-            return player_avatar
-        else:
-            self.bot.say(f"{user.display_name} is not in the game.")
+            return any(registrant for registrant in game.registrants if registrant is user)
 
     async def check_valid_user(self, ctx) -> bool:
         error = self._check_invalid_user_error(ctx)
