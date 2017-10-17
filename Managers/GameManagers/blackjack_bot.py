@@ -6,6 +6,7 @@ import asyncio
 
 
 class BlackjackBot(GameManager):
+
     # Game input, creation and deletion for Blackjack
 
     def __init__(self, bot):
@@ -59,7 +60,7 @@ class BlackjackBot(GameManager):
         if self.is_turn(game, user):
             return True
         else:
-            await self.bot.say(f"Please wait.")
+            await self.bot.say(f"It's not your turn. Please wait.")
 
     @staticmethod
     def is_in_game(game, user) -> bool:
@@ -101,24 +102,17 @@ class BlackjackBot(GameManager):
         await self.bot.say(f"Time limit elapsed. The game has ended.")
         game.in_progress = False
 
-    async def set_join_waiting_period(self, ctx):
-        await self.say_setup_message(ctx)
-        await asyncio.sleep(15)
-        await self.say_last_call_message()
-        await asyncio.sleep(5)
-
     async def say_setup_message(self, ctx):
         user_name = ctx.message.author.display_name
-        setup_message = f"{user_name} is starting a round of Blackjack! Type `/join` to join. \n" \
-                        f"For information on commands, try `/blackjackhelp`."
+        setup_message = f"{user_name} is starting a round of Blackjack! Type `/join` in the next 20 seconds to join."
         await self.bot.say(setup_message)
 
     async def say_last_call_message(self):
         random_messages = ["Generating a deck from thin air.",
                            "Assembling a precarious house of cards.",
-                           "Structuring the deck into a static order.",
+                           "Structuring the deck into a totally legit, static order.",
                            "Getting ready to shoot random cards at players.",
-                           "Not planning your demise with nefarious cheats."]
+                           "(Not) planning the player's demise with nefarious cheats."]
         random_message = roll(random_messages)
         message = SPACE.join([random_message, "Last call to sign up!"])
         await self.bot.say(message)
