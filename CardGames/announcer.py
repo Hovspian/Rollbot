@@ -42,7 +42,7 @@ class BlackjackAnnouncer:
 
     async def dealer_card(self, card):
         rendered_card = self.renderer.render_card(card)
-        await self.bot.say(f"Dealer's face-up card is {rendered_card}.")
+        await self.bot.say(f"Dealer's face-up card: {rendered_card}")
 
     async def dealer_turn(self, hand):
         dealer_hand = await self.dealer_reveal_hand(hand)
@@ -56,9 +56,9 @@ class BlackjackAnnouncer:
     async def report_hit(self, hand, new_card):
         rendered_hand = self.renderer.render_hand(hand)
         rendered_new_card = self.renderer.render_card(new_card)
-        hand_report = [f"You received: {rendered_new_card}",
-                       f"Your hand: {rendered_hand}"]
-        await self.stagger_messages(hand_report)
+        hand_report = LINEBREAK.join([f"You received: {rendered_new_card}",
+                                      f"Your hand: {rendered_hand}"])
+        await self.bot.say(hand_report)
 
     async def dealer_hit(self, new_card: dict):
         rendered_card = self.renderer.render_card(new_card)
@@ -67,6 +67,9 @@ class BlackjackAnnouncer:
 
     async def dealer_stand(self):
         await self.bot.say("The dealer is now standing. Hands will be compared.")
+
+    async def no_players_left(self):
+        await self.bot.say("There are no more competitors left in the round. The game has ended.")
 
     async def stagger_messages(self, messages: List[str]) -> None:
         for message in messages:
