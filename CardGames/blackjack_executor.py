@@ -30,9 +30,9 @@ class BlackjackExecutor(JoinableGame):
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
         self.max_time_left = 10 * 60  # 10 minutes
 
-    def get_avatar(self, user):
+    def get_avatar(self, user) -> List[PlayerHand]:
         # Players own a list of hands: initially one hand, but can be multiple after a split
-        return PlayerHand()
+        return [PlayerHand()]
 
     async def start_game(self):
         self.dispense_cards()
