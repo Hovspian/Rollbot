@@ -22,7 +22,7 @@ class Hand:
     def get_first_card(self):
         return self._cards[0]
 
-    def update_value(self, value):
+    def set_value(self, value):
         self._value = value
 
     def get_value(self):

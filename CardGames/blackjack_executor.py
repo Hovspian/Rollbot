@@ -76,7 +76,7 @@ class BlackjackExecutor:
         dealer_hand = self.avatar_handler.get_first_hand(self.dealer)
         await self.announcer.dealer_turn(dealer_hand)
         await self.dealer_hit_loop()
-        await self.check_dealer_game_end()
+        await self.dealer_game_end()
 
     async def hit(self) -> None:
         hand = self.get_current_player_hand()
@@ -94,8 +94,8 @@ class BlackjackExecutor:
         hand = self.get_current_player_hand()
         if self.blackjack.double_down(hand):
             wager = hand.get_wager()
-            await self.stand()
             await self.announcer.double_down_success(wager)
+            await self.stand()
         else:
             await self.announcer.double_down_fail()
 
@@ -178,34 +178,36 @@ class BlackjackExecutor:
             self.registrants.append(host)
             return self.avatar_handler.create_avatar(host, Hand())
 
-    async def dealer_ace_or_ten(self) -> None:
-        hand = self.get_dealer_hand()
-        first_card = hand.get_first_card()
-        is_ace_or_ten = self.blackjack.is_ten_value(first_card) or self.blackjack.is_ace(first_card)
-        if is_ace_or_ten:
-            await self.announcer.ace_or_ten_message(hand)
-
     async def check_initial_dealer_cards(self):
         """ If the dealer's visible card is a ten or ace, the dealer goes first. """
         if await self.dealer_ace_or_ten():
-            await self.dealer_hit_loop()
-            await self.check_dealer_game_end()
+            await self.check_initial_dealer_blackjack()
         else:
             await self.next_turn()
 
-    async def check_dealer_game_end(self):
+    async def dealer_ace_or_ten(self) -> None:
+        hand = self.get_dealer_hand()
+        first_card = hand.get_first_card()
+        is_ace = self.blackjack.is_ace(first_card)
+        is_ten = self.blackjack.is_ten_value(first_card)
+        if is_ace or is_ten:
+            await self.announcer.ace_or_ten_message(hand)
+
+    async def check_initial_dealer_blackjack(self):
+        hand = self.get_dealer_hand()
+        is_blackjack = await self.check_blackjack(hand)
+        if is_blackjack:
+            await self.end_game()
+        else:
+            await self.next_turn()
+
+    async def dealer_game_end(self):
         hand = self.get_dealer_hand()
         is_blackjack = await self.check_blackjack(hand)
         is_bust = await self.check_dealer_bust()
-        are_player_turns_remaining = self.players
-        if is_blackjack or is_bust:
-            await self.end_game()
-        elif are_player_turns_remaining:
+        if not is_blackjack and not is_bust:
             await self.announcer.dealer_stand()
-            await self.next_turn()
-        else:
-            await self.announcer.dealer_stand()
-            await self.end_game()
+        await self.end_game()
 
     async def check_dealer_bust(self):
         hand = self.get_dealer_hand()
@@ -214,18 +216,15 @@ class BlackjackExecutor:
             return True
 
     async def dealer_hit_loop(self):
-        hand = self.get_dealer_hand()
-        hand_value = hand.get_value()
-        while hand_value < 17:
-            card = self.blackjack.hit(hand)
-            card_value = self.blackjack.get_value(card)
-            hand_value += card_value
+        dealer_hand = self.get_dealer_hand()
+        while dealer_hand.get_value() < 17:
+            card = self.blackjack.hit(dealer_hand)
             await self.announcer.dealer_hit(card)
 
     def get_host_hand_value(self):
         hand = self.get_dealer_hand()
         if hand.is_bust():
-            hand.update_value(0)
+            hand.set_value(0)
         return hand.get_value()
 
     def get_dealer_hand(self) -> Hand:
@@ -242,7 +241,6 @@ class BlackjackExecutor:
         hands = self.avatar_handler.get_hands(player)
         for hand in hands:
             await self.announcer.player_hand(player_name, hand)
-            await self.check_stand_off(hand)
             await self.check_winner(hand)
             await self.announce_payout(hand)
 
@@ -251,18 +249,17 @@ class BlackjackExecutor:
             await self.announcer.announce_blackjack()
             return True
 
-    async def check_stand_off(self, player_hand: PlayerHand):
-        if self.is_stand_off(player_hand):
-            wager = player_hand.get_wager()
-            await self.announcer.stand_off(wager)
-
     async def check_winner(self, player_hand: PlayerHand) -> None:
-        is_blackjack = await self.check_blackjack(player_hand)
+        is_blackjack_win = self.is_blackjack_win(player_hand)
         is_winner = await self.is_winner(player_hand)
-        if is_blackjack and is_winner:
+        is_standoff = self.is_stand_off(player_hand)
+        if is_blackjack_win:
             player_hand.blackjack_win()
         elif is_winner:
             player_hand.normal_win()
+        elif is_standoff:
+            wager = player_hand.get_wager()
+            await self.announcer.stand_off(wager)
         else:
             player_hand.lose()
 
@@ -273,6 +270,12 @@ class BlackjackExecutor:
             await self.announcer.win(winnings)
         elif winnings < 0:
             await self.announcer.loss(wager)
+
+    def is_blackjack_win(self, player_hand):
+        host_hand = self.get_dealer_hand()
+        is_host_blackjack = self.blackjack.is_blackjack(host_hand)
+        is_player_blackjack = self.blackjack.is_blackjack(player_hand)
+        return is_player_blackjack and not is_host_blackjack
 
     def is_stand_off(self, player_hand: Hand) -> bool:
         host_hand = self.get_dealer_hand()

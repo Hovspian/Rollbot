@@ -127,4 +127,4 @@ class Blackjack:
 
     def update_hand_value(self, hand):
         value = self._get_hand_value(hand)
-        hand.update_value(value)
+        hand.set_value(value)

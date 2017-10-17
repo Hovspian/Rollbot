@@ -23,7 +23,7 @@ class BlackjackBot(GameManager):
     async def start_game(self, blackjack: BlackjackExecutor) -> None:
         blackjack.in_progress = True
         dealer = blackjack.dealer_name
-        await self.bot.say(f"Your dealer is {dealer}. Starting Blackjack.")
+        await self.bot.say(f"Your dealer is {dealer}, and plays are made against their hand. Starting Blackjack.")
         await blackjack.start_game()
 
     async def perform_action(self, ctx, perform_action: str):
@@ -42,8 +42,9 @@ class BlackjackBot(GameManager):
             await actions[perform_action]()
 
     async def can_make_move(self, game: BlackjackExecutor, user):
+        # TODO announces a player turn when game has not started
         game_underway = game.in_progress
-        user_in_game = self.check_in_game(game, user)
+        user_in_game = await self.check_in_game(game, user)
         valid_turn = await self.check_turn(game, user)
         return game_underway and user_in_game and valid_turn
 
@@ -57,8 +58,7 @@ class BlackjackBot(GameManager):
         if self.is_turn(game, user):
             return True
         else:
-            current_player_name = game.get_current_player.display_name
-            await self.bot.say(f"It's {current_player_name}'s turn.")
+            await self.bot.say(f"Please wait.")
 
     @staticmethod
     def is_in_game(game, user) -> bool:
@@ -89,7 +89,6 @@ class BlackjackBot(GameManager):
             return game
         else:
             await self.bot.say("You aren't part of a Blackjack game. Join the next one?")
-
 
     async def _medium_time_warning(self, game):
         await self.bot.say(f"One minute left.")

@@ -25,7 +25,7 @@ class BlackjackAnnouncer:
         rendered_hand = self.renderer.render_hand(hand)
         message = ["Please make a play:",
                    f"{rendered_hand}",
-                   "Options: `/hit`  `/stand`  `/doubledown`  `/split`"]
+                   "Options: `/hit`  `/stand`  `/doubledown`"]
         await self.bot.say(LINEBREAK.join(message))
 
     async def player_hand(self, player_name, hand):
