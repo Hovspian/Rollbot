@@ -57,25 +57,25 @@ class BlackjackExecutor(JoinableGame):
     async def next_turn(self):
         are_player_turns_remaining = self.players
         if are_player_turns_remaining:
-            await self.announce_player_turn()
+            await self.player_make_move()
         else:
             await self.check_dealer_turn()
 
     async def check_dealer_turn(self):
         are_players_standing = self.standing_players
         if are_players_standing:
-            await self.announce_dealer_turn()
+            await self.dealer_make_move()
         else:
             await self.announcer.no_players_left()
         await self.end_game()
 
-    async def announce_player_turn(self):
+    async def player_make_move(self):
         current_player = self.players[0]
         player_name = self.avatar_handler.get_name(current_player)
         hand = self.get_current_player_hand()
         await self.announcer.next_turn(player_name, hand)
 
-    async def announce_dealer_turn(self):
+    async def dealer_make_move(self):
         dealer_hand = self.avatar_handler.get_first_hand(self.dealer)
         await self.announcer.dealer_turn(dealer_hand)
         await self.dealer_hit_loop()
@@ -178,7 +178,7 @@ class BlackjackExecutor(JoinableGame):
 
     def init_dealer(self, host) -> PlayerAvatar:
         if host is not None:
-            self.registrants.append(host)
+            self.users.append(host)
             return self.avatar_handler.create_avatar(host, Hand())
 
     async def check_initial_dealer_cards(self):

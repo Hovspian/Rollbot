@@ -31,8 +31,8 @@ class GameManager:
 
     def get_user_game(self, user):
         for game in self.active_games:
-            for registrant in game.registrants:
-                if registrant is user:
+            for in_game_user in game.users:
+                if in_game_user is user:
                     return game
 
     async def set_join_waiting_period(self, ctx):

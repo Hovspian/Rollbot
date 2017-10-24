@@ -28,7 +28,7 @@ class BlackjackBot(GameManager):
         await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
         await blackjack.start_game()
 
-    async def perform_action(self, ctx, perform_action: str):
+    async def perform_action(self, ctx, action_to_perform: str):
         user = ctx.message.author
         blackjack = await self.get_game(ctx)
         can_make_move = await self.can_make_move(blackjack, user)
@@ -41,7 +41,7 @@ class BlackjackBot(GameManager):
                 "doubledown": blackjack.attempt_double_down
             }
 
-            await actions[perform_action]()
+            await actions[action_to_perform]()
 
     async def can_make_move(self, game: BlackjackExecutor, user):
         # TODO announces a player turn when game has not started
@@ -72,6 +72,7 @@ class BlackjackBot(GameManager):
         return user is first_in_queue
 
     async def requeue_player(self, game):
+        # TODO AFK block prevention
         first_in_queue = game.players.pop(0)
         player_name = first_in_queue.display_name
         no_player_turns_left = not game.players

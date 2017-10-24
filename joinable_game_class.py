@@ -5,14 +5,13 @@ class JoinableGame:
     def __init__(self, host):
         self.host = host
         self.host_name = host.display_name
-        self.registrants = [host]  # List of users
+        self.users = [host]  # All users who join a game
         self.players = []  # List[PlayerAvatar]
         self.in_progress = False
         self.max_time_left = 180
 
     def add_user(self, user):
-        # All players who join a game are a registrant
-        self.registrants.append(user)
+        self.users.append(user)
         avatar = self.get_avatar(user)
         self.add_player(user, avatar)
 

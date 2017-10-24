@@ -56,7 +56,7 @@ class UserManager:
         # Search the registrants attribute for the user
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
-            return any(registrant for registrant in game.registrants if registrant is user)
+            return any(in_game_user for in_game_user in game.users if in_game_user is user)
 
     async def check_valid_user(self, ctx) -> bool:
         error = self._check_invalid_user_error(ctx)
