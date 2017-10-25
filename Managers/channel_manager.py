@@ -53,7 +53,7 @@ class UserManager:
         await self.bot.say(f"{user.display_name} joined the game.")
 
     def is_user_in_game(self, channel, user) -> bool:
-        # Search the registrants attribute for the user
+        # Search the users attribute for the user
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
             return any(in_game_user for in_game_user in game.users if in_game_user is user)

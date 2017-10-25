@@ -15,7 +15,6 @@ class BlackjackBot(GameManager):
     async def create_blackjack(self, ctx):
         game_starter = ctx.message.author
         executor = BlackjackExecutor(self.bot, host=game_starter)
-        executor.add_user(game_starter)
         self.initialize_game(executor)
         return executor
 
@@ -36,7 +35,7 @@ class BlackjackBot(GameManager):
 
             actions = {
                 "hit": blackjack.hit,
-                "stand": blackjack.stand,
+                "stand": blackjack.stand_current_hand,
                 "split": blackjack.attempt_split,
                 "doubledown": blackjack.attempt_double_down
             }
@@ -64,7 +63,7 @@ class BlackjackBot(GameManager):
 
     @staticmethod
     def is_in_game(game, user) -> bool:
-        return any([player for player in game.players if player.user is user])
+        return any(in_game_user for in_game_user in game.users if in_game_user is user)
 
     @staticmethod
     def is_turn(game, user) -> bool:

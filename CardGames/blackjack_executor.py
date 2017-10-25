@@ -38,7 +38,6 @@ class BlackjackExecutor(JoinableGame):
 
     def init_dealer(self, host) -> PlayerAvatar:
         if host is not None:
-            self.users.append(host)
             return self.avatar_handler.create_avatar(host, Hand())
 
     async def start_game(self):
@@ -182,7 +181,7 @@ class BlackjackExecutor(JoinableGame):
         for hand in hands:
             await self.announcer.player_hand(player_name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
-            hand_checker.check_outcome()
+            await hand_checker.check_outcome()
 
     def get_current_player(self) -> PlayerAvatar:
         return self.players[0]
@@ -192,7 +191,9 @@ class BlackjackExecutor(JoinableGame):
 
     @staticmethod
     def _get_active_hand(hands: List[PlayerHand]) -> PlayerHand:
-        return next(hand for hand in hands if hand.is_active)
+        for hand in hands:
+            if hand.is_active:
+                return hand
 
     def get_dealer_hand(self) -> Hand:
         return self.avatar_handler.get_first_hand(self.dealer)
