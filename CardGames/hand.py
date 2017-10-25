@@ -26,6 +26,7 @@ class Hand:
         return self._value
 
     def is_bust(self) -> bool:
+        # TODO hands should not know about blackjack rules
         return self._value > 21
 
     def get_cards(self) -> List[dict]:
