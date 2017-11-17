@@ -61,13 +61,13 @@ class BlackjackExecutor(JoinableGame):
 
     async def show_player_cards(self) -> None:
 
-        async def announce_cards(player):
-            player_name = self.avatar_handler.get_name(player)
-            hand = self.avatar_handler.get_first_hand(player)
-            await self.announcer.player_cards(player_name, hand)
-
         for player in self.players:
-            await announce_cards(player)
+            await self.announce_cards(player)
+
+    async def announce_cards(self, player):
+        player_name = self.avatar_handler.get_name(player)
+        hand = self.avatar_handler.get_first_hand(player)
+        await self.announcer.player_cards(player_name, hand)
 
     async def check_initial_dealer_cards(self) -> None:
         is_game_end = await self.dealer_executor.is_dealer_blackjack()
