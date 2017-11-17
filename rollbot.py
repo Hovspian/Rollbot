@@ -10,6 +10,7 @@ from RollGames.rollgame import RollGame, last_roll
 from constants import *
 from discordtoken import TOKEN
 from helper_functions import *
+from OutputWriter.output import SessionData
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
@@ -18,6 +19,7 @@ channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
+data_manager = SessionData()
 
 
 @bot.event
@@ -199,6 +201,38 @@ async def pick(ctx):
 @bot.command(pass_context=True)
 async def scratch(ctx):
     await scratch_card_bot.make_action(ctx, "scratch")
+
+
+@bot.command(pass_context=True)
+async def gold(ctx):
+    query = message_without_command(ctx.message.content)
+    if query:
+        await query_user_gold(ctx, query)
+    else:
+        await say_personal_gold(ctx)
+
+
+async def say_personal_gold(ctx):
+    user_id = ctx.message.author.id
+    gold = data_manager.get_gold(user_id)
+    if gold:
+        await bot.say(f"You have {gold} gold.")
+    else:
+        await bot.say("You don't have any gold stores. Play a game?")
+
+
+async def query_user_gold(ctx, query):
+    message = ctx.message
+    query_user = discord.utils.get(message.server.members, name=query)
+    if query_user:
+        user_id = query_user.id
+        gold = data_manager.get_gold(user_id)
+        if gold:
+            await bot.say(f"{query_user} has {gold} gold.")
+        else:
+            await bot.say(f"{query} does not have any gold stores.")
+    else:
+        await bot.say(f"{query} is not a user on the server.")
 
 
 bot.remove_command('help')
