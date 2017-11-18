@@ -68,10 +68,9 @@ class VersusHammer(HammerRace, JoinableGame):
     """Game mode allows users to join the race."""
 
     def __init__(self, ctx):
-        HammerRace.__init__(self, ctx=ctx)
-        JoinableGame.__init__(self, host=ctx.message.author)
+        HammerRace.__init__(self, ctx)
+        JoinableGame.__init__(self, ctx)
         self.losers = []
-        self.add_user(self.host)
         self.invalid_participants_error = "A race needs at least two players."
 
     def get_avatar(self, user):
