@@ -6,6 +6,7 @@ from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager
 from Managers.statistics import StatisticsBot
+from Managers.GameManagers.slot_machine_bot import SlotMachineBot
 from RollGames.roll import Roll
 from RollGames.rollgame import RollGame, last_roll
 from constants import *
@@ -15,12 +16,13 @@ from helper_functions import *
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
+data_manager = SessionDataManager()
 channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
-data_manager = SessionDataManager()
 stats_bot = StatisticsBot(bot, data_manager)
+slot_machine_bot = SlotMachineBot(bot, data_manager)
 
 
 @bot.event
@@ -148,40 +150,32 @@ async def butts():
 
 @bot.command(pass_context=True)
 async def slots(ctx):
-    await play_slots(ClassicSlots(ctx))
+    await slot_machine_bot.play_slots(ClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
-    await play_slots(BigClassicSlots(ctx))
+    await slot_machine_bot.play_slots(BigClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantslots(ctx):
-    await play_slots(GiantClassicSlots(ctx))
+    await slot_machine_bot.play_slots(GiantClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def mapleslots(ctx):
-    await play_slots(MapleSlots(ctx))
+    await slot_machine_bot.play_slots(MapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigmapleslots(ctx):
-    await play_slots(BigMapleSlots(ctx))
+    await slot_machine_bot.play_slots(BigMapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantmapleslots(ctx):
-    await play_slots(GiantMapleSlots(ctx))
-
-
-async def play_slots(slot_machine):
-    host_name = slot_machine.get_host_name()
-    slot_machine.play_slot()
-    report = '\n'.join([f"{host_name}'s slot results", slot_machine.get_outcome_report()])
-    await bot.say(slot_machine.draw_slot_interface())
-    await bot.say(report)
+    await slot_machine_bot.play_slots(GiantMapleSlots(ctx))
 
 
 @bot.command(pass_context=True)

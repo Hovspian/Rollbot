@@ -16,8 +16,8 @@ class StatisticsBot:
             await self._say_personal_gold(ctx)
 
     async def _say_personal_gold(self, ctx):
-        user_id = ctx.message.author.id
-        gold = self.data_manager.get_gold(user_id)
+        user = ctx.message.author
+        gold = self.data_manager.get_gold(user)
         if gold:
             await self.bot.say(f"You have {gold} gold.")
         else:

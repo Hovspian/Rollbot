@@ -37,6 +37,9 @@ class SlotMachine(GridGame):
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
 
+    def get_payout_amount(self) -> int:
+        return self.payout_amount
+
     def _check_results(self) -> None:
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
