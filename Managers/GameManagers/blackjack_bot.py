@@ -6,11 +6,15 @@ import asyncio
 
 
 class BlackjackBot(GameManager):
-
     # Game input, creation and deletion for Blackjack
 
     def __init__(self, bot):
         super().__init__(bot)
+        self.random_messages = ["Generating a deck from thin air.",
+                                "Assembling a precarious house of cards.",
+                                "Structuring the deck into a totally legit, static order.",
+                                "Getting ready to shoot random cards at players.",
+                                "(Not) planning the player's demise with nefarious cheats."]
 
     async def create_blackjack(self, ctx):
         blackjack = BlackjackExecutor(self.bot, ctx)
@@ -28,7 +32,6 @@ class BlackjackBot(GameManager):
         blackjack = await self.get_game(ctx)
         can_make_move = await self.can_make_move(blackjack, user)
         if blackjack and can_make_move:
-
             actions = {
                 "hit": blackjack.hit,
                 "stand": blackjack.stand_current_hand,
@@ -79,11 +82,6 @@ class BlackjackBot(GameManager):
         await self.bot.say(setup_message)
 
     async def _say_last_call_message(self):
-        random_messages = ["Generating a deck from thin air.",
-                           "Assembling a precarious house of cards.",
-                           "Structuring the deck into a totally legit, static order.",
-                           "Getting ready to shoot random cards at players.",
-                           "(Not) planning the player's demise with nefarious cheats."]
-        random_message = roll(random_messages)
+        random_message = roll(self.random_messages)
         message = SPACE.join([random_message, "Last call to sign up!"])
         await self.bot.say(message)
