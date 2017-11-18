@@ -1,10 +1,10 @@
-from Managers.data_manager import SessionData
+from Managers.data_manager import SessionDataManager
 import discord
 from helper_functions import message_without_command
 
 
 class StatisticsBot:
-    def __init__(self, bot, data_manager: SessionData):
+    def __init__(self, bot, data_manager: SessionDataManager):
         self.bot = bot
         self.data_manager = data_manager
 

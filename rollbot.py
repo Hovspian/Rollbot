@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from GridGames.Slots.modes import *
 from Managers.channel_manager import ChannelManager
-from Managers.data_manager import SessionData
+from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager
 from Managers.statistics import StatisticsBot
 from RollGames.roll import Roll
@@ -19,7 +19,7 @@ channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
-data_manager = SessionData()
+data_manager = SessionDataManager()
 stats_bot = StatisticsBot(bot, data_manager)
 
 
