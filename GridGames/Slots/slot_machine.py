@@ -22,7 +22,7 @@ class SlotMachine(GridGame):
         self.bias_mechanic.initialize()
 
         def _roll_columns() -> None:
-            reel = self._generate_reel()
+            reel = self._get_reel()
             column = self._generate_column(reel)
             self._add_result(column)
 
@@ -41,8 +41,27 @@ class SlotMachine(GridGame):
         result_checker.analyze_results()
         self.payout_amount += self.calculate_payout()
 
+    def _get_reel(self) -> List[dict]:
+        # If no reel, create one from default values. Otherwise, reconstruct the first reel.
+        if not self.reels:
+            reel = self._roll_initial_reel()
+        else:
+            reel = self._rebuild_reel()
+        self.reels.append(reel)
+        return reel
+
+    def _roll_initial_reel(self) -> List[dict]:
+        return self._generate_reel(self.default_outcomes, self.first_reel_size)
+
+    def _rebuild_reel(self) -> List[dict]:
+        first_column = self.results[0]
+        first_reel = self.reels[0]
+        include_symbols = self._roll_num_included_symbols()
+        rerolled_reel = self._generate_reel(first_reel, include_symbols)
+        return rerolled_reel + first_column
+
     @staticmethod
-    def _roll_reel(symbols, reel_size) -> List[dict]:
+    def _generate_reel(symbols, reel_size) -> List[dict]:
         reel = []
 
         def roll_add_to_reel(i) -> None:
@@ -65,25 +84,6 @@ class SlotMachine(GridGame):
 
         [roll_add_to_reel(i) for i in range(reel_size)]
         return reel
-
-    def _generate_reel(self) -> List[dict]:
-        # If no reel, create one from default values. Otherwise, reconstruct the first reel.
-        if not self.reels:
-            reel = self._roll_initial_reel()
-        else:
-            reel = self._rebuild_reel()
-        self.reels.append(reel)
-        return reel
-
-    def _roll_initial_reel(self) -> List[dict]:
-        return self._roll_reel(self.default_outcomes, self.first_reel_size)
-
-    def _rebuild_reel(self) -> List[dict]:
-        first_column = self.results[0]
-        first_reel = self.reels[0]
-        include_symbols = self._roll_num_included_symbols()
-        rerolled_reel = self._roll_reel(first_reel, include_symbols)
-        return rerolled_reel + first_column
 
     def _roll_num_included_symbols(self) -> int:
         return random.randint(1, self.num_columns + 1)
