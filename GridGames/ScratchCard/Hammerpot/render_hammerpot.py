@@ -32,7 +32,8 @@ class RenderHammerpot(CardRenderer):
         rows_needed = self.card.num_columns * 2 - len(rows)
         table_bottom = []
         for i in range(rows_needed):
-            if i == rows_needed - 1:
+            end_of_table = i == rows_needed - 1
+            if end_of_table:
                 table_bottom.append(TABLE_BOTTOM)
             else:
                 table_bottom.append(TABLE_WHITESPACE)
