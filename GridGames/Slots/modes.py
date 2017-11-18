@@ -7,18 +7,18 @@ from GridGames.Slots.slot_machine import SlotMachine
 
 
 class BigSlots(SlotMachine):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.num_columns = 5
         self.payout_multiplier = 1.5
         self.init_reel_size = self.num_columns * 2
-        self.bias_mechanic = BigBias(self)
+        self.bias_mechanic = BigSlotsBias(self)
 
     def _roll_num_included_symbols(self):
         return random.randint(1, self.num_columns)
 
 
-class BigBias(SlotsBias):
+class BigSlotsBias(SlotsBias):
     def __init__(self, slot_machine):
         super().__init__(slot_machine)
 
@@ -31,17 +31,17 @@ class BigBias(SlotsBias):
 
 
 class GiantSlots(SlotMachine):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.num_columns = 7
         self.payout_multiplier = 2
-        self.bias_mechanic = GiantBias(self)
+        self.bias_mechanic = GiantSlotsBias(self)
 
     def _roll_num_included_symbols(self):
         return random.randint(0, self.num_columns - 1)
 
 
-class GiantBias(SlotsBias):
+class GiantSlotsBias(SlotsBias):
     def __init__(self, slot_machine):
         super().__init__(slot_machine)
 
@@ -54,8 +54,8 @@ class GiantBias(SlotsBias):
 
 
 class ClassicSlots(SlotMachine):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.default_outcomes = [CHERRY, CHERRY,
                                  STRAWBERRY, STRAWBERRY,
                                  PEAR, PEAR,
@@ -78,18 +78,18 @@ class ClassicSlots(SlotMachine):
 
 
 class BigClassicSlots(BigSlots, ClassicSlots):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
 
 
 class GiantClassicSlots(GiantSlots, ClassicSlots):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
 
 
 class MapleSlots(SlotMachine):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.default_outcomes = [BUBBLING, BUBBLING,
                                  WARBOW, WARBOW,
                                  MUSHROOM, MUSHROOM,
@@ -113,10 +113,10 @@ class MapleSlots(SlotMachine):
 
 
 class BigMapleSlots(BigSlots, MapleSlots):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
 
 
 class GiantMapleSlots(GiantSlots, MapleSlots):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)

@@ -10,6 +10,7 @@ class SlotsBias:
         self.first_row = 0
         self.last_row = self.num_columns - 1
         self.results = slot_machine.results
+        self.initialize()
 
     def initialize(self) -> None:
         self._roll_bias_index()

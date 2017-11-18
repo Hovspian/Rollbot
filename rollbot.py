@@ -148,38 +148,38 @@ async def butts():
 
 @bot.command(pass_context=True)
 async def slots(ctx):
-    await play_slots(ctx, slot_machine=ClassicSlots())
+    await play_slots(ClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
-    await play_slots(ctx, slot_machine=BigClassicSlots())
+    await play_slots(BigClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantslots(ctx):
-    await play_slots(ctx, slot_machine=GiantClassicSlots())
+    await play_slots(GiantClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def mapleslots(ctx):
-    await play_slots(ctx, slot_machine=MapleSlots())
+    await play_slots(MapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigmapleslots(ctx):
-    await play_slots(ctx, slot_machine=BigMapleSlots())
+    await play_slots(BigMapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantmapleslots(ctx):
-    await play_slots(ctx, slot_machine=GiantMapleSlots())
+    await play_slots(GiantMapleSlots(ctx))
 
 
-async def play_slots(ctx, slot_machine):
-    author = ctx.message.author.display_name
+async def play_slots(slot_machine):
+    host_name = slot_machine.get_host_name()
     slot_machine.play_slot()
-    report = '\n'.join([f"{author}'s slot results", slot_machine.get_outcome_report()])
+    report = '\n'.join([f"{host_name}'s slot results", slot_machine.get_outcome_report()])
     await bot.say(slot_machine.draw_slot_interface())
     await bot.say(report)
 

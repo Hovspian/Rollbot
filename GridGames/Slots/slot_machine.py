@@ -9,8 +9,8 @@ from helper_functions import *
 
 class SlotMachine(GridGame):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.default_outcomes = []
         self.first_reel_size = int(math.ceil(self.num_columns * 1.5))
         self.reels = []
@@ -19,7 +19,6 @@ class SlotMachine(GridGame):
         self.bias_mechanic = SlotsBias(self)
 
     def play_slot(self) -> None:
-        self.bias_mechanic.initialize()
 
         def _roll_columns() -> None:
             reel = self._get_reel()
@@ -28,10 +27,12 @@ class SlotMachine(GridGame):
 
         [_roll_columns() for i in range(self.num_columns)]
         self._check_results()
+        self._resolve_payout()
 
     def draw_slot_interface(self) -> str:
         rows = super().get_rows(self.results)
-        return '\n'.join([self.get_emotes(row) for row in rows])
+        symbols = [self.get_emotes(row) for row in rows]
+        return '\n'.join(symbols)
 
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
@@ -39,6 +40,8 @@ class SlotMachine(GridGame):
     def _check_results(self) -> None:
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
+
+    def _resolve_payout(self):
         self.payout_amount += self.calculate_payout()
 
     def _get_reel(self) -> List[dict]:
