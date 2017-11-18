@@ -71,6 +71,7 @@ class VersusHammer(HammerRace, JoinableGame):
         HammerRace.__init__(self, ctx)
         JoinableGame.__init__(self, ctx)
         self.losers = []
+        self.multiplier = 1
         self.invalid_participants_error = "A race needs at least two players."
 
     def get_avatar(self, user):
@@ -93,9 +94,9 @@ class VersusHammer(HammerRace, JoinableGame):
 
     def gold_owed(self, participant: Participant):
         steps_left = self._get_steps_left(participant.progress)
-        gold = steps_left * 2 + 5
-        gold = gold // len(self.winners)
+        gold = (steps_left * self.multiplier + 5) // len(self.winners)
         return f'{participant.name} owes {gold} gold to each winner.'
+
 
     def _check_race_end(self) -> None:
         if self.is_race_end():
