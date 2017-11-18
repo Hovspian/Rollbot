@@ -45,9 +45,11 @@ class ComparisonHammer(HammerRace):
                                           "Example: ```/compare bread, eggs, hammer```"
         self._init_participants()
 
-    @staticmethod
-    def _set_options(message: str) -> List[str]:
-        return message.split(",")
+    def winner_report(self):
+        return SPACE.join(["Out of",
+                           self.message,
+                           ":\n",
+                           super().winner_report()])
 
     def _init_participants(self) -> None:
         [self._init_option(option) for option in self._options]
@@ -57,11 +59,9 @@ class ComparisonHammer(HammerRace):
         first_letter = option[0]
         super()._init_participant(short_name=first_letter, name=option)
 
-    def winner_report(self):
-        return SPACE.join(["Out of",
-                           self.message,
-                           ":\n",
-                           super().winner_report()])
+    @staticmethod
+    def _set_options(message: str) -> List[str]:
+        return message.split(",")
 
 
 class VersusHammer(HammerRace, JoinableGame):
@@ -86,24 +86,34 @@ class VersusHammer(HammerRace, JoinableGame):
         if not self.losers:
             return "Tie!"
         else:
-            return LINEBREAK.join([super().winner_report(), self.report_gold_owed()])
+            return LINEBREAK.join([super().winner_report(), self._report_gold_owed()])
 
-    def report_gold_owed(self):
-        reports = [self.gold_owed(loser) for loser in self.losers]
+    def _report_gold_owed(self):
+        reports = [self._get_gold_owed(loser) for loser in self.losers]
         return LINEBREAK.join(reports)
-
-    def gold_owed(self, participant: Participant):
-        steps_left = self._get_steps_left(participant.progress)
-        gold = (steps_left * self.multiplier + 5) // len(self.winners)
-        return f'{participant.name} owes {gold} gold to each winner.'
-
 
     def _check_race_end(self) -> None:
         if self.is_race_end():
             self.in_progress = False
-            self._add_losers()
+            self._resolve_losers()
 
-    def _add_losers(self):
+    def _resolve_losers(self):
         for participant in self.participants:
             if participant not in self.winners:
-                self.losers.append(participant)
+                gold_owed = self._calculate_gold_owed(participant)
+                self._add_loser(participant, gold_owed)
+
+    def _calculate_gold_owed(self, participant: Participant):
+        steps_left = self._get_steps_left(participant.progress)
+        return (steps_left * self.multiplier + 5) // len(self.winners)
+
+    def _add_loser(self, participant, gold) -> None:
+        debtor = {'name': participant.name,
+                  'gold': gold}
+        self.losers.append(debtor)
+
+    @staticmethod
+    def _get_gold_owed(loser: dict):
+        user = loser['name']
+        amount = loser['gold']
+        return f'{user} owes {amount} gold to each winner.'
