@@ -23,7 +23,7 @@ class ClassicHammer(HammerRace):
             report = LINEBREAK.join([self.message, report])
         return report
 
-    def _get_answer(self):
+    def _get_answer(self) -> str:
         answer_list = self._get_winner_names()
         if self.overriding_answer in answer_list:
             answer = self.overriding_answer
@@ -45,7 +45,7 @@ class ComparisonHammer(HammerRace):
                                           "Example: ```/compare bread, eggs, hammer```"
         self._init_participants()
 
-    def winner_report(self):
+    def winner_report(self) -> str:
         return SPACE.join(["Out of",
                            self.message,
                            ":\n",
@@ -79,16 +79,16 @@ class VersusHammer(HammerRace, JoinableGame):
         name = user.display_name
         return super()._init_participant(short_name, name)
 
-    def get_start_message(self):
+    def get_start_message(self) -> str:
         return SPACE.join(["Race between", self._get_player_names()])
 
-    def winner_report(self):
+    def winner_report(self) -> str:
         if not self.losers:
             return "Tie!"
         else:
             return LINEBREAK.join([super().winner_report(), self._report_gold_owed()])
 
-    def _report_gold_owed(self):
+    def _report_gold_owed(self) -> str:
         reports = [self._get_gold_owed(loser) for loser in self.losers]
         return LINEBREAK.join(reports)
 
@@ -97,13 +97,13 @@ class VersusHammer(HammerRace, JoinableGame):
             self.in_progress = False
             self._resolve_losers()
 
-    def _resolve_losers(self):
+    def _resolve_losers(self) -> None:
         for participant in self.participants:
             if participant not in self.winners:
                 gold_owed = self._calculate_gold_owed(participant)
                 self._add_loser(participant, gold_owed)
 
-    def _calculate_gold_owed(self, participant: Participant):
+    def _calculate_gold_owed(self, participant: Participant) -> int:
         steps_left = self._get_steps_left(participant.progress)
         return (steps_left * self.multiplier + 5) // len(self.winners)
 
@@ -113,7 +113,7 @@ class VersusHammer(HammerRace, JoinableGame):
         self.losers.append(debtor)
 
     @staticmethod
-    def _get_gold_owed(loser: dict):
+    def _get_gold_owed(loser: dict) -> str:
         user = loser['name']
         amount = loser['gold']
         return f'{user} owes {amount} gold to each winner.'
