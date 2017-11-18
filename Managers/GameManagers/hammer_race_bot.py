@@ -60,7 +60,8 @@ class HammerPayoutHandler:
     def resolve_payouts(self):
         for loser in self.game.losers:
             gold_amount = loser['gold']
-            self.pay_winners(gold_amount)
+            divided_amount = loser['divided_gold']
+            self.pay_winners(divided_amount)
             self.data_manager.update_gold(loser, -gold_amount)
 
     def pay_winners(self, gold_amount):

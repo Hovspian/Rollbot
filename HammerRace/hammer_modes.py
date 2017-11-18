@@ -108,13 +108,14 @@ class VersusHammer(HammerRace, JoinableGame):
         return steps_left * self.multiplier + 5
 
     def _add_loser(self, participant, gold) -> None:
+        num_winners = len(self.winners)
         debtor = {'name': participant.name,
-                  'gold': gold}
+                  'gold': gold,
+                  'divided_gold': gold // num_winners}
         self.losers.append(debtor)
 
-    def _get_gold_owed(self, loser: dict) -> str:
+    @staticmethod
+    def _get_gold_owed(loser: dict) -> str:
         user = loser['name']
-        amount = loser['gold']
-        num_winners= len(self.winners)
-        divided_amount = amount // num_winners
-        return f'{user} owes {divided_amount} gold to each winner.'
+        amount = loser['divided_gold']
+        return f'{user} owes {amount} gold to each winner.'
