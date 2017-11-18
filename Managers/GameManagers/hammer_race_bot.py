@@ -50,3 +50,21 @@ class HammerRaceBot(GameManager):
             await self.bot.say(hammer_race.round_report())
 
         await self.bot.say(hammer_race.winner_report())
+
+
+class HammerPayoutHandler:
+    def __init__(self, game: VersusHammer, data_manager):
+        self.game = game
+        self.data_manager = data_manager
+
+    def resolve_payouts(self):
+        for loser in self.game.losers:
+            gold_amount = loser['gold']
+            self.pay_winners(gold_amount)
+            self.data_manager.update_gold(loser, -gold_amount)
+
+    def pay_winners(self, gold_amount):
+        num_winners = len(self.game.winners)
+        divided_gold = gold_amount // num_winners
+        for winner in self.game.winners:
+            self.data_manager.update_gold(winner, divided_gold)

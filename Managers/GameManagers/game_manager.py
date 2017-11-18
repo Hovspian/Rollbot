@@ -12,7 +12,6 @@ class GameManager:
         self.active_games = []
 
     def is_user_in_game(self, host):
-        # TODO not all games have registrants.
         is_in_game = self.get_user_game(host)
         return not is_in_game
 
