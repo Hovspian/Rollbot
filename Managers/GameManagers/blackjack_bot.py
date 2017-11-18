@@ -13,19 +13,15 @@ class BlackjackBot(GameManager):
         super().__init__(bot)
 
     async def create_blackjack(self, ctx):
-        game_starter = ctx.message.author
-        executor = BlackjackExecutor(self.bot, host=game_starter)
-        self.initialize_game(executor)
-        return executor
+        blackjack = BlackjackExecutor(self.bot, ctx)
+        self.add_game(blackjack)
+        return blackjack
 
-    def initialize_game(self, game):
-        self.add_game(game)
-
-    async def start_game(self, blackjack: BlackjackExecutor) -> None:
-        blackjack.in_progress = True
-        dealer = blackjack.dealer_name
-        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
-        await blackjack.start_game()
+    async def run(self, blackjack: BlackjackExecutor):
+        ctx = blackjack.get_context()
+        await self.set_join_waiting_period(ctx)
+        await self._start_game(blackjack)
+        await self._set_game_end(blackjack)
 
     async def perform_action(self, ctx, action_to_perform: str):
         user = ctx.message.author
@@ -42,48 +38,33 @@ class BlackjackBot(GameManager):
 
             await actions[action_to_perform]()
 
-    async def can_make_move(self, game: BlackjackExecutor, user):
-        # TODO announces a player turn when game has not started
-        game_underway = game.in_progress
-        user_in_game = await self.check_in_game(game, user)
-        valid_turn = await self.check_turn(game, user)
-        return game_underway and user_in_game and valid_turn
-
-    async def check_in_game(self, game, user):
-        if self.is_in_game(game, user):
-            return True
+    async def can_make_move(self, game: BlackjackExecutor, user) -> bool:
+        move_error = self._check_move_error(game, user)
+        if move_error:
+            await self.bot.say(move_error)
         else:
-            await self.bot.say("You aren't in the game. Join the next one?")
-
-    async def check_turn(self, game, user):
-        if self.is_turn(game, user):
             return True
-        else:
-            await self.bot.say(f"It's not your turn. Please wait.")
+
+    def _check_move_error(self, game, user) -> any:
+        error = False
+        if not self._is_in_game(game, user):
+            error = "You aren't in the game. Join the next one?"
+        elif not self._is_turn(game, user):
+            error = "It's not your turn. Please wait."
+        elif not game.in_progress:
+            error = "The game is not underway yet."
+        return error
 
     @staticmethod
-    def is_in_game(game, user) -> bool:
-        return any(in_game_user for in_game_user in game.users if in_game_user is user)
-
-    @staticmethod
-    def is_turn(game, user) -> bool:
+    def _is_turn(game, user) -> bool:
         first_in_queue = game.get_current_player().user
         return user is first_in_queue
 
-    async def requeue_player(self, game):
-        # TODO AFK block prevention
-        first_in_queue = game.players.pop(0)
-        player_name = first_in_queue.display_name
-        no_player_turns_left = not game.players
-        if self.is_past_afk(first_in_queue) or no_player_turns_left:
-            await self.bot.say(f"{player_name} is away, and has been removed from the game.")
-        else:
-            await self.bot.say(f"{player_name} seems to be away. Skipping to the next player...")
-            game.players.append(first_in_queue)
-
-    @staticmethod
-    async def is_past_afk(player):
-        return player.afk > 0
+    async def _start_game(self, blackjack: BlackjackExecutor) -> None:
+        blackjack.in_progress = True
+        dealer = blackjack.dealer_name
+        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
+        await blackjack.start()
 
     async def get_game(self, ctx):
         game = super().get_game(ctx)
@@ -92,22 +73,12 @@ class BlackjackBot(GameManager):
         else:
             await self.bot.say("You aren't part of a Blackjack game. Join the next one?")
 
-    async def _medium_time_warning(self, game):
-        await self.bot.say(f"One minute left.")
-
-    async def _low_time_warning(self, game):
-        await self.bot.say(f"20 seconds left!")
-
-    async def _time_out(self, game):
-        await self.bot.say(f"Time limit elapsed. The game has ended.")
-        game.in_progress = False
-
-    async def say_setup_message(self, ctx):
+    async def _say_setup_message(self, ctx):
         user_name = ctx.message.author.display_name
         setup_message = f"{user_name} is starting a round of Blackjack! Type `/join` in the next 20 seconds to join."
         await self.bot.say(setup_message)
 
-    async def say_last_call_message(self):
+    async def _say_last_call_message(self):
         random_messages = ["Generating a deck from thin air.",
                            "Assembling a precarious house of cards.",
                            "Structuring the deck into a totally legit, static order.",

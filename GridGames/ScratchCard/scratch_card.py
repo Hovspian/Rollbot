@@ -6,9 +6,9 @@ from joinable_game_class import JoinableGame
 
 class ScratchCard(GridGame, JoinableGame):
     # Mechanics
-    def __init__(self, ctx, host):
+    def __init__(self, ctx):
         GridGame.__init__(self, ctx)
-        JoinableGame.__init__(self, host)
+        JoinableGame.__init__(self, ctx)
         self.max_time_left = 120
         self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns
@@ -17,15 +17,15 @@ class ScratchCard(GridGame, JoinableGame):
         self.underlying_symbols = []
         self.winnings = 0
         self.in_progress = True
-        self.announcement = None
-        self.card_render = None
+        self.announcement = None  # TBD
+        self.card_renderer = None  # TBD
 
     def initialize_card(self) -> None:
         random.shuffle(self.underlying_symbols)
         self._initialize_grids()
 
     def render_card(self) -> str:
-        card = [CODE_TAG, self.card_render.render_card(), CODE_TAG]
+        card = [CODE_TAG, self.card_renderer.render_card(), CODE_TAG]
         return LINEBREAK.join(card)
 
     def scratch_tiles(self, list_coordinates) -> None:

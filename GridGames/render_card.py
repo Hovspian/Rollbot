@@ -2,7 +2,7 @@ from GridGames.ScratchCard.constants import *
 from typing import List
 
 
-class RenderCard:
+class CardRenderer:
     # Box drawing methods for scratchcard
 
     def __init__(self, card):

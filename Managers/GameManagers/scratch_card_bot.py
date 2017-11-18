@@ -15,10 +15,11 @@ class ScratchCardBot(GameManager):
         self.parser = LineParser()
         self.error_handler = InputErrorHandler(bot)
 
-    async def initialize_game(self, ctx, game):
+    async def initialize_game(self, game):
         self.add_game(game)
         game.initialize_card()
         await self.say_starting_message(game)
+        await self._set_game_end(game)
 
     async def make_action(self, ctx, action_to_perform: str) -> None:
         is_host = await self.check_game_host(ctx)
@@ -26,18 +27,18 @@ class ScratchCardBot(GameManager):
         if is_host and game:
             raw_input = message_without_command(ctx.message.content)
             actions = {
-                "scratch": self.attempt_scratch,
-                "pick": self.attempt_pick_line
+                "scratch": self._attempt_scratch,
+                "pick": self._attempt_pick_line
             }
             await actions[action_to_perform](game, raw_input)
 
-    async def attempt_scratch(self, game: ScratchCard, raw_input):
+    async def _attempt_scratch(self, game: ScratchCard, raw_input):
         validated_tiles = await self.error_handler.validate(game, raw_input)
         if validated_tiles:
             game.scratch_tiles(validated_tiles)
             await self.report_turn(game)
 
-    async def attempt_pick_line(self, game: Hammerpot, raw_input):
+    async def _attempt_pick_line(self, game: Hammerpot, raw_input):
         line = self.parser.get_line(game, raw_input)
         can_pick = await self.error_handler.check_can_pick_line(game)
         if line and can_pick:

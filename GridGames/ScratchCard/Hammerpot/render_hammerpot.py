@@ -1,9 +1,9 @@
-from GridGames.render_card import RenderCard
+from GridGames.render_card import CardRenderer
 from GridGames.ScratchCard.constants import *
 from typing import List
 
 
-class RenderHammerpot(RenderCard):
+class RenderHammerpot(CardRenderer):
 
     # Renders the payout table next to the card
 

@@ -21,8 +21,8 @@ class BlackjackExecutor(JoinableGame):
     Maps user commands to game mechanics and feedback.
     """
 
-    def __init__(self, bot, host=None):
-        super().__init__(host)
+    def __init__(self, bot, ctx):
+        super().__init__(ctx)
         self.blackjack = Blackjack()
         self.avatar_handler = BlackjackAvatarHandler()
         self.dealer = self.init_dealer(RollbotHost())
@@ -41,7 +41,7 @@ class BlackjackExecutor(JoinableGame):
         if host is not None:
             return self.avatar_handler.create_avatar(host, Hand())
 
-    async def start_game(self):
+    async def start(self):
         self.dispense_cards()
         await self.show_player_cards()
         await self.dealer_executor.show_dealer_face_up()

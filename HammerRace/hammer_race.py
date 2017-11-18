@@ -12,6 +12,7 @@ class HammerRace:
         self.participants = []
         self.race_track = RaceTrack(self)
         self.in_progress = False
+        self.ctx = ctx
         self.message = message_without_command(ctx.message.content)
 
     def next_round(self) -> None:

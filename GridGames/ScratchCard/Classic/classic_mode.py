@@ -1,13 +1,13 @@
 from GridGames.ScratchCard.Classic.feedback import ScratchCardFeedback
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card import ScratchCard
-from GridGames.render_card import RenderCard
+from GridGames.render_card import CardRenderer
 from helper_functions import *
 
 
 class ClassicScratchCard(ScratchCard):
-    def __init__(self, ctx, host):
-        super().__init__(ctx, host)
+    def __init__(self, ctx):
+        super().__init__(ctx)
         self.num_winnable_combos = self._roll_num_winnable_combos()
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
@@ -32,7 +32,7 @@ class ClassicScratchCard(ScratchCard):
         self._add_winnable_combo()
         self._add_random_values()
         super().initialize_card()
-        self.card_render = RenderCard(self)
+        self.card_renderer = CardRenderer(self)
 
     def _add_winnable_combo(self) -> None:
         for i in range(self.num_winnable_combos):

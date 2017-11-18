@@ -18,7 +18,8 @@ class ChannelManager:
             return False
         return True
 
-    def add_game_in_session(self, ctx, game):
+    def add_game_in_session(self, game):
+        ctx = game.get_context()
         channel = ctx.message.channel
         self.active_games[channel] = game
 
@@ -33,18 +34,6 @@ class ChannelManager:
         if self.is_game_in_channel(channel):
             game = self.active_games[channel]
             return game.in_progress
-
-
-class UserManager:
-
-    """ User enrollment and retrieval in channel games """
-
-    def __init__(self, channel_manager, bot):
-        self.active_games = channel_manager.active_games
-        self.get_game = channel_manager.get_game
-        self.is_game_in_channel = channel_manager.is_game_in_channel
-        self.is_game_in_progress = channel_manager.is_game_in_progress
-        self.bot = bot
 
     async def add_user_to_game(self, ctx):
         channel = ctx.message.channel
