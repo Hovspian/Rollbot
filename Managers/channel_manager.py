@@ -6,11 +6,6 @@ class ChannelManager:
         self.active_games = {}
         self.bot = bot
 
-    def get_game(self, ctx):
-        channel = ctx.message.channel
-        if channel in self.active_games:
-            return self.active_games[channel]
-
     async def check_valid_new_game(self, ctx):
         channel = ctx.message.channel
         if self._is_game_in_channel(channel):
