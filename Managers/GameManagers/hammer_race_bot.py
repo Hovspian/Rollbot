@@ -51,6 +51,5 @@ class HammerRaceBot(GameManager):
 
     async def say_setup_message(self, ctx):
         host_name = ctx.message.author.display_name
-        game_name = "a race"
         setup_message = f"{host_name} is starting a race. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)

@@ -49,34 +49,46 @@ class GameManager:
         setup_message = f"{host_name} is starting a game. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)
 
-    async def set_time_limit(self, game):
-        time_left = game.max_time_left
-
-        while game.in_progress:
-            await asyncio.sleep(1.0)
-            time_left -= 1
-            if time_left == 60:
-                await self._medium_time_warning(game)
-            if time_left == 20:
-                await self._low_time_warning(game)
-            if time_left == 0:
-                await self._time_out(game)
-                break
-        return self._end_game(game)
-
-    async def _medium_time_warning(self, game):
-        host = game.host_name
-        await self.bot.say(f"{host} has 1 minute left.")
-
-    async def _low_time_warning(self, game):
-        host = game.host_name
-        await self.bot.say(f"{host} has 20 seconds left!")
-
-    async def _time_out(self, game):
-        host = game.host_name
-        await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
-        game.in_progress = False
+    async def set_game_end(self, game):
+        await TimeLimit(game, self.bot).set_time_limit()
+        self._end_game(game)
 
     def _end_game(self, game):
         self.active_games.remove(game)
-        return True
+
+
+class TimeLimit:
+
+    # Sets a time limit on the game session.
+    # Games end when they are complete or time has run out.
+
+    def __init__(self, game, bot):
+        self.game = game
+        self.bot = bot
+
+    async def set_time_limit(self):
+        time_left = self.game.max_time_left
+
+        while self.game.in_progress:
+            await asyncio.sleep(1.0)
+            time_left -= 1
+            if time_left == 60:
+                await self._medium_time_warning()
+            if time_left == 20:
+                await self._low_time_warning()
+            if time_left == 0:
+                await self._time_out()
+                break
+
+    async def _medium_time_warning(self):
+        host = self.game.host_name
+        await self.bot.say(f"{host} has 1 minute left.")
+
+    async def _low_time_warning(self):
+        host = self.game.host_name
+        await self.bot.say(f"{host} has 20 seconds left!")
+
+    async def _time_out(self):
+        host = self.game.host_name
+        await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
+        self.game.in_progress = False

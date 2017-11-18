@@ -19,8 +19,8 @@ class SessionManager:
         self.channel_manager = ChannelManager(bot)
         self.user_manager = UserManager(self.channel_manager, bot)
         self.scratch_card_bot = ScratchCardBot(bot, data_manager)  # GameManager
-        self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
-        self.blackjack_bot = BlackjackBot(bot) # GameManager
+        self.hammer_bot = HammerRaceBot(bot)  # GameManager
+        self.blackjack_bot = BlackjackBot(bot)  # GameManager
         self.roll_game_bot = RollGameBot(bot)  # GameManager
 
     # Game creation
@@ -30,12 +30,8 @@ class SessionManager:
             self.channel_manager.add_game_in_session(ctx, blackjack)
             await self.blackjack_bot.set_join_waiting_period(ctx)
             await self.blackjack_bot.start_game(blackjack)
-            game_ended = await self.blackjack_bot.set_time_limit(blackjack)
-            if game_ended:
-                self.channel_manager.vacate_channel(ctx)
-                results = blackjack.results
-                for player in results:
-                    self.data_manager.update_gold(player.user, results[player])
+            await self.blackjack_bot.set_game_end(blackjack)
+            self.channel_manager.vacate_channel(ctx)
 
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
@@ -52,31 +48,29 @@ class SessionManager:
     async def _create_scratch_game(self, ctx, game) -> None:
         self.channel_manager.add_game_in_session(ctx, game)
         await self.scratch_card_bot.initialize_game(ctx, game)
-        game_ended = await self.scratch_card_bot.set_time_limit(game)
-        if game_ended:
-            self.data_manager.update_gold(game.host, game.winnings)
-            self.channel_manager.vacate_channel(ctx)
+        await self.scratch_card_bot.set_game_end(game)
+        self.channel_manager.vacate_channel(ctx)
 
     async def askhammer(self, ctx) -> None:
-        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = self.hammer_race_bot.create_askhammer(ctx)
+        if await self._is_valid_new_game(ctx, self.hammer_bot):
+            hammer_race = self.hammer_bot.create_askhammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self.hammer_race_bot.start_race(hammer_race)
+            await self.hammer_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
     async def comparison_hammer(self, ctx) -> None:
-        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = self.hammer_race_bot.create_comparisonhammer(ctx)
+        if await self._is_valid_new_game(ctx, self.hammer_bot):
+            hammer_race = self.hammer_bot.create_comparisonhammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self.hammer_race_bot.start_race(hammer_race)
+            await self.hammer_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
     async def create_versushammer(self, ctx) -> None:
-        if await self._is_valid_new_game(ctx, self.hammer_race_bot):
-            hammer_race = self.hammer_race_bot.create_versushammer(ctx)
+        if await self._is_valid_new_game(ctx, self.hammer_bot):
+            hammer_race = self.hammer_bot.create_versushammer(ctx)
             self.channel_manager.add_game_in_session(ctx, game=hammer_race)
-            await self.hammer_race_bot.set_join_waiting_period(ctx)
-            await self.hammer_race_bot.start_race(hammer_race)
+            await self.hammer_bot.set_join_waiting_period(ctx)
+            await self.hammer_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
 
     async def create_normal_rollgame(self, ctx, bet) -> None:
