@@ -59,13 +59,13 @@ class Hammerpot(ScratchCard):
         return [get_tile(coordinates) for coordinates in list_coordinates]
 
     def _initialize_payouts(self):
-        generated_payouts = self.generate_payouts()
+        generated_payouts = self._generate_payouts()
 
         for i, sum_value in enumerate(self.winnable_sums):
             self.payouts[sum_value] = generated_payouts[i]
 
-    def generate_payouts(self):
-        payouts = self.get_biased_payouts()
+    def _generate_payouts(self):
+        payouts = self._get_biased_payouts()
         num_payouts_needed = len(self.winnable_sums) - len(payouts)
 
         for i in range(num_payouts_needed):
@@ -76,7 +76,7 @@ class Hammerpot(ScratchCard):
         random.shuffle(payouts)
         return payouts
 
-    def get_biased_payouts(self) -> List[int]:
+    def _get_biased_payouts(self) -> List[int]:
         high_end = self._get_high_end_payout()
         low_end = self._get_low_end_payout()
         return [high_end, low_end]

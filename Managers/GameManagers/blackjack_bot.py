@@ -23,7 +23,7 @@ class BlackjackBot(GameManager):
 
     async def run(self, blackjack: BlackjackExecutor):
         ctx = blackjack.get_context()
-        await self.set_join_waiting_period(ctx)
+        await self._set_join_waiting_period(ctx)
         await self._start_game(blackjack)
         await self._set_game_end(blackjack)
 

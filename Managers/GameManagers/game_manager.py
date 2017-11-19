@@ -34,7 +34,7 @@ class GameManager:
                 if in_game_user is user:
                     return game
 
-    async def set_join_waiting_period(self, ctx):
+    async def _set_join_waiting_period(self, ctx):
         await self._say_setup_message(ctx)
         await asyncio.sleep(15)
         await self._say_last_call_message()

@@ -44,17 +44,17 @@ class SessionManager:
     async def askhammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_bot):
             race = self.hammer_bot.create_askhammer(ctx)
-            self._run_hammer(ctx, race)
+            await self._run_hammer(ctx, race)
 
     async def comparison_hammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_bot):
             race = self.hammer_bot.create_comparisonhammer(ctx)
             await self._run_hammer(ctx, race)
 
-    async def create_versushammer(self, ctx) -> None:
+    async def versushammer(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.hammer_bot):
             race = self.hammer_bot.create_versushammer(ctx)
-            await self.hammer_bot.set_join_waiting_period(ctx)
+            await self.hammer_bot._set_join_waiting_period(ctx)
             await self._run_hammer(ctx, race)
 
     async def create_normal_rollgame(self, ctx, bet) -> None:
