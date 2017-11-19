@@ -27,7 +27,7 @@ class SessionManager:
         if await self._is_valid_new_game(ctx, self.blackjack_bot):
             blackjack = await self.blackjack_bot.create_blackjack(ctx)
             channel = ctx.message.channel
-            self.channel_manager.add_game_in_session(channel, blackjack)
+            self.channel_manager.add_channel_game(channel, blackjack)
             await self.blackjack_bot.run(blackjack)
             self.channel_manager.vacate_channel(channel)
 
@@ -98,7 +98,7 @@ class SessionManager:
 
     async def _create_scratch_game(self, ctx, game) -> None:
         channel = ctx.message.channel
-        self.channel_manager.add_game_in_session(channel, game)
+        self.channel_manager.add_channel_game(channel, game)
         await self.scratch_card_bot.initialize_game(game)
         self.channel_manager.vacate_channel(channel)
 

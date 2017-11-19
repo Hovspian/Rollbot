@@ -13,7 +13,7 @@ class ChannelManager:
             return False
         return True
 
-    def add_game_in_session(self, channel, game):
+    def add_channel_game(self, channel, game):
         self.active_games[channel] = game
 
     def vacate_channel(self, channel):
