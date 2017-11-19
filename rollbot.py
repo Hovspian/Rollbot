@@ -130,7 +130,7 @@ async def compare(ctx):
 
 @bot.command(pass_context=True)
 async def versushammer(ctx):
-    await session_manager.create_versushammer(ctx)
+    await session_manager.versushammer(ctx)
 
 
 @bot.command(pass_context=True)
