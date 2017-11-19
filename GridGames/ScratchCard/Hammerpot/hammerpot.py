@@ -17,13 +17,14 @@ class Hammerpot(ScratchCard):
         self.winnable_sums = []
         self.chosen_sum = 0
         self.announcement = HammerpotFeedback(self)
+        self.card_renderer = None  # TBD
 
     def initialize_card(self):
         super().initialize_card()
         self._initialize_sums()
         self._initialize_payouts()
         self._reveal_random_tile()
-        self.card_render = RenderHammerpot(self)
+        self.card_renderer = RenderHammerpot(self)
 
     def pick_line(self, line: List[list]):
         fitted_line = line[:self.num_columns]
