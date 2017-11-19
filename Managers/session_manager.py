@@ -92,7 +92,7 @@ class SessionManager:
             self.data_manager.update_gold(winner_result[0], winner_result[1])
 
     async def join_game(self, ctx):
-        user_can_join = await self.channel_manager.check_valid_user(ctx)
+        user_can_join = await self.channel_manager.check_valid_join(ctx)
         if user_can_join:
             await self.channel_manager.add_user_to_game(ctx)
 

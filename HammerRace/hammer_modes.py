@@ -64,20 +64,14 @@ class ComparisonHammer(HammerRace):
         return message.split(",")
 
 
-class VersusHammer(HammerRace, JoinableGame):
+class VersusHammer(HammerRace):
     """Game mode allows users to join the race."""
 
     def __init__(self, ctx):
         HammerRace.__init__(self, ctx)
-        JoinableGame.__init__(self, ctx)
         self.losers = []
         self.multiplier = 1
         self.invalid_participants_error = "A race needs at least two players."
-
-    def get_avatar(self, user):
-        short_name = user.display_name[0]
-        name = user.display_name
-        return super()._init_participant(short_name, name)
 
     def get_start_message(self) -> str:
         return SPACE.join(["Race between", self._get_player_names()])
@@ -87,6 +81,11 @@ class VersusHammer(HammerRace, JoinableGame):
             return "Tie!"
         else:
             return LINEBREAK.join([super().winner_report(), self._report_gold_owed()])
+
+    def get_avatar(self, player):
+        short_name = player.display_name[0]
+        name = player.display_name
+        return super()._init_participant(short_name, name)
 
     def _report_gold_owed(self) -> str:
         reports = [self._get_gold_owed(loser) for loser in self.losers]

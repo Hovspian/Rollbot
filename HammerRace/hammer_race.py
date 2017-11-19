@@ -1,18 +1,18 @@
 from HammerRace.race_track import RaceTrack
 from HammerRace.participant import Participant
 from helper_functions import message_without_command
+from joinable_game_class import JoinableGame
 
 
-class HammerRace:
+class HammerRace(JoinableGame):
     # Manage relationship between feedback, participants and race
 
     def __init__(self, ctx):
+        super().__init__(ctx)
         self.distance_to_finish = 40
         self.winners = []
         self.participants = []
         self.race_track = RaceTrack(self)
-        self.in_progress = False
-        self.ctx = ctx
         self.message = message_without_command(ctx.message.content)
 
     def next_round(self) -> None:

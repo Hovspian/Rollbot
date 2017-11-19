@@ -25,14 +25,14 @@ class ChannelManager:
         await self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
 
-    async def check_valid_user(self, ctx) -> bool:
-        error = self._check_invalid_user_error(ctx)
+    async def check_valid_join(self, ctx) -> bool:
+        error = self._check_invalid_join_error(ctx)
         if error:
             await self.bot.say(error)
         else:
             return True
 
-    def _check_invalid_user_error(self, ctx):
+    def _check_invalid_join_error(self, ctx):
         channel = ctx.message.channel
         user = ctx.message.author
         error = None

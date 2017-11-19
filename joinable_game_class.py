@@ -1,7 +1,7 @@
 from player_avatar import PlayerAvatar
 
 
-class JoinableGame:
+class GameCore:
     def __init__(self, ctx):
         self.ctx = ctx
         self.host = ctx.message.author
@@ -9,11 +9,29 @@ class JoinableGame:
         self.users = []  # All users who join a game
         self.players = []  # List[PlayerAvatar]
         self.in_progress = False
-        self.max_time_left = 180
         self.add_user(self.host)
 
     def add_user(self, user) -> None:
         self.users.append(user)
+
+    def get_context(self) -> object:
+        # Info such as who started the game, what channel
+        return self.ctx
+
+    def get_host(self):
+        return self.host
+
+    def get_host_name(self):
+        return self.host_name
+
+
+class JoinableGame(GameCore):
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.max_time_left = 180
+        self.add_user(self.host)
+
+    def add_user(self, user) -> None:
         avatar = self.get_avatar(user)
         self.add_player(user, avatar)
 
@@ -25,13 +43,3 @@ class JoinableGame:
     def get_avatar(self, user) -> any:
         # Method that constructs the user's in-game representation
         pass
-
-    def get_context(self) -> object:
-        # Info such as who started the game, what channel
-        return self.ctx
-
-    def get_host(self):
-        return self.host
-
-    def get_host_name(self):
-        return self.host_name

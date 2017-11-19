@@ -15,8 +15,8 @@ class GameManager:
         is_in_game = self.get_user_game(host)
         return not is_in_game
 
-    async def check_user_game_running(self, host):
-        if self.is_user_in_game(host):
+    async def check_user_game_running(self, user):
+        if self.is_user_in_game(user):
             return True
         else:
             await self.bot.say("Please finish your current game first.")
