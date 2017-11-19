@@ -22,6 +22,7 @@ class ClassicScratchCard(ScratchCard):
                                FIFTY,
                                FIFTY,
                                HUNDRED]
+        self.initialize_card()
 
     @staticmethod
     def _roll_num_winnable_combos() -> int:

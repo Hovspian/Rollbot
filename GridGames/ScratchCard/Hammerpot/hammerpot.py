@@ -18,6 +18,7 @@ class Hammerpot(ScratchCard):
         self.chosen_sum = 0
         self.announcement = HammerpotFeedback(self)
         self.card_renderer = None  # TBD
+        self.initialize_card()
 
     def initialize_card(self):
         super().initialize_card()

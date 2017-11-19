@@ -17,7 +17,6 @@ class ScratchCardBot(GameManager):
 
     async def initialize_game(self, game):
         self.add_game(game)
-        game.initialize_card()
         await self.say_starting_message(game)
         await self._set_game_end(game)
 
