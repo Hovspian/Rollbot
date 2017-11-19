@@ -6,24 +6,12 @@ class ChannelManager:
         self.active_games = {}
         self.bot = bot
 
-    async def check_valid_new_game(self, ctx):
+    async def check_valid_new_game(self, ctx) -> bool:
         channel = ctx.message.channel
-        if self._is_game_in_channel(channel):
+        if not self._is_game_in_channel(channel):
+            return True
+        else:
             await self.bot.say("Another game is already underway in this channel.")
-            return False
-        return True
-
-    def add_channel_game(self, channel, game):
-        self.active_games[channel] = game
-
-    def vacate_channel(self, channel):
-        self.active_games.pop(channel)
-
-    async def add_user_to_game(self, ctx):
-        channel = ctx.message.channel
-        user = ctx.message.author
-        await self.active_games[channel].add_user(user)
-        await self.bot.say(f"{user.display_name} joined the game.")
 
     async def check_valid_join(self, ctx) -> bool:
         error = self._check_invalid_join_error(ctx)
@@ -32,10 +20,22 @@ class ChannelManager:
         else:
             return True
 
-    def _check_invalid_join_error(self, ctx):
+    def add_channel_game(self, channel, game) -> None:
+        self.active_games[channel] = game
+
+    def vacate_channel(self, channel) -> None:
+        self.active_games.pop(channel)
+
+    async def add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
         user = ctx.message.author
-        error = None
+        await self.active_games[channel].add_user(user)
+        await self.bot.say(f"{user.display_name} joined the game.")
+
+    def _check_invalid_join_error(self, ctx) -> bool:
+        channel = ctx.message.channel
+        user = ctx.message.author
+        error = False
         if not self._is_game_in_channel(channel):
             error = "No game in this channel."
         elif self._is_game_in_progress(channel):
