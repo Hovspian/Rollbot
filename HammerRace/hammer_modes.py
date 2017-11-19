@@ -7,16 +7,16 @@ from HammerRace.hammer_race import *
 class ClassicHammer(HammerRace):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.overriding_answer = ""
-        self.init_participants()
+        self.overriding_answer = None  # TBD
+        self.init_players()
 
-    def init_participants(self) -> None:
-        super()._init_participant(short_name="y", name="yes")
-        super()._init_participant(short_name="n", name="no")
-        hammer = super()._init_participant(short_name="h", name=":hammer:")
+    def init_players(self) -> None:
+        super()._init_player(short_name="y", name="yes")
+        super()._init_player(short_name="n", name="no")
+        hammer = super()._init_player(short_name="h", name=":hammer:")
         self.overriding_answer = hammer.name
 
-    def winner_report(self) -> str:
+    def outcome_report(self) -> str:
         answer = self._get_answer()
         report = SPACE.join(["The answer is", answer])
         if self.message != '':
@@ -41,23 +41,23 @@ class ComparisonHammer(HammerRace):
     def __init__(self, ctx):
         super().__init__(ctx)
         self._options = self._set_options(self.message)
-        self.invalid_participants_error = "Please enter 2-5 options, separated by commas. " \
+        self.invalid_players_error = "Please enter 2-5 options, separated by commas. " \
                                           "Example: ```/compare bread, eggs, hammer```"
-        self._init_participants()
+        self._init_players()
 
-    def winner_report(self) -> str:
+    def outcome_report(self) -> str:
         return SPACE.join(["Out of",
                            self.message,
                            ":\n",
-                           super().winner_report()])
+                           super().outcome_report()])
 
-    def _init_participants(self) -> None:
+    def _init_players(self) -> None:
         [self._init_option(option) for option in self._options]
 
     def _init_option(self, option: str) -> None:
         option = option.strip()
         first_letter = option[0]
-        super()._init_participant(short_name=first_letter, name=option)
+        super()._init_player(short_name=first_letter, name=option)
 
     @staticmethod
     def _set_options(message: str) -> List[str]:
@@ -71,21 +71,21 @@ class VersusHammer(HammerRace):
         HammerRace.__init__(self, ctx)
         self.losers = []
         self.multiplier = 1
-        self.invalid_participants_error = "A race needs at least two players."
+        self.invalid_players_error = "A race needs at least two players."
 
     def get_start_message(self) -> str:
         return SPACE.join(["Race between", self._get_player_names()])
 
-    def winner_report(self) -> str:
+    def outcome_report(self) -> str:
         if not self.losers:
             return "Tie!"
         else:
-            return LINEBREAK.join([super().winner_report(), self._report_gold_owed()])
+            return LINEBREAK.join([super().outcome_report(), self._report_gold_owed()])
 
     def get_avatar(self, player):
         short_name = player.display_name[0]
         name = player.display_name
-        return super()._init_participant(short_name, name)
+        return super()._init_player(short_name, name)
 
     def _report_gold_owed(self) -> str:
         reports = [self._get_gold_owed(loser) for loser in self.losers]
@@ -93,22 +93,22 @@ class VersusHammer(HammerRace):
 
     def _check_race_end(self) -> None:
         if self.is_race_end():
-            self.in_progress = False
+            self.end_game()
             self._resolve_losers()
 
     def _resolve_losers(self) -> None:
-        for participant in self.participants:
-            if participant not in self.winners:
-                gold_owed = self._calculate_gold_owed(participant)
-                self._add_loser(participant, gold_owed)
+        for player in self.players:
+            if player not in self.winners:
+                gold_owed = self._calculate_gold_owed(player)
+                self._add_loser(player, gold_owed)
 
-    def _calculate_gold_owed(self, participant: Participant) -> int:
-        steps_left = self._get_steps_left(participant.progress)
+    def _calculate_gold_owed(self, player: Participant) -> int:
+        steps_left = self._get_steps_left(player.progress)
         return steps_left * self.multiplier + 5
 
-    def _add_loser(self, participant, gold) -> None:
+    def _add_loser(self, player, gold) -> None:
         num_winners = len(self.winners)
-        debtor = {'name': participant.name,
+        debtor = {'name': player.name,
                   'gold': gold,
                   'divided_gold': gold // num_winners}
         self.losers.append(debtor)

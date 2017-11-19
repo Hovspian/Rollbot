@@ -24,7 +24,7 @@ class HammerRaceBot(GameManager):
         return versus_hammer
 
     async def run(self, hammer_race) -> None:
-        if hammer_race.valid_num_participants():
+        if hammer_race.valid_num_players():
             await self._say_start_message(hammer_race)
             await self._run_race(hammer_race)
             self._end_game(hammer_race)
@@ -50,7 +50,7 @@ class HammerRaceBot(GameManager):
             hammer_race.next_round()
             await self.bot.say(hammer_race.round_report())
 
-        await self.bot.say(hammer_race.winner_report())
+        await self.bot.say(hammer_race.outcome_report())
 
 
 class HammerPayoutHandler:
