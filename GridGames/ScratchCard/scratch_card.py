@@ -4,11 +4,10 @@ from helper_functions import *
 from joinable_game_class import JoinableGame
 
 
-class ScratchCard(GridGame, JoinableGame):
+class ScratchCard(GridGame):
     # Mechanics
     def __init__(self, ctx):
         GridGame.__init__(self, ctx)
-        JoinableGame.__init__(self, ctx)
         self.max_time_left = 120
         self.num_columns = 3
         self.grid_size = self.num_columns * self.num_columns

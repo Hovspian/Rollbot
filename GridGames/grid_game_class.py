@@ -1,20 +1,16 @@
 import math
 from typing import List
+from joinable_game_class import JoinableGame
 
 
-class GridGame:
+class GridGame(JoinableGame):
     def __init__(self, ctx):
+        super().__init__(ctx)
         self.num_columns = 3
         self.payout_multiplier = 1
         self.results = []
         self.winning_symbols = []
         self.host = ctx.message.author
-
-    def get_host(self):
-        return self.host
-
-    def get_host_name(self):
-        return self.host.display_name
 
     def get_rows(self, columns) -> List[list]:
         def _get_row(i):
