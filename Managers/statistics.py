@@ -1,6 +1,7 @@
-from Managers.data_manager import SessionDataManager
 import discord
-from helper_functions import message_without_command
+
+from Core.helper_functions import message_without_command
+from Managers.data_manager import SessionDataManager
 
 
 class StatisticsBot:

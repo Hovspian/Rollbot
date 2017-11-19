@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-
-
+from Core.constants import *
 from GridGames.Slots.modes import *
+from Managers.GameManagers.slot_machine_bot import SlotMachineBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager
@@ -12,9 +12,8 @@ from Managers.GameManagers.roll_game_bot import RollGameBot
 from RollGames.roll import Roll
 from RollGames.rollgame import RollGame
 from RollGames.roll_game_modes import NormalRollGame
-from constants import *
+from Core.constants import *
 from discordtoken import TOKEN
-from helper_functions import *
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)

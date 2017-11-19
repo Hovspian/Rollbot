@@ -1,7 +1,7 @@
-from HammerRace.hammer_race import *
-from constants import *
 from typing import List
-from joinable_game_class import JoinableGame
+
+from Core.constants import *
+from HammerRace.hammer_race import *
 
 
 class ClassicHammer(HammerRace):

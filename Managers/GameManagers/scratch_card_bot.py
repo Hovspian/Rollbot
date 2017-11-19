@@ -1,9 +1,9 @@
+from Core.helper_functions import *
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
-from Managers.GameManagers.game_manager import GameManager
-from helper_functions import *
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from GridGames.ScratchCard.scratch_card import ScratchCard
+from Managers.GameManagers.game_manager import GameManager
 
 
 class ScratchCardBot(GameManager):

@@ -1,7 +1,8 @@
-from HammerRace.race_track import RaceTrack
-from HammerRace.participant import Participant
 from helper_functions import message_without_command
-from joinable_game_class import JoinableGame
+
+from Core.joinable_game_class import JoinableGame
+from HammerRace.participant import Participant
+from HammerRace.race_track import RaceTrack
 
 
 class HammerRace(JoinableGame):

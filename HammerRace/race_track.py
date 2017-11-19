@@ -1,5 +1,5 @@
+from Core.constants import *
 from HammerRace.participant import Participant
-from constants import *
 
 
 class RaceTrack:

@@ -1,5 +1,5 @@
-from constants import DOUBLE_SPACE, SPACE
 from CardGames.hand import Hand
+from Core.constants import DOUBLE_SPACE, SPACE
 
 
 class RenderCard:

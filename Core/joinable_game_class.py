@@ -1,4 +1,4 @@
-from player_avatar import PlayerAvatar
+from Core.player_avatar import PlayerAvatar
 
 
 class GameCore:

@@ -1,4 +1,4 @@
-from helper_functions import *
+from Core.helper_functions import *
 
 
 class SlotsBias:
