@@ -1,7 +1,7 @@
 import math
 from typing import List
 
-from Core.joinable_game_class import JoinableGame
+from Core.core_game_class import JoinableGame
 
 
 class GridGame(JoinableGame):

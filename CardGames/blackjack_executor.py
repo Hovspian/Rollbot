@@ -5,7 +5,7 @@ from CardGames.blackjack import Blackjack
 from CardGames.dealer import BlackjackDealer
 from CardGames.hand import Hand, PlayerHand
 from CardGames.result_checker import BlackjackResultChecker
-from Core.joinable_game_class import JoinableGame
+from Core.core_game_class import JoinableGame
 
 
 class RollbotHost:
