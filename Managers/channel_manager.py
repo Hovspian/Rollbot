@@ -8,10 +8,10 @@ class ChannelManager:
 
     async def check_valid_new_game(self, ctx) -> bool:
         channel = ctx.message.channel
-        if not self._is_game_in_channel(channel):
-            return True
-        else:
+        if self._is_game_in_channel(channel):
             await self.bot.say("Another game is already underway in this channel.")
+        else:
+            return True
 
     async def check_valid_join(self, ctx) -> bool:
         error = self._check_invalid_join_error(ctx)
