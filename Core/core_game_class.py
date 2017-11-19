@@ -9,6 +9,7 @@ class GameCore:
         self.users = []  # All users joining a game
         self.players = []  # Game participants
         self.in_progress = False
+        self.max_time_left = 180
         self.add_user(self.host)
 
     def add_user(self, user) -> None:
@@ -27,6 +28,9 @@ class GameCore:
     def get_host_name(self):
         return self.host_name
 
+    def start_game(self):
+        self.in_progress = True
+
     def end_game(self):
         self.in_progress = False
 
@@ -34,7 +38,6 @@ class GameCore:
 class JoinableGame(GameCore):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.max_time_left = 180
 
     def add_player(self, user) -> None:
         # Couples the avatar and user in a PlayerAvatar class and submits it to self.players

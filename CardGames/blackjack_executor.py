@@ -1,5 +1,4 @@
-from player_avatar import *
-
+from Core.player_avatar import *
 from CardGames.announcer import BlackjackAnnouncer
 from CardGames.blackjack import Blackjack
 from CardGames.dealer import BlackjackDealer
@@ -39,10 +38,12 @@ class BlackjackExecutor(JoinableGame):
         return [PlayerHand()]
 
     def init_dealer(self, host) -> PlayerAvatar:
+        # TODO let players host blackjack games
         if host is not None:
             return self.avatar_handler.create_avatar(host, Hand())
 
-    async def start(self):
+    async def start_game(self):
+        super().start_game()
         self.dispense_cards()
         await self.show_player_cards()
         await self.dealer_executor.show_dealer_face_up()
@@ -175,7 +176,7 @@ class BlackjackExecutor(JoinableGame):
         """ Checks self.players in case the dealer has gotten a blackjack. """
         [await self.resolve_outcomes(player) for player in self.standing_players]
         [await self.resolve_outcomes(player) for player in self.players]
-        self.in_progress = False
+        super().end_game()
 
     async def resolve_outcomes(self, player) -> None:
         player_name = self.avatar_handler.get_name(player)

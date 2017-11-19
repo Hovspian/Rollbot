@@ -41,8 +41,8 @@ class HammerRaceBot(GameManager):
         if start_message:
             await self.bot.say(start_message)
 
-    async def _run_race(self, hammer_race) -> None:
-        hammer_race.in_progress = True
+    async def _run_race(self, hammer_race: HammerRace) -> None:
+        hammer_race.start_game()
         await self.bot.say(hammer_race.round_report())
 
         while hammer_race.in_progress:

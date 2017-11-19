@@ -1,4 +1,3 @@
-import asyncio
 from Managers.channel_manager import *
 from Managers.GameManagers.hammer_race_bot import HammerRaceBot
 from Managers.GameManagers.scratch_card_bot import ScratchCardBot

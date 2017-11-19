@@ -1,4 +1,5 @@
 import asyncio
+from Core.core_game_class import GameCore
 
 
 class GameManager:
@@ -79,7 +80,7 @@ class TimeLimit:
     # Sets a time limit on the game session.
     # Games end when they are complete or time has run out.
 
-    def __init__(self, game, bot):
+    def __init__(self, game: GameCore, bot):
         self.game = game
         self.bot = bot
 
@@ -98,14 +99,14 @@ class TimeLimit:
                 break
 
     async def _medium_time_warning(self):
-        host = self.game.host_name
+        host = self.game.get_host_name()
         await self.bot.say(f"{host} has 1 minute left.")
 
     async def _low_time_warning(self):
-        host = self.game.host_name
+        host = self.game.get_host_name()
         await self.bot.say(f"{host} has 20 seconds left!")
 
     async def _time_out(self):
-        host = self.game.host_name
+        host = self.game.get_host_name()
         await self.bot.say(f"Time limit elapsed. {host}'s game has ended.")
-        self.game.in_progress = False
+        self.game.end_game()

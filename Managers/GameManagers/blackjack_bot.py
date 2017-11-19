@@ -1,5 +1,4 @@
-from helper_functions import roll
-
+from Core.helper_functions import roll
 from CardGames.blackjack_executor import BlackjackExecutor
 from Core.constants import *
 from Managers.GameManagers.game_manager import GameManager
@@ -64,10 +63,9 @@ class BlackjackBot(GameManager):
         return user is first_in_queue
 
     async def _start_game(self, blackjack: BlackjackExecutor) -> None:
-        blackjack.in_progress = True
         dealer = blackjack.dealer_name
         await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
-        await blackjack.start()
+        await blackjack.start_game()
 
     async def get_game(self, ctx):
         game = super().get_game(ctx)

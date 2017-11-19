@@ -1,5 +1,4 @@
 from typing import List
-
 from Core.constants import *
 from HammerRace.hammer_race import *
 
