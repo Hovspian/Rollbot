@@ -19,18 +19,44 @@ EIGHTBALL_RESPONSES = ['It is certain',
                        'Outlook not so good',
                        'Very doubtful']
 
-ROLLBOT_COMMANDS = "```Rollbot commands: " \
-                   "\n   /roll <max> - Rolls a random number between 1 and max. 100 is the default max. " \
-                   "\n   /start <mode> <bet> - Starts a new game. The bet is set to 100 if not specified. " \
-                   "\n   Note: only one game can be in progress at a time. " \
-                   "\n   /join - Join the current game. " \
-                   "\n\nGame modes: " \
-                   "\n   normal - everyone rolls 1-100. The lowest roller owes the highest roller the bet. " \
-                   "\n   difference - everyone rolls 1-bet and the lowest roller owes the highest roller " \
-                   "the difference between the rolls." \
-                   "\n   countdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous" \
-                   " roll until someone rolls 1 and loses. The winnings are split between everyone else. " \
-                   "\n   Note: if there is a tie then I will do more rolls on my own to decide the winner```"
+BASIC_COMMANDS = "**Rollbot commands:**" \
+                 "\n/gold - says how much gold you've earned/lost in total" \
+                 "\n/gold <user> - says how much gold a particular person has earned/lost" \
+                 "\n/join - join the current game if one is available" \
+                 "\n/blackjack - start a new blackjack game" \
+                 "\n/eightball <question> - ask a question to the magic 8 ball" \
+                 "\n/help <type> - a more specific help command for different game types" \
+                 "\nTypes: slots, blackjack, scratchcard, rollgames"
+
+SLOTS_COMMANDS = "**Slots commands:**" \
+                 "\n/slots - play a 3x3 slot machine" \
+                 "\n/bigslots - play a 5x5 slot machine" \
+                 "\n/giantslots - play a 7x7 slot machine" \
+                 "\n/mapleslots - play a 3x3 slot machine using maple icons" \
+                 "\n/bigmapleslots - play a 5x5 slot machine using maple icons" \
+                 "\n/giantmapleslots - play a 7x7 slot machine using maple icons"
+
+BLACKJACK_COMMANDS = "**Blackjack commands:**" \
+                     "\n/hit - Receive a card. If your hand's value exceeds 21 points, it's a bust." \
+                     "\n/stand - End your turn with your hand as-is." \
+                     "\n/doubledown - Double your wager, receive one more card, and stand." \
+                     "\n/split - If you are dealt two cards of equal value, split them into separate hands."
+
+SCRATCHCARD_COMMANDS = "**Scratch Card commands:**" \
+                       "\n"
+
+ROLLGAMES_COMMANDS = "**Roll Games commands:**" \
+                     "\n /roll - Roll a random number between 1 and 100." \
+                     "\n/roll <max> - Roll a random number between 1 and max." \
+                     "\n/rollgame <mode> - Starts a new roll game." \
+                     "\n**Modes**: normal, difference, and countdown" \
+                     "\nnormal - everyone rolls 1-100. The lowest roller owes the highest roller the bet." \
+                     "\ndifference - everyone rolls 1-bet and the lowest roller owes the highest roller the " \
+                     "difference between their rolls." \
+                     "\ncountdown - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until " \
+                     "someone rolls 1 and loses. The winnings are split between everyone else." \
+                     "\nNote: if there is a tie then I will do more rolls on my own to determine the winner."
+
 
 SPACE = ' '
 DOUBLE_SPACE = '  '

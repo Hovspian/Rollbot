@@ -80,15 +80,6 @@ async def join(ctx):
 
 # Blackjack commands
 
-@bot.command(pass_context=True)
-async def blackjackhelp():
-    options = ["Blackjack commands:",
-               "`/hit` : Receive a card. If your hand's value exceeds 21 points, it's a bust.",
-               "`/stand` : End your turn with your hand as-is.",
-               "`/doubledown` : Double your wager, receive one more card, and stand.",
-               "`/split` : If you are dealt two cards of equal value, split them into separate hands."]
-    await bot.say(LINEBREAK.join(options))
-
 
 @bot.command(pass_context=True)
 async def blackjack(ctx):
@@ -206,13 +197,26 @@ async def gold(ctx):
 bot.remove_command('help')
 
 
-@bot.command()
-async def help():
-    await bot.say(ROLLBOT_COMMANDS)
+@bot.group(pass_context = True)
+async def help(ctx):
+    if ctx.invoked_subcommand is None:
+        await bot.say(BASIC_COMMANDS)
+
+@help.command()
+async def slots():
+    await bot.say(SLOTS_COMMANDS)
+
+@help.command()
+async def blackjack():
+    await bot.say(BLACKJACK_COMMANDS)
+
+@help.command()
+async def rollgames():
+    await bot.say(ROLLGAMES_COMMANDS)
 
 
 @bot.command(alias='8ball')
-async def eightball():
+async def eightball(*question):
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await bot.say(EIGHTBALL_RESPONSES[pick_random])
 
