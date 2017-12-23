@@ -5,7 +5,7 @@ from RollGames.roll import Roll
 last_roll = [Roll(0, None, 0)]
 
 
-class Game:
+class Games:
     def __init__(self, bot, game_mode, bet, channel):
         self.bot = bot
         self.mode = game_mode

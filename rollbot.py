@@ -7,8 +7,10 @@ from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager
 from Managers.statistics import StatisticsBot
 from Managers.GameManagers.slot_machine_bot import SlotMachineBot
+from Managers.GameManagers.roll_game_bot import RollGameBot
 from RollGames.roll import Roll
-from RollGames.rollgame import RollGame, last_roll
+from RollGames.rollgame import RollGame
+from RollGames.roll_game_modes import NormalRollGame
 from constants import *
 from discordtoken import TOKEN
 from helper_functions import *
@@ -17,12 +19,13 @@ description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
-channel_manager = ChannelManager(bot)
 session_manager = SessionManager(bot)
+channel_manager = session_manager.channel_manager
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
 stats_bot = StatisticsBot(bot, data_manager)
 slot_machine_bot = SlotMachineBot(bot, data_manager)
+roll_game_bot = RollGameBot(bot)
 
 
 @bot.event
@@ -43,33 +46,34 @@ async def roll(ctx, max=100):
         return
 
     roll = random.randint(1, max)
-    last_roll[0] = Roll(roll, roller, max)
-    await bot.say("{} rolled {} (1-{})".format(roller.display_name, roll, max))
-    return last_roll[0]
+
+    try:
+        game = channel_manager.get_game(ctx)
+        game.last_roll[0] = Roll(roll, roller, max)
+    except:
+        pass
+    await bot.say(f"{roller.display_name} rolled {roll} (1-{max} c)")
 
 
-@bot.command(pass_context=True)
-async def start(ctx, mode: str, bet=100):
-    """Starts the game mode specified with the given bet. If no bet is given, 100 is chosen as the default."""
-    starter = ctx.message.author
-    channel = ctx.message.channel
-    valid_modes = ['normal', 'difference', 'countdown']
+@bot.group(pass_context=True)
+async def rollgame(ctx):
+    if ctx.invoked_subcommand is None:
+        await bot.say("You must specify a type of roll game. Try `/rollgame normal`")
 
-    if channel_manager.is_game_in_progress(channel):
-        await bot.say('Game already in progress in channel')
-        return
-    if mode not in valid_modes:
-        await bot.say('Invalid game mode.')
-        return
-    if bet < 1:
-        await bot.say('1 is the minimum for bets.')
-        return
 
-    the_game = RollGame(bot, mode, bet, channel)
-    await the_game.add(starter)
-    channel_manager.add_game_in_session(channel, the_game)
-    await the_game.play()
-    channel_manager.vacate_channel(channel)
+@rollgame.command(pass_context=True)
+async def normal(ctx, bet = 100):
+    await session_manager.create_normal_rollgame(ctx, bet)
+
+
+@rollgame.command(pass_context=True)
+async def difference(ctx, bet = 100):
+    await session_manager.create_difference_rollgame(ctx, bet)
+
+
+@rollgame.command(pass_context=True)
+async def countdown(ctx, bet = 100):
+    await session_manager.create_countdown_rollgame(ctx, bet)
 
 
 @bot.command(pass_context=True)
@@ -211,12 +215,12 @@ async def blackjack():
     await bot.say(BLACKJACK_COMMANDS)
 
 @help.command()
-async def rollgames():
-    await bot.say(ROLLGAMES_COMMANDS)
+async def rollgame():
+    await bot.say(ROLLGAME_COMMANDS)
 
 
 @bot.command(alias='8ball')
-async def eightball(*question):
+async def eightball():
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await bot.say(EIGHTBALL_RESPONSES[pick_random])
 

@@ -3,6 +3,7 @@ from Managers.channel_manager import *
 from Managers.GameManagers.hammer_race_bot import HammerRaceBot
 from Managers.GameManagers.scratch_card_bot import ScratchCardBot
 from Managers.GameManagers.blackjack_bot import BlackjackBot
+from Managers.GameManagers.roll_game_bot import RollGameBot
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 
@@ -19,6 +20,7 @@ class SessionManager:
         self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
         self.blackjack_bot = BlackjackBot(bot) # GameManager
+        self.roll_game_bot = RollGameBot(bot)  # GameManager
 
     # Game creation
     async def create_blackjack(self, ctx) -> None:
@@ -71,6 +73,33 @@ class SessionManager:
             await self.hammer_race_bot.set_join_waiting_period(ctx)
             await self.hammer_race_bot.start_race(hammer_race)
             self.channel_manager.vacate_channel(ctx)
+
+    async def create_normal_rollgame(self, ctx, bet) -> None:
+        if await self._is_valid_new_game(ctx, self.roll_game_bot):
+            game = await self.roll_game_bot.create_normal_rollgame(ctx, bet)
+            await self._play_rollgame(ctx, game)
+
+    async def create_difference_rollgame(self, ctx, bet) -> None:
+        if await self._is_valid_new_game(ctx, self.roll_game_bot):
+            game = await self.roll_game_bot.create_difference_rollgame(ctx, bet)
+            await self._play_rollgame(ctx, game)
+
+    async def create_countdown_rollgame(self, ctx, bet) -> None:
+        if await self._is_valid_new_game(ctx, self.roll_game_bot):
+            game = await self.roll_game_bot.create_countdown_rollgame(ctx, bet)
+            await self._play_rollgame(ctx, game)
+
+    async def _play_rollgame(self, ctx, game):
+        self.channel_manager.add_game_in_session(ctx, game)
+        await self.roll_game_bot.set_join_waiting_period(ctx, game)
+
+        if len(self.roll_game_bot.get_game(ctx).users) > 2:
+            await self.roll_game_bot.start_rolls(ctx, game)
+        else:
+            await self.bot.say("Not enough players.")
+
+        self.channel_manager.vacate_channel(ctx)
+        print('vacated')
 
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)
