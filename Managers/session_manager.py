@@ -99,7 +99,6 @@ class SessionManager:
             await self.bot.say("Not enough players.")
 
         self.channel_manager.vacate_channel(ctx)
-        print('vacated')
 
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)

@@ -25,7 +25,7 @@ blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
 stats_bot = StatisticsBot(bot, data_manager)
 slot_machine_bot = SlotMachineBot(bot, data_manager)
-roll_game_bot = RollGameBot(bot)
+roll_game_bot = session_manager.roll_game_bot
 
 
 @bot.event
