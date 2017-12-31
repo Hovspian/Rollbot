@@ -39,21 +39,27 @@ class RollGameBot(GameManager):
         await self.bot.say("Determining results")
         result = await game.determine(game.player_rolls)
         loser = game.get_name(result[0][0])
-        winner = game.get_name(result[1][0])
-        the_difference = result[1][1] - result[0][1]
+        winner = game.get_name(result[1][0][0])
+        the_difference = result[1][0][1] - result[0][1]
         if the_difference == 0:
             await self.bot.say("It's a tie.")
         else:
-            await self.bot.say(f"{loser} owes {winner} {result[2]}g")
+            split_winners = ', '.join(winner)
+            await self.bot.say(f"{loser} owes {split_winners} {result[2]}g")
+
+        self._store_result(result)
 
         self._end_game(game)
         game.in_progress = False
+
+    def _store_result(self, result):
+        pass
 
     async def say_setup_message(self, ctx, game):
         await self.bot.say(game.create_message(ctx))
 
     async def set_join_waiting_period(self, ctx, game):
         await self.say_setup_message(ctx, game)
-        await asyncio.sleep(3)
+        await asyncio.sleep(15)
         await self.say_last_call_message()
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
