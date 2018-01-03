@@ -32,8 +32,7 @@ class StatisticsBot:
             await self.bot.say(f"{query} is not a user on the server.")
 
     async def _say_user_gold(self, query_user):
-        user_id = query_user.id
-        gold = self.data_manager.get_gold(user_id)
+        gold = self.data_manager.get_gold(query_user)
         if gold:
             await self.bot.say(f"{query_user} has {gold} gold.")
         else:
