@@ -206,17 +206,30 @@ async def help(ctx):
     if ctx.invoked_subcommand is None:
         await bot.say(BASIC_COMMANDS)
 
+
 @help.command()
 async def slots():
     await bot.say(SLOTS_COMMANDS)
+
 
 @help.command()
 async def blackjack():
     await bot.say(BLACKJACK_COMMANDS)
 
+
 @help.command()
 async def rollgame():
     await bot.say(ROLLGAME_COMMANDS)
+
+
+@help.command()
+async def scratchcard():
+    await bot.say(SCRATCHCARD_COMMANDS)
+
+
+@help.command()
+async def hammerrace():
+    await bot.say(HAMMERRACE_COMMANDS)
 
 
 @bot.command(alias='8ball')

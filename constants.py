@@ -27,7 +27,7 @@ BASIC_COMMANDS = "**Rollbot commands:**" \
                  "\n`/roll <max>` - Roll a random number between 1 and max. The max defaults 100 if none is given" \
                  "\n`/eightball <question>` - ask a question to the magic 8 ball" \
                  "\n`/help <type>` - a more specific help command for different game types" \
-                 "\nTypes: slots, blackjack, scratchcard, rollgame"
+                 "\nTypes: slots, blackjack, rollgame, scratchcard, hammerrace"
 
 SLOTS_COMMANDS = "**Slots commands:**" \
                  "\n`/slots` - play a 3x3 slot machine" \
@@ -45,7 +45,15 @@ BLACKJACK_COMMANDS = "**Blackjack commands:**" \
                      "\n`/split` - If you are dealt two cards of equal value, split them into separate hands."
 
 SCRATCHCARD_COMMANDS = "**Scratch Card commands:**" \
-                       "\n"
+                       "\n`/scratchcard` - Creates a new scratch card for the user" \
+                       "\n`/hammerpot` - Creates a new hammer pot for the user" \
+                       "\n`/scratch <space>` - Scratches off the specified space or spaces, separated by commas" \
+                       "\n`/pick <line>` - Pick a row, column, or diagonal (hammerpot only)"
+
+HAMMERRACE_COMMANDS = "**Hammer Race commands:**" \
+                      "\n`/versushammer` - Creates a joinable hammer race" \
+                      "\n`/askhammer` - Ask a question and get a yes, no, or hammer response" \
+                      "\n`/compare <entry 1, entry 2, ..., entry 5>` - Creates a hammer race comparing 2-5 entries"
 
 ROLLGAME_COMMANDS = "**Rollgame commands:**" \
                      "\n`/rollgame <mode>` - Starts a new roll game." \
@@ -53,8 +61,8 @@ ROLLGAME_COMMANDS = "**Rollgame commands:**" \
                      "\n`normal` - everyone rolls 1-100. The lowest roller owes the highest roller the bet." \
                      "\n`difference` - everyone rolls 1-bet and the lowest roller owes the highest roller the " \
                      "difference between their rolls." \
-                     "\n`countdown` - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until " \
-                     "someone rolls 1 and loses. The winnings are split between everyone else." \
+                     "\n`countdown` - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until" \
+                     " someone rolls 1 and loses. The winnings are split between everyone else." \
                      "\nNote: if there is a tie then I will do more rolls on my own to determine the winner."
 
 
