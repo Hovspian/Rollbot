@@ -54,6 +54,6 @@ class RollGameBot(GameManager):
 
     async def set_join_waiting_period(self, ctx, game):
         await self.say_setup_message(ctx, game)
-        await asyncio.sleep(3)
+        await asyncio.sleep(15)
         await self.say_last_call_message()
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
