@@ -52,7 +52,7 @@ async def roll(ctx, max=100):
         game.last_roll[0] = Roll(roll, roller, max)
     except:
         pass
-    await bot.say(f"{roller.display_name} rolled {roll} (1-{max} c)")
+    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
 
 @bot.group(pass_context=True)
