@@ -15,7 +15,7 @@ class SlotMachineBot:
         host_name = slot_machine.get_host_name()
         report = '\n'.join([f"{host_name}'s slot results",
                             slot_machine.get_outcome_report()])
-        await self.bot.say(slot_machine.draw_slot_interface())
+        await self.bot.say(slot_machine.render_slots())
         await self.bot.say(report)
 
     def save_payout(self, slot_machine):

@@ -14,9 +14,6 @@ class ResultChecker:
         self._check_top_left_diagonal()
         self._check_top_right_diagonal()
 
-    def _check_columns(self):
-        [self._check_combo(column, combo_name='column') for column in self.results]
-
     def _check_rows(self):
         [self._check_combo(row, combo_name='row') for row in self.get_rows(self.results)]
 

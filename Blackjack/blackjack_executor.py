@@ -1,9 +1,9 @@
 from Core.player_avatar import *
-from CardGames.announcer import BlackjackAnnouncer
-from CardGames.blackjack import Blackjack
-from CardGames.dealer import BlackjackDealer
-from CardGames.hand import Hand, PlayerHand
-from CardGames.result_checker import BlackjackResultChecker
+from Blackjack.announcer import BlackjackAnnouncer
+from Blackjack.blackjack import Blackjack
+from Blackjack.dealer import BlackjackDealer
+from Blackjack.hand import Hand, PlayerHand
+from Blackjack.result_checker import BlackjackResultChecker
 from Core.core_game_class import JoinableGame
 
 
@@ -16,10 +16,6 @@ class RollbotHost:
 
 
 class BlackjackExecutor(JoinableGame):
-
-    """
-    Maps user commands to game mechanics and feedback.
-    """
 
     def __init__(self, bot, ctx):
         super().__init__(ctx)
@@ -82,7 +78,7 @@ class BlackjackExecutor(JoinableGame):
     async def trigger_next_turn(self) -> None:
         are_player_turns_remaining = self.players
         if are_player_turns_remaining:
-            await self.player_make_move()
+            await self.player_turn()
         else:
             await self.check_dealer_turn()
             await self.end_game()
@@ -94,7 +90,7 @@ class BlackjackExecutor(JoinableGame):
         else:
             await self.announcer.no_players_left()
 
-    async def player_make_move(self) -> None:
+    async def player_turn(self) -> None:
         current_player = self.players[0]
         player_name = self.avatar_handler.get_name(current_player)
         hand = self.get_current_player_hand()

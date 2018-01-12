@@ -39,3 +39,6 @@ class StatisticsBot:
         else:
             await self.bot.say(f"{query_user.display_name} does not have any gold.")
 
+    async def butt_counter(self):
+        pass
+

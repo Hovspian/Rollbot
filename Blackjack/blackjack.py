@@ -1,8 +1,6 @@
 from copy import deepcopy
-
-from helper_functions import *
-
-from CardGames.hand import *
+from Core.helper_functions import *
+from Blackjack.hand import *
 
 
 class Blackjack:

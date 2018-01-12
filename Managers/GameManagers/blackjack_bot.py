@@ -1,85 +1,77 @@
-from Core.helper_functions import roll
-from CardGames.blackjack_executor import BlackjackExecutor
-from Core.constants import *
-from Managers.GameManagers.game_manager import GameManager
+from Blackjack.move_checker import BlackjackMoveChecker
+from Core.time_limit import TimeLimit
+from Blackjack.blackjack_executor import BlackjackExecutor
+from Managers.session_options import SessionOptions
+from Blackjack.join_timer import BlackjackJoinTimer
 
 
-class BlackjackBot(GameManager):
-    # Game input, creation and deletion for Blackjack
+class BlackjackInitializer:
 
-    def __init__(self, bot):
-        super().__init__(bot)
-        self.random_messages = ["Generating a deck from thin air.",
-                                "Assembling a precarious house of cards.",
-                                "Structuring the deck into a totally legit, static order.",
-                                "Getting ready to shoot random cards at players.",
-                                "(Not) planning the player's demise with nefarious cheats."]
+    """
+    Handles blackjack creation
+    """
 
-    async def create_blackjack(self, ctx):
-        blackjack = BlackjackExecutor(self.bot, ctx)
+    def __init__(self, session: SessionOptions):
+        self.ctx = session.ctx
+        self.bot = session.bot
+        self.channel_manager = session.channel_manager
+        self.games = {}
+        self.join_timers = []
+
+    async def create_game(self, ctx):
+        if self.can_create_game(ctx):
+            blackjack = BlackjackExecutor(self.bot, self.ctx)
+            await self.run_session(blackjack)
+
+    async def run_session(self, blackjack):
         self.add_game(blackjack)
-        return blackjack
+        await self.run_join_timer(blackjack)
+        await self.run_time_limit(blackjack)
+        self.remove_game(blackjack)
 
-    async def run(self, blackjack: BlackjackExecutor):
-        ctx = blackjack.get_context()
-        await self.set_join_waiting_period(ctx)
-        await self._start_game(blackjack)
-        await self._set_game_end(blackjack)
+    async def run_join_timer(self, blackjack):
+        join_timer = BlackjackJoinTimer(self.bot, blackjack)
+        self.join_timers.append(blackjack.host)
+        await join_timer.set_join_waiting_period()
+        self.join_timers.remove(blackjack.host)
 
-    async def perform_action(self, ctx, action_to_perform: str):
+    async def run_time_limit(self, blackjack):
+        time_limit = TimeLimit(self.bot, blackjack)
+        await time_limit.set_time_limit()
+
+    def add_game(self, blackjack):
+        channel = self.ctx.message.channel
+        self.channel_manager.add_game(channel, blackjack)
+        self.games[blackjack.host] = blackjack
+
+    def remove_game(self, blackjack):
+        channel = self.ctx.message.channel
+        self.channel_manager.vacate_channel(channel)
+        self.games.pop(blackjack.host)
+
+    async def can_create_game(self, ctx) -> bool:
+        return self.channel_manager.check_valid_new_game(ctx) and\
+                self.check_valid_new_game(ctx)
+
+    async def check_valid_new_game(self, ctx) -> bool:
         user = ctx.message.author
-        blackjack = await self.get_game(ctx)
-        can_make_move = await self.can_make_move(blackjack, user)
-        if blackjack and can_make_move:
-            actions = {
-                "hit": blackjack.hit,
-                "stand": blackjack.stand_current_hand,
-                "split": blackjack.attempt_split,
-                "doubledown": blackjack.attempt_double_down
-            }
-
-            await actions[action_to_perform]()
-
-    async def can_make_move(self, game: BlackjackExecutor, user) -> bool:
-        move_error = self._check_move_error(game, user)
-        if move_error:
-            await self.bot.say(move_error)
-        else:
-            return True
-
-    def _check_move_error(self, game, user) -> any:
-        error = False
-        if not self._is_in_game(game, user):
-            error = "You aren't in the game. Join the next one?"
-        elif not self._is_turn(game, user):
-            error = "It's not your turn. Please wait."
-        elif not game.in_progress:
-            error = "The game is not underway yet."
-        return error
+        is_user_in_game = False
+        for game in self.games:
+            is_user_in_game = self._is_in_game(game, user)
+        return is_user_in_game
 
     @staticmethod
-    def _is_turn(game, user) -> bool:
-        first_in_queue = game.get_current_player().user
-        return user is first_in_queue
+    def _is_in_game(game, user) -> bool:
+        return any(in_game_user for in_game_user in game.users if in_game_user is user)
 
-    async def _start_game(self, blackjack: BlackjackExecutor) -> None:
-        dealer = blackjack.dealer_name
-        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
-        await blackjack.start_game()
 
-    async def get_game(self, ctx):
-        game = super().get_game(ctx)
-        if game:
-            return game
-        else:
-            await self.bot.say("You aren't part of a Blackjack game. Join the next one?")
+class BlackjackBot:
+    def __init__(self, games, bot):
+        self.games = games
+        self.bot = bot
 
-    async def _say_setup_message(self, ctx):
-        user_name = ctx.message.author.display_name
-        setup_message = f"{user_name} is starting a round of Blackjack! Type `/join` in the next 20 seconds to join."
-        await self.bot.say(setup_message)
+    def make_move(self, ctx, action):
+        move_checker = BlackjackMoveChecker(self.bot)
 
-    async def _say_last_call_message(self):
-        random_message = roll(self.random_messages)
-        message = SPACE.join([random_message, "Last call to sign up!"])
-        await self.bot.say(message)
+
+

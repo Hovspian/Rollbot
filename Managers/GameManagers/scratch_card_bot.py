@@ -1,12 +1,12 @@
 from Core.helper_functions import *
+from Core.join_timer import SessionManager
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from GridGames.ScratchCard.scratch_card import ScratchCard
-from Managers.GameManagers.game_manager import GameManager
 
 
-class ScratchCardBot(GameManager):
+class ScratchCardBot(SessionManager):
     # Handles user-game relationship for scratch cards / hammerpot
 
     def __init__(self, bot, data_manager):

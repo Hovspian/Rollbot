@@ -9,6 +9,7 @@ class RenderHammerpot(CardRenderer):
 
     def __init__(self, card):
         super().__init__(card)
+        self.card = card
         self.payout_table = self._get_payout_table()
 
     def render_card(self) -> str:
@@ -69,10 +70,6 @@ class RenderHammerpot(CardRenderer):
             formatted_payouts.append(empty_entry)
         return formatted_payouts
 
-    @staticmethod
-    def _is_even_number(num_entries) -> bool:
-        return num_entries % 2 == 0
-
     def _get_formatted_payouts(self) -> List[str]:
         # Format the card's sum : payout dictionary
         sums_to_payouts = self.card.payouts.items()
@@ -91,3 +88,7 @@ class RenderHammerpot(CardRenderer):
     def _respace_payout(self, payout) -> str:
         chars_needed = '{:3}'
         return chars_needed.format(payout)
+
+    @staticmethod
+    def _is_even_number(num_entries) -> bool:
+        return num_entries % 2 == 0

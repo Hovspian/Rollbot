@@ -11,6 +11,7 @@ class ClassicScratchCard(ScratchCard):
         self.num_winnable_combos = self._roll_num_winnable_combos()
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
+        self.results = []
         self.announcement = ScratchCardFeedback(self)
         self.default_values = [EMPTY_TILE,
                                FIVE,
@@ -45,7 +46,8 @@ class ClassicScratchCard(ScratchCard):
         return [symbol] * self.matches_to_win
 
     def _add_random_values(self) -> None:
-        symbols_remaining = self.grid_size - len(self.underlying_symbols)
+        grid_size = self.num_columns * self.num_columns
+        symbols_remaining = grid_size - len(self.underlying_symbols)
         for i in range(symbols_remaining):
             symbol = roll(self.default_values)
             self.underlying_symbols.append(symbol)
@@ -57,8 +59,7 @@ class ClassicScratchCard(ScratchCard):
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
-            self.winnings = self.calculate_payout()
-            self.in_progress = False
+            self.end_game()
 
     def _scratch(self, y, x):
         super()._scratch(y, x)

@@ -1,4 +1,4 @@
-from CardGames.hand import Hand
+from Blackjack.hand import Hand
 from Core.constants import DOUBLE_SPACE, SPACE
 
 

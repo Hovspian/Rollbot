@@ -16,13 +16,11 @@ from Core.constants import *
 from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='/', description=description)
+bot = commands.Bot(command_prefix='&', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
 session_manager = SessionManager(bot, data_manager)
-channel_manager = session_manager.channel_manager
-blackjack_bot = session_manager.blackjack_bot
-scratch_card_bot = session_manager.scratch_card_bot
+channel_manager = ChannelManager(bot)
 stats_bot = StatisticsBot(bot, data_manager)
 slot_machine_bot = SlotMachineBot(bot, data_manager)
 roll_game_bot = session_manager.roll_game_bot

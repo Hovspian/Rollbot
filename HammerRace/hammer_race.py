@@ -31,9 +31,6 @@ class HammerRace(JoinableGame):
         report = "The winners are {}" if self._has_multiple_winners() else "The winner is {}"
         return report.format(winners)
 
-    def get_start_message(self):
-        return None
-
     def _is_winner(self, player: Participant) -> bool:
         return self._get_steps_left(player.progress) <= 0
 

@@ -1,4 +1,4 @@
-from CardGames.hand import PlayerHand
+from Blackjack.hand import PlayerHand
 
 
 class BlackjackResultChecker:

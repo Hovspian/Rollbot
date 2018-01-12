@@ -6,7 +6,6 @@ class CardRenderer:
     # Box drawing methods for scratchcard
 
     def __init__(self, card):
-        self.card = card
         self.num_columns = card.num_columns
         self.card_grid = card.card_grid
 

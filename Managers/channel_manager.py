@@ -20,7 +20,7 @@ class ChannelManager:
         else:
             return True
 
-    def add_channel_game(self, channel, game) -> None:
+    def add_game(self, channel, game) -> None:
         self.active_games[channel] = game
 
     def vacate_channel(self, channel) -> None:
@@ -57,3 +57,4 @@ class ChannelManager:
         if self._is_game_in_channel(channel):
             game = self.active_games[channel]
             return any(in_game_user for in_game_user in game.users if in_game_user is user)
+

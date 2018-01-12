@@ -1,8 +1,8 @@
 import asyncio
 from typing import List
 
-from CardGames.hand import PlayerHand
-from CardGames.render_card import RenderCard
+from Blackjack.hand import PlayerHand
+from Blackjack.render_card import RenderCard
 from Core.constants import *
 
 
