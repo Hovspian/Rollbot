@@ -8,7 +8,6 @@ class SessionDataManager:
 
     def update_gold(self, user, gold_earned):
         name = str(user)
-
         try:
             self.table.update_item(
                 Key = {'username': name},

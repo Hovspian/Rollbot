@@ -93,7 +93,7 @@ class SessionManager:
         self.channel_manager.add_game_in_session(ctx, game)
         await self.roll_game_bot.set_join_waiting_period(ctx, game)
 
-        if len(self.roll_game_bot.get_game(ctx).users) > 2:
+        if len(self.roll_game_bot.get_game(ctx).users) > 1:
             await self.roll_game_bot.start_rolls(ctx, game)
         else:
             await self.bot.say("Not enough players.")

@@ -16,8 +16,8 @@ class StaticRollGame(RollGame):
             else:
                 await self.bot.wait_for_message(content=f'/roll {max}', channel=self.ctx.message.channel)
             await asyncio.sleep(0.01)
-            if self.last_roll[0].roller in self.users and self.last_roll[0].roller not in self.player_rolls:
-                self.player_rolls.append((self.last_roll[0].roller, self.last_roll[0].rolled))
+            if self.last_roll.roller in self.users and self.last_roll.roller not in self.player_rolls:
+                self.player_rolls.append((self.last_roll.roller, self.last_roll.rolled))
                 await self.bot.say("Roll counted")
             await asyncio.sleep(0.01)
 
@@ -140,7 +140,7 @@ class CountdownRollGame(RollGame):
                     await self.bot.wait_for_message(content=f'/roll {self.last_roll.rolled}', author=player,
                                                     channel=self.ctx.message.channel)
 
-                await asyncio.sleep(2)
+                await asyncio.sleep(0.5)
 
     async def determine(self, rolls : list):
         winners = []

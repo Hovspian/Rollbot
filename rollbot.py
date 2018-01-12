@@ -49,7 +49,7 @@ async def roll(ctx, max=100):
 
     try:
         game = channel_manager.get_game(ctx)
-        game.last_roll[0] = Roll(roll, roller, max)
+        game.last_roll = Roll(roll, roller, max)
     except:
         pass
     await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
