@@ -56,14 +56,15 @@ HAMMERRACE_COMMANDS = "**Hammer Race commands:**" \
                       "\n`/compare <entry 1, entry 2, ..., entry 5>` - Creates a hammer race comparing 2-5 entries"
 
 ROLLGAME_COMMANDS = "**Rollgame commands:**" \
-                     "\n`/rollgame <mode>` - Starts a new roll game." \
-                     "\nModes: normal, difference, and countdown" \
-                     "\n`normal` - everyone rolls 1-100. The lowest roller owes the highest roller the bet." \
-                     "\n`difference` - everyone rolls 1-bet and the lowest roller owes the highest roller the " \
-                     "difference between their rolls." \
-                     "\n`countdown` - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until" \
-                     " someone rolls 1 and loses. The winnings are split between everyone else." \
-                     "\nNote: if there is a tie then I will do more rolls on my own to determine the winner."
+                    "\n`/rollgame <mode> <bet>` - Starts a new roll game with the specified bet." \
+                    "\nModes: normal, difference, and countdown" \
+                    "\nThe bet will default to 100 if one isn't specified" \
+                    "\n`normal` - everyone rolls 1-100. The lowest roller owes the highest roller the bet." \
+                    "\n`difference` - everyone rolls 1-bet and the lowest roller owes the highest roller the " \
+                    "difference between their rolls." \
+                    "\n`countdown` - the starter rolls 1-bet then everyone takes turns rolling 1-previous roll until" \
+                    " someone rolls 1 and loses. The winnings are split between everyone else." \
+                    "\nNote: if there is a tie then I will do more rolls on my own to determine the winner."
 
 
 SPACE = ' '
