@@ -20,7 +20,7 @@ class SessionManager:
         self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
         self.blackjack_bot = BlackjackBot(bot) # GameManager
-        self.roll_game_bot = RollGameBot(bot)  # GameManager
+        self.roll_game_bot = RollGameBot(bot, self)  # GameManager
 
     # Game creation
     async def create_blackjack(self, ctx) -> None:
@@ -99,7 +99,6 @@ class SessionManager:
             await self.bot.say("Not enough players.")
 
         self.channel_manager.vacate_channel(ctx)
-        print('vacated')
 
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)

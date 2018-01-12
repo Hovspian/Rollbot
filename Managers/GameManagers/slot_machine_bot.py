@@ -21,4 +21,5 @@ class SlotMachineBot:
     def save_payout(self, slot_machine):
         user = slot_machine.get_host()
         gold_amount = slot_machine.get_payout_amount()
-        self.data_manager.update_gold(user, gold_amount)
+        if gold_amount != 0:
+            self.data_manager.update_gold(user, gold_amount)

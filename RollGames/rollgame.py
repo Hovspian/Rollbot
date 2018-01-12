@@ -26,7 +26,7 @@ class RollGame:
     def get_name(author):
         return author.display_name
 
-    async def add(self, player: discord.member.Member):
+    async def add_user(self, player: discord.member.Member):
         self.users.append(player)
 
     async def wait_for_rolls(self, max):
