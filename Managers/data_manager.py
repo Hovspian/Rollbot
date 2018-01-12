@@ -25,9 +25,10 @@ class SessionDataManager:
     def get_gold(self, user):
         name = str(user)
 
-        response = self.table.get_item(Key={'username': name})
-        item = response['Item']
-        if item is not None:
-            return item['gold']
-        else:
+        try:
+            response = self.table.get_item(Key={'username': name})
+            item = response['Item']
+            if item is not None:
+                return item['gold']
+        except KeyError:
             return 0

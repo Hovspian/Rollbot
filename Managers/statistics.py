@@ -26,7 +26,6 @@ class StatisticsBot:
     async def _query_user_gold(self, ctx, query):
         message = ctx.message
         query_user = message.server.get_member_named(query)
-        print(query_user)
         if query_user:
             await self._say_user_gold(query_user)
         else:
@@ -35,7 +34,7 @@ class StatisticsBot:
     async def _say_user_gold(self, query_user):
         gold = self.data_manager.get_gold(query_user)
         if gold:
-            await self.bot.say(f"{query_user} has {gold} gold.")
+            await self.bot.say(f"{query_user.display_name} has {gold} gold.")
         else:
-            await self.bot.say(f"{query_user} does not have any gold.")
+            await self.bot.say(f"{query_user.display_name} does not have any gold.")
 
