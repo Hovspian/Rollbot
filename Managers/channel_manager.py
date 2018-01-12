@@ -49,7 +49,7 @@ class UserManager:
     async def add_user_to_game(self, ctx):
         channel = ctx.message.channel
         user = ctx.message.author
-        self.active_games[channel].add_user(user)
+        await self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
 
     def is_user_in_game(self, channel, user) -> bool:

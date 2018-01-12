@@ -25,7 +25,8 @@ class StatisticsBot:
 
     async def _query_user_gold(self, ctx, query):
         message = ctx.message
-        query_user = discord.utils.get(message.server.members, name=query)
+        query_user = message.server.get_member_named(query)
+        print(query_user)
         if query_user:
             await self._say_user_gold(query_user)
         else:
