@@ -10,10 +10,7 @@ class RollGame:
         self.bet = bet
         self.ctx = ctx
         self.users = []
-        self.player_rolls = []
-        self.result = {}
         self.in_progress = False
-        self.last_roll = Roll(0, None, 0)
 
     @staticmethod
     async def forced_roll(player: discord.member.Member, max: int):
@@ -29,14 +26,14 @@ class RollGame:
     async def add_user(self, player: discord.member.Member):
         self.users.append(player)
 
-    async def wait_for_rolls(self, max):
+    async def wait_for_rolls(self):
         raise NotImplementedError
 
-    async def determine(self, rolls):
-        raise NotImplementedError
-
-    def create_message(self, ctx):
+    async def determine(self):
         raise NotImplementedError
 
     def play_message(self):
+        raise NotImplementedError
+
+    def add_roll(self, roll):
         raise NotImplementedError
