@@ -97,6 +97,7 @@ class SessionManager:
             await self.roll_game_bot.start_rolls(game)
         else:
             await self.bot.say("Not enough players.")
+            self.roll_game_bot.terminate_game(game)
 
         self.channel_manager.vacate_channel(ctx)
 

@@ -59,8 +59,7 @@ class RollGameBot(GameManager):
         setup_message = f"{host_name} is starting a roll game. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)
 
-    async def set_join_waiting_period(self, ctx):
-        await self.say_setup_message(ctx)
-        await asyncio.sleep(1)
-        await self.say_last_call_message()
-        await asyncio.sleep(1)
+    def terminate_game(self, game):
+        self._end_game(game)
+        game.in_progress = False
+
