@@ -27,41 +27,39 @@ class RollGameBot(GameManager):
         self.add_game(game)
         return game
 
-    async def start_rolls(self, ctx, game : RollGame):
+    async def start_rolls(self, game : RollGame):
         game.in_progress = True
 
         await self.bot.say(game.play_message())
+        await game.wait_for_rolls()
+        result = await game.determine()
 
-        await self.bot.say("Waiting for rolls")
-        await game.wait_for_rolls(game.bet)
-
-        await self.bot.say("Determining results")
-        result = await game.determine(game.player_rolls)
-        loser = game.get_name(result[0][0])
-        winner = game.get_name(result[1][0][0])
-        the_difference = result[1][0][1] - result[0][1]
-        if the_difference == 0:
-            await self.bot.say("It's a tie.")
+        if result[0][1] == 0:
+            await self.bot.say("It's a tie")
         else:
-            split_winners = ', '.join(winner)
-            await self.bot.say(f"{loser} owes {split_winners} {result[2]}g")
-
-        self._store_result(game, result)
+            loser = game.get_name(result[0][0])
+            winners = []
+            for tup in result[1]:
+                winners.append(game.get_name(tup[0]))
+            split_winners = ', '.join(winners)
+            await self.bot.say(f"{loser} owes {split_winners} {result[1][0][1]}g")
+            self._store_result(result)
 
         self._end_game(game)
         game.in_progress = False
 
-    def _store_result(self, game, result):
-        loser = game.get_name(result[0][0])
-        self.data_manager.update_gold(loser, -game.bet)
-        for winner in result[1][0]:
-            self.data_manager.update_gold(winner, result[2])
+    def _store_result(self, result):
+        loser_result = result[0]
+        self.data_manager.update_gold(loser_result[0], loser_result[1])
+        for winner_result in result[1]:
+            self.data_manager.update_gold(winner_result[0], winner_result[1])
 
-    async def say_setup_message(self, ctx, game):
-        await self.bot.say(game.create_message(ctx))
+    async def say_setup_message(self, ctx):
+        host_name = ctx.message.author.display_name
+        setup_message = f"{host_name} is starting a roll game. Type /join in the next 20 seconds to join."
+        await self.bot.say(setup_message)
 
-    async def set_join_waiting_period(self, ctx, game):
-        await self.say_setup_message(ctx, game)
-        await asyncio.sleep(15)
-        await self.say_last_call_message()
-        await asyncio.sleep(5)
+    def terminate_game(self, game):
+        self._end_game(game)
+        game.in_progress = False
+

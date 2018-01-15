@@ -13,14 +13,14 @@ class SessionManager:
     # Handles the coupling between channel managers and game managers.
     # Namely, channel managers need to know when the game has ended.
 
-    def __init__(self, bot):
+    def __init__(self, bot, data_manager):
         self.bot = bot
         self.channel_manager = ChannelManager(bot)
         self.user_manager = UserManager(self.channel_manager, bot)
         self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
         self.blackjack_bot = BlackjackBot(bot) # GameManager
-        self.roll_game_bot = RollGameBot(bot, self)  # GameManager
+        self.roll_game_bot = RollGameBot(bot, data_manager)  # GameManager
 
     # Game creation
     async def create_blackjack(self, ctx) -> None:
@@ -91,12 +91,13 @@ class SessionManager:
 
     async def _play_rollgame(self, ctx, game):
         self.channel_manager.add_game_in_session(ctx, game)
-        await self.roll_game_bot.set_join_waiting_period(ctx, game)
+        await self.roll_game_bot.set_join_waiting_period(ctx)
 
         if len(self.roll_game_bot.get_game(ctx).users) > 1:
-            await self.roll_game_bot.start_rolls(ctx, game)
+            await self.roll_game_bot.start_rolls(game)
         else:
             await self.bot.say("Not enough players.")
+            self.roll_game_bot.terminate_game(game)
 
         self.channel_manager.vacate_channel(ctx)
 

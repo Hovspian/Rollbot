@@ -19,7 +19,7 @@ description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
-session_manager = SessionManager(bot)
+session_manager = SessionManager(bot, data_manager)
 channel_manager = session_manager.channel_manager
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot
@@ -46,13 +46,13 @@ async def roll(ctx, max=100):
         return
 
     roll = random.randint(1, max)
+    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
     try:
         game = channel_manager.get_game(ctx)
-        game.last_roll = Roll(roll, roller, max)
+        await game.add_roll(Roll(roll, roller, max))
     except:
         pass
-    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
 
 @bot.group(pass_context=True)

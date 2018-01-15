@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, random
 from RollGames.rollgame import RollGame
 from RollGames.roll import Roll
 from discord.ext.commands.context import Context
@@ -8,59 +8,35 @@ from Managers.data_manager import SessionDataManager
 class StaticRollGame(RollGame):
     def __init__(self, bot, data_manager: SessionDataManager, ctx : Context, bet):
         super().__init__(bot, data_manager, ctx, bet)
+        self.player_rolls = []
 
-    async def wait_for_rolls(self, max):
+    async def wait_for_rolls(self):
         while len(self.users) > len(self.player_rolls):
-            if max == 100:
-                await self.bot.wait_for_message(content='/roll', channel=self.ctx.message.channel)
-            else:
-                await self.bot.wait_for_message(content=f'/roll {max}', channel=self.ctx.message.channel)
-            await asyncio.sleep(0.01)
-            if self.last_roll.roller in self.users and self.last_roll.roller not in self.player_rolls:
-                self.player_rolls.append((self.last_roll.roller, self.last_roll.rolled))
-                await self.bot.say("Roll counted")
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(1)
 
-    async def determine(self, rolls: list):
+    async def determine(self):
         """Determines the winner or loser of a game. If there is a tie, it will reroll for them."""
 
-        rolls.sort(key=lambda roll: roll[1])
+        self.player_rolls.sort(key=lambda roll: roll[1])
 
-        lowest = rolls[0][1]
+        lowest = self.player_rolls[0][1]
         lowest_rollers = []
         low_index = 0
-        while low_index < len(rolls) and rolls[low_index][1] == lowest:
-            lowest_rollers.append(rolls[low_index][0])
+        while low_index < len(self.player_rolls) and self.player_rolls[low_index][1] == lowest:
+            lowest_rollers.append(self.player_rolls[low_index][0])
             low_index += 1
 
-        highest = rolls[len(rolls) - 1][1]
+        highest = self.player_rolls[len(self.player_rolls) - 1][1]
         highest_rollers = []
-        high_index = len(rolls) - 1
-        while high_index >= 0 and rolls[high_index][1] == highest:
-            highest_rollers.append(rolls[high_index][0])
+        high_index = len(self.player_rolls) - 1
+        while high_index >= 0 and self.player_rolls[high_index][1] == highest:
+            highest_rollers.append(self.player_rolls[high_index][0])
             high_index -= 1
 
-        if len(lowest_rollers) > 1:
-            loser_reroll = []
-            for person in lowest_rollers:
-                the_roll = await self.forced_roll(person, 100)
-                loser_reroll.append((the_roll.roller, the_roll.rolled))
-            result = await self.determine(loser_reroll)
-            loser = result[0][0]
-        else:
-            loser = lowest_rollers[0]
+        loser = lowest_rollers[random.randint(0, len(lowest_rollers) - 1)]
+        winner = highest_rollers[random.randint(0, len(highest_rollers) - 1)]
 
-        if len(highest_rollers) > 1:
-            winner_reroll = []
-            for person in highest_rollers:
-                the_roll = await self.forced_roll(person, 100)
-                winner_reroll.append((the_roll.roller, the_roll.rolled))
-            result = await self.determine(winner_reroll)
-            winner = result[1][0][0]
-        else:
-            winner = highest_rollers[0]
-
-        result = [(loser, lowest), [(winner, highest)]]
+        result = [loser, winner]
         return result
 
 
@@ -68,92 +44,86 @@ class NormalRollGame(StaticRollGame):
     def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
         super().__init__(bot, data_manager, ctx, bet)
 
-    def create_message(self, ctx):
-        host = ctx.message.author.display_name
-        return f"{host} is creating a normal roll with {self.bet}g bet. Type /join in the next 20 seconds to join."
-
     def play_message(self):
-        return "Start rolling from 1-100."
+        return "Start rolling from 1-100"
 
-    async def determine(self, rolls : list):
-        result = await super().determine(rolls)
-        result.append(self.bet)
+    async def determine(self):
+        super_result = await super().determine()
+        loser = super_result[0]
+        winner = super_result[1]
+        if self.player_rolls[0][1] == self.player_rolls[len(self.player_rolls) - 1][1]:
+            owed = 0
+        else:
+            owed = self.bet
 
-        loser = result[0][0]
-        winner = result[1][0][0]
-        self.result[loser] = -result[2]
-        self.result[winner] = result[2]
-
+        result = [(loser, -owed), [(winner, owed)]]
         return result
+
+    def add_roll(self, roll):
+        if roll.roller in self.users and roll.roller not in self.player_rolls and roll.max == 100:
+            self.player_rolls.append((roll.roller, roll.rolled))
 
 
 class DifferenceRollGame(StaticRollGame):
     def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
         super().__init__(bot, data_manager, ctx, bet)
 
-    def create_message(self, ctx):
-        host = ctx.message.author.display_name
-        return f"{host} is creating a difference roll with {self.bet}g bet. Type /join in the next 20 seconds to join."
-
     def play_message(self):
-        return f"Start rolling from 1-{self.bet}."
+        if self.bet > 0:
+            return f"Start rolling from 1-{self.bet}"
+        else:
+            return "Start rolling from 1-100"
 
-    async def determine(self, rolls: list):
-        result = await super().determine(rolls)
-        difference = result[1][1][0] - result[0][1]
-        result.append(difference)
+    async def determine(self):
+        super_result = await super().determine()
+        loser = super_result[0]
+        winner = super_result[1]
+        owed = self.player_rolls[len(self.player_rolls) - 1][1] - self.player_rolls[0][1]
 
-        loser = result[0][0]
-        winner = result[1][0][0]
-        self.result[loser] = -result[2]
-        self.result[winner] = result[2]
-
+        result = [(loser, -owed), [(winner, owed)]]
         return result
+
+    def add_roll(self, roll):
+        if roll.roller in self.users and roll.roller not in self.player_rolls and \
+                (roll.max == self.bet or (roll.max == 100 and self.bet < 1)):
+            self.player_rolls.append((roll.roller, roll.rolled))
 
 
 class CountdownRollGame(RollGame):
     def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
         super().__init__(bot, data_manager, ctx, bet)
-
-    def create_message(self, ctx):
-        host = ctx.message.author.display_name
-        return f"{host} is creating a countdown roll with {self.bet}g bet. Type /join in the next 20 seconds to join."
+        if bet > 1:
+            self.next_roll = bet
+        else:
+            self.next_roll = 100
 
     def play_message(self):
-        return "Starting to play a countdown roll game."
+        return f"Waiting for roll to {self.next_roll} from {self.get_name(self.users[0])}"
 
-    async def wait_for_rolls(self, max):
-        self.last_roll = Roll(self.bet, None, self.bet)
-        while self.last_roll.rolled > 1:
-            for player in self.users:
-                await asyncio.sleep(0.01)
-                if self.last_roll.rolled == 1:
-                    index = self.users.index(player)
-                    loser_index = (index - 1) % len(self.users)
-                    self.player_rolls[0] = self.users[loser_index]
+    async def wait_for_rolls(self):
+        while self.next_roll > 1:
+            await asyncio.sleep(1)
 
-                    return
-                await self.bot.say(f'Waiting for roll to {self.last_roll.rolled} from {self.get_name(player)}')
-                if self.last_roll.rolled == 100:
-                    await self.bot.wait_for_message(content='/roll', author=player, channel=self.ctx.message.channel)
-                else:
-                    await self.bot.wait_for_message(content=f'/roll {self.last_roll.rolled}', author=player,
-                                                    channel=self.ctx.message.channel)
-
-                await asyncio.sleep(0.5)
-
-    async def determine(self, rolls : list):
-        winners = []
-        for player in self.users:
-            if player is not rolls[0]:
-                winners.append(self.get_name(player))
+    async def determine(self):
+        loser = self.users[-1]
+        winners = self.users[:-1]
         owed = self.bet // len(winners)
+        loser_result = (loser, -self.bet)
 
-        loser = rolls[0]
-        self.result[loser] = -self.bet
-
+        winner_list = []
         for player in winners:
-            self.result[player] = owed
+            winner_list.append((player, owed))
+        result = [loser_result, winner_list]
 
-        result = [rolls[0], winners, owed]
         return result
+
+    async def add_roll(self, roll):
+        if self.next_roll == 1:
+            return
+        if roll.roller is self.users[0] and roll.max == self.next_roll:
+            self.next_roll = roll.rolled
+            self.users.remove(roll.roller)
+            self.users.append(roll.roller)
+            if roll.rolled > 1:
+                await self.bot.say(f"Waiting for roll to {self.next_roll} from {self.users[0].display_name}")
+
