@@ -105,16 +105,15 @@ class CountdownRollGame(RollGame):
             await asyncio.sleep(1)
 
     async def determine(self):
-        result = []
         loser = self.users[-1]
         winners = self.users[:-1]
         owed = self.bet // len(winners)
-        result[0] = (loser, -self.bet)
+        loser_result = (loser, -self.bet)
 
         winner_list = []
         for player in winners:
             winner_list.append((player, owed))
-        result[1] = winner_list
+        result = [loser_result, winner_list]
 
         return result
 
