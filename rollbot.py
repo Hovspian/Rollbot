@@ -16,10 +16,10 @@ from discordtoken import TOKEN
 from helper_functions import *
 
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='/', description=description)
+bot = commands.Bot(command_prefix='.', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
-session_manager = SessionManager(bot)
+session_manager = SessionManager(bot, data_manager)
 channel_manager = session_manager.channel_manager
 blackjack_bot = session_manager.blackjack_bot
 scratch_card_bot = session_manager.scratch_card_bot

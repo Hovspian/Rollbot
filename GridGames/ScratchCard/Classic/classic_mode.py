@@ -56,6 +56,7 @@ class ClassicScratchCard(ScratchCard):
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
+            self.winnings = self.calculate_payout()
             self.in_progress = False
 
     def _scratch(self, y, x):
