@@ -6,8 +6,8 @@ from helper_functions import *
 
 
 class ClassicScratchCard(ScratchCard):
-    def __init__(self, host):
-        super().__init__(host)
+    def __init__(self, ctx, host):
+        super().__init__(ctx, host)
         self.num_winnable_combos = self._roll_num_winnable_combos()
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []

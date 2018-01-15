@@ -6,8 +6,8 @@ from joinable_game_class import JoinableGame
 
 class ScratchCard(GridGame, JoinableGame):
     # Mechanics
-    def __init__(self, host):
-        GridGame.__init__(self)
+    def __init__(self, ctx, host):
+        GridGame.__init__(self, ctx)
         JoinableGame.__init__(self, host)
         self.max_time_left = 120
         self.num_columns = 3

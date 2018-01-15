@@ -36,13 +36,13 @@ class SessionManager:
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
             user = ctx.message.author
-            scratch_card = ClassicScratchCard(host=user)
+            scratch_card = ClassicScratchCard(ctx, host=user)
             await self._create_scratch_game(ctx, scratch_card)
 
     async def create_hammerpot(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
             user = ctx.message.author
-            hammerpot = Hammerpot(host=user)
+            hammerpot = Hammerpot(ctx, host=user)
             await self._create_scratch_game(ctx, hammerpot)
 
     async def _create_scratch_game(self, ctx, game) -> None:

@@ -6,8 +6,8 @@ from helper_functions import *
 
 
 class Hammerpot(ScratchCard):
-    def __init__(self, host):
-        super().__init__(host)
+    def __init__(self, ctx, host):
+        super().__init__(ctx, host)
         self.title = "HAMMERPOT"
         self.max_time_left = 180
         self.underlying_symbols = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
