@@ -6,8 +6,8 @@ from helper_functions import *
 
 
 class ClassicScratchCard(ScratchCard):
-    def __init__(self, host):
-        super().__init__(host)
+    def __init__(self, ctx, host):
+        super().__init__(ctx, host)
         self.num_winnable_combos = self._roll_num_winnable_combos()
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
@@ -56,6 +56,7 @@ class ClassicScratchCard(ScratchCard):
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
+            self.winnings = self.calculate_payout()
             self.in_progress = False
 
     def _scratch(self, y, x):

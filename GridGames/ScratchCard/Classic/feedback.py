@@ -30,7 +30,7 @@ class ScratchCardFeedback:
     def _get_winning_report(self) -> str:
         winning_symbols = self.scratch_card.winning_symbols
         payout_stats = '\n'.join([self._symbol_stats(match) for match in winning_symbols])
-        payout = self.scratch_card.calculate_payout()
+        payout = self.scratch_card.winnings
         payout_message = f':dollar: Payout is {payout} gold. :dollar:'
         return '\n'.join(["Winning match!", payout_stats, payout_message])
 

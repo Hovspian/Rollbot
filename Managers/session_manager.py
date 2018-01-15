@@ -15,9 +15,10 @@ class SessionManager:
 
     def __init__(self, bot, data_manager):
         self.bot = bot
+        self.data_manager = data_manager
         self.channel_manager = ChannelManager(bot)
         self.user_manager = UserManager(self.channel_manager, bot)
-        self.scratch_card_bot = ScratchCardBot(bot)  # GameManager
+        self.scratch_card_bot = ScratchCardBot(bot, data_manager)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
         self.blackjack_bot = BlackjackBot(bot) # GameManager
         self.roll_game_bot = RollGameBot(bot, data_manager)  # GameManager
@@ -36,13 +37,13 @@ class SessionManager:
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
             user = ctx.message.author
-            scratch_card = ClassicScratchCard(host=user)
+            scratch_card = ClassicScratchCard(ctx, host=user)
             await self._create_scratch_game(ctx, scratch_card)
 
     async def create_hammerpot(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):
             user = ctx.message.author
-            hammerpot = Hammerpot(host=user)
+            hammerpot = Hammerpot(ctx, host=user, )
             await self._create_scratch_game(ctx, hammerpot)
 
     async def _create_scratch_game(self, ctx, game) -> None:
