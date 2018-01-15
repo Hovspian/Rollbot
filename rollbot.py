@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 from GridGames.Slots.modes import *
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
@@ -51,7 +52,7 @@ async def roll(ctx, max=100):
     try:
         game = channel_manager.get_game(ctx)
         await game.add_roll(Roll(roll, roller, max))
-    except:
+    except AttributeError:
         pass
 
 
