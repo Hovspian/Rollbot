@@ -54,6 +54,7 @@ class SessionManager:
         await self.scratch_card_bot.initialize_game(ctx, game)
         game_ended = await self.scratch_card_bot.set_time_limit(game)
         if game_ended:
+            self.data_manager.update_gold(game.host, game.winnings)
             self.channel_manager.vacate_channel(ctx)
 
     async def askhammer(self, ctx) -> None:

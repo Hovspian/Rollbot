@@ -43,7 +43,6 @@ class ScratchCardBot(GameManager):
         if line and can_pick:
             game.pick_line(line)
             await self.report_turn(game)
-            #self.data_manager.update_gold(game.host, game.winnings)
 
     async def check_game_host(self, ctx) -> bool:
         game_host = await self.get_game_host(ctx)
@@ -68,8 +67,6 @@ class ScratchCardBot(GameManager):
         report = game.announcement.get_report()
         await self.bot.say(current_card)
         await self.bot.say(report)
-        if not game.in_progress:
-            self.data_manager.update_gold(game.host, game.winnings)
 
     async def get_game(self, ctx):
         game = super().get_game(ctx)
