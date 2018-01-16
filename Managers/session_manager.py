@@ -33,6 +33,9 @@ class SessionManager:
             game_ended = await self.blackjack_bot.set_time_limit(blackjack)
             if game_ended:
                 self.channel_manager.vacate_channel(ctx)
+                results = blackjack.results
+                for player in results:
+                    self.data_manager.update_gold(player.user, results[player])
 
     async def create_scratch_card(self, ctx) -> None:
         if await self._is_valid_new_game(ctx, self.scratch_card_bot):

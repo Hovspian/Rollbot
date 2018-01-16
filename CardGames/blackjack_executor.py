@@ -31,6 +31,7 @@ class BlackjackExecutor(JoinableGame):
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
         self.dealer_executor = BlackjackDealer(self)
         self.max_time_left = 10 * 60  # 10 minutes
+        self.results = {}
 
     def get_avatar(self, user) -> List[PlayerHand]:
         # Players own a list of hands: initially one hand, but can be multiple after a split
@@ -178,10 +179,12 @@ class BlackjackExecutor(JoinableGame):
     async def resolve_outcomes(self, player) -> None:
         player_name = self.avatar_handler.get_name(player)
         hands = self.avatar_handler.get_hands(player)
+        self.results[player] = 0
         for hand in hands:
             await self.announcer.player_hand(player_name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
             await hand_checker.check_outcome()
+            self.results[player] += hand.get_winnings() - hand.get_wager()
 
     def get_current_player(self) -> PlayerAvatar:
         return self.players[0]
