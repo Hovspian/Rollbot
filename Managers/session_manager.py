@@ -99,11 +99,18 @@ class SessionManager:
 
         if len(self.roll_game_bot.get_game(ctx).users) > 1:
             await self.roll_game_bot.start_rolls(game)
+            self._store_rollgame_result(game)
         else:
             await self.bot.say("Not enough players.")
             self.roll_game_bot.terminate_game(game)
 
         self.channel_manager.vacate_channel(ctx)
+
+    def _store_rollgame_result(self, game):
+        loser_result = game.result[0]
+        self.data_manager.update_gold(loser_result[0], loser_result[1])
+        for winner_result in game.result[1]:
+            self.data_manager.update_gold(winner_result[0], winner_result[1])
 
     async def join_game(self, ctx):
         user_can_join = await self.user_manager.check_valid_user(ctx)

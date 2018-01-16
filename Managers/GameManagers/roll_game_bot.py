@@ -32,27 +32,20 @@ class RollGameBot(GameManager):
 
         await self.bot.say(game.play_message())
         await game.wait_for_rolls()
-        result = await game.determine()
+        await game.determine()
 
-        if result[0][1] == 0:
+        if game.result[0][1] == 0:
             await self.bot.say("It's a tie")
         else:
-            loser = game.get_name(result[0][0])
+            loser = game.get_name(game.result[0][0])
             winners = []
-            for tup in result[1]:
+            for tup in game.result[1]:
                 winners.append(game.get_name(tup[0]))
             split_winners = ', '.join(winners)
-            await self.bot.say(f"{loser} owes {split_winners} {result[1][0][1]}g")
-            self._store_result(result)
+            await self.bot.say(f"{loser} owes {split_winners} {game.result[1][0][1]}g")
 
         self._end_game(game)
         game.in_progress = False
-
-    def _store_result(self, result):
-        loser_result = result[0]
-        self.data_manager.update_gold(loser_result[0], loser_result[1])
-        for winner_result in result[1]:
-            self.data_manager.update_gold(winner_result[0], winner_result[1])
 
     async def say_setup_message(self, ctx):
         host_name = ctx.message.author.display_name

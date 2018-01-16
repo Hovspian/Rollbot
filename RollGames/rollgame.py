@@ -11,6 +11,7 @@ class RollGame:
         self.ctx = ctx
         self.users = []
         self.in_progress = False
+        self.result = []
 
     @staticmethod
     async def forced_roll(player: discord.member.Member, max: int):
@@ -35,5 +36,5 @@ class RollGame:
     def play_message(self):
         raise NotImplementedError
 
-    def add_roll(self, roll):
+    async def add_roll(self, roll):
         raise NotImplementedError
