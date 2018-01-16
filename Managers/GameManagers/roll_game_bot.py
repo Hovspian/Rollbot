@@ -5,24 +5,23 @@ from RollGames.roll_game_modes import *
 
 class RollGameBot(GameManager):
 
-    def __init__(self, bot, data_manager):
+    def __init__(self, bot):
         super().__init__(bot)
-        self.data_manager = data_manager
 
     async def create_normal_rollgame(self, ctx, bet):
-        game = NormalRollGame(self.bot, self.data_manager, ctx, bet)
+        game = NormalRollGame(self.bot, ctx, bet)
         await game.add_user(ctx.message.author)
         self.add_game(game)
         return game
 
     async def create_difference_rollgame(self, ctx, bet):
-        game = DifferenceRollGame(self.bot, self.data_manager, ctx, bet)
+        game = DifferenceRollGame(self.bot, ctx, bet)
         await game.add_user(ctx.message.author)
         self.add_game(game)
         return game
 
     async def create_countdown_rollgame(self, ctx, bet):
-        game = CountdownRollGame(self.bot, self.data_manager, ctx, bet)
+        game = CountdownRollGame(self.bot, ctx, bet)
         await game.add_user(ctx.message.author)
         self.add_game(game)
         return game

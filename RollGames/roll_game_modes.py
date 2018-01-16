@@ -1,13 +1,11 @@
 import asyncio, random
 from RollGames.rollgame import RollGame
-from RollGames.roll import Roll
 from discord.ext.commands.context import Context
-from Managers.data_manager import SessionDataManager
 
 
 class StaticRollGame(RollGame):
-    def __init__(self, bot, data_manager: SessionDataManager, ctx : Context, bet):
-        super().__init__(bot, data_manager, ctx, bet)
+    def __init__(self, bot, ctx : Context, bet):
+        super().__init__(bot, ctx, bet)
         self.player_rolls = []
 
     async def wait_for_rolls(self):
@@ -41,8 +39,8 @@ class StaticRollGame(RollGame):
 
 
 class NormalRollGame(StaticRollGame):
-    def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
-        super().__init__(bot, data_manager, ctx, bet)
+    def __init__(self, bot, ctx, bet):
+        super().__init__(bot, ctx, bet)
 
     def play_message(self):
         return "Everyone from 1-100"
@@ -65,8 +63,8 @@ class NormalRollGame(StaticRollGame):
 
 
 class DifferenceRollGame(StaticRollGame):
-    def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
-        super().__init__(bot, data_manager, ctx, bet)
+    def __init__(self, bot, ctx, bet):
+        super().__init__(bot, ctx, bet)
 
     def play_message(self):
         if self.bet > 0:
@@ -90,8 +88,8 @@ class DifferenceRollGame(StaticRollGame):
 
 
 class CountdownRollGame(RollGame):
-    def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
-        super().__init__(bot, data_manager, ctx, bet)
+    def __init__(self, bot, ctx, bet):
+        super().__init__(bot, ctx, bet)
         if bet > 1:
             self.next_roll = bet
         else:

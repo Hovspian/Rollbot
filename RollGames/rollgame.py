@@ -4,9 +4,8 @@ from Managers.data_manager import SessionDataManager
 
 
 class RollGame:
-    def __init__(self, bot, data_manager: SessionDataManager, ctx, bet):
+    def __init__(self, bot, ctx, bet):
         self.bot = bot
-        self.data_manager = data_manager
         self.bet = bet
         self.ctx = ctx
         self.users = []

@@ -21,7 +21,7 @@ class SessionManager:
         self.scratch_card_bot = ScratchCardBot(bot, data_manager)  # GameManager
         self.hammer_race_bot = HammerRaceBot(bot)  # GameManager
         self.blackjack_bot = BlackjackBot(bot) # GameManager
-        self.roll_game_bot = RollGameBot(bot, data_manager)  # GameManager
+        self.roll_game_bot = RollGameBot(bot)  # GameManager
 
     # Game creation
     async def create_blackjack(self, ctx) -> None:
