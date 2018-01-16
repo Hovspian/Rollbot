@@ -51,7 +51,7 @@ Types: blackjack, slots, rollgame, scratchcard, hammerrace
 `/giantmapleslots` - Play a 7x7 slot machine using maple icons
 
 ### Roll game commands:
-`/rollgame <mode>` - Starts a new roll game
+`/rollgame <mode> <bet>` - Starts a new roll game with the specified bet
 
 Modes: normal, difference, and countdown
 
