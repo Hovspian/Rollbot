@@ -28,6 +28,7 @@ class BlackjackBot:
             await self.bot.say("You aren't in the game. Join the next one?")
 
     def _get_game(self, ctx):
+        # Return the game that the user is in, if any.
         user = ctx.message.author
         for game in self.initializer.get_games():
             if self._is_in_game(game, user):

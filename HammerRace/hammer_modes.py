@@ -34,8 +34,11 @@ class ClassicHammer(HammerRace):
 
 
 class ComparisonHammer(HammerRace):
-    """Game mode compares inputted choices.
-    Example: /hammer eggs, bread, banana"""
+
+    """
+    Game mode compares inputted choices.
+    Example: /hammer eggs, bread, banana
+    """
 
     def __init__(self, ctx):
         super().__init__(ctx)
@@ -64,7 +67,10 @@ class ComparisonHammer(HammerRace):
 
 
 class VersusHammer(HammerRace):
-    """Game mode allows users to join the race."""
+
+    """
+    Game mode allowing users to join the race.
+    """
 
     def __init__(self, ctx):
         HammerRace.__init__(self, ctx)

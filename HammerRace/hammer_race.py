@@ -1,10 +1,10 @@
 from Core.helper_functions import message_without_command
-from Core.core_game_class import JoinableGame
+from Core.core_game_class import GameCore
 from HammerRace.participant import Participant
 from HammerRace.race_track import RaceTrack
 
 
-class HammerRace(JoinableGame):
+class HammerRace(GameCore):
     # Manage relationship between feedback, participants and race
 
     def __init__(self, ctx):

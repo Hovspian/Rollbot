@@ -1,7 +1,4 @@
-import math
 from typing import List
-
-from Core.core_game_class import JoinableGame
 
 
 class GridOptions:
