@@ -4,7 +4,7 @@ from Blackjack.blackjack import Blackjack
 from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import Hand, PlayerHand
 from Blackjack.result_checker import BlackjackResultChecker
-from Core.core_game_class import JoinableGame
+from Core.core_game_class import GameCore
 
 
 class RollbotHost:
@@ -15,7 +15,7 @@ class RollbotHost:
         self.gold = 10000
 
 
-class BlackjackExecutor(JoinableGame):
+class BlackjackExecutor(GameCore):
 
     def __init__(self, bot, ctx):
         super().__init__(ctx)
@@ -28,10 +28,6 @@ class BlackjackExecutor(JoinableGame):
         self.dealer_executor = BlackjackDealer(self)
         self.max_time_left = 10 * 60  # 10 minutes
         self.results = {}
-
-    def get_avatar(self, user) -> List[PlayerHand]:
-        # Players own a list of hands: initially one hand, but can be multiple after a split
-        return [PlayerHand()]
 
     def init_dealer(self, host) -> PlayerAvatar:
         # TODO let players host blackjack games
@@ -169,7 +165,7 @@ class BlackjackExecutor(JoinableGame):
             await self.check_next_hand()
 
     async def end_game(self) -> None:
-        """ Checks self.players in case the dealer has gotten a blackjack. """
+        # Checks self.players in case the dealer has gotten a blackjack.
         [await self.resolve_outcomes(player) for player in self.standing_players]
         [await self.resolve_outcomes(player) for player in self.players]
         super().end_game()
@@ -198,3 +194,14 @@ class BlackjackExecutor(JoinableGame):
 
     def get_dealer_hand(self) -> Hand:
         return self.avatar_handler.get_first_hand(self.dealer)
+
+    def add_player(self, user) -> None:
+        # Couples the avatar and user in a PlayerAvatar class
+        avatar = self.get_avatar()
+        player_avatar = PlayerAvatar(user, avatar)
+        super().add_player(player_avatar)
+
+    @staticmethod
+    def get_avatar() -> List[PlayerHand]:
+        # Players own a list of hands: initially one hand, but can be multiple after a split
+        return [PlayerHand()]

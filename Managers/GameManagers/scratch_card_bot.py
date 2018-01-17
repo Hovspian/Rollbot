@@ -69,7 +69,7 @@ class ScratchCardBot(SessionManager):
         await self.bot.say(report)
 
     async def get_game(self, ctx):
-        game = super().get_game(ctx)
+        game = super()._get_game(ctx)
         if game:
             return game
         else:

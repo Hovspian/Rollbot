@@ -11,7 +11,7 @@ class TimeLimit:
         self.bot = bot
         self.game = game
 
-    async def set_time_limit(self):
+    async def run(self):
         time_left = self.game.max_time_left
 
         while self.game.in_progress:

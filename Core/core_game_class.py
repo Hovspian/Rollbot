@@ -6,7 +6,7 @@ class GameCore:
         self.ctx = ctx
         self.host = ctx.message.author
         self.host_name = self.host.display_name
-        self.users = []  # All users joining a game
+        self.users = []  # All Discord users joining a game
         self.players = []  # Game participants
         self.in_progress = False
         self.max_time_left = 180
@@ -34,17 +34,3 @@ class GameCore:
     def end_game(self):
         self.in_progress = False
 
-
-class JoinableGame(GameCore):
-    def __init__(self, ctx):
-        super().__init__(ctx)
-
-    def add_player(self, user) -> None:
-        # Couples the avatar and user in a PlayerAvatar class and submits it to self.players
-        avatar = self.get_avatar(user)
-        player_avatar = PlayerAvatar(user, avatar)
-        super().add_player(player_avatar)
-
-    def get_avatar(self, user) -> any:
-        # Abstract method that constructs the user's in-game representation
-        pass

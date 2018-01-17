@@ -1,4 +1,15 @@
+class MoveOptions:
+    def __init__(self, ctx, bot, game):
+        self.ctx = ctx
+        self.bot = bot
+        self.game = game
+
+
 class BlackjackMoveChecker:
+
+    """
+    Checks if your Blackjack move is legal.
+    """
 
     def __init__(self, bot, game):
         self.bot = bot

@@ -1,12 +1,36 @@
 class ChannelManager:
 
-    """ Restricts one ongoing game per channel """
+    """
+    Restricts one ongoing game per channel.
+    States controlled by GameInitializer and bot commands.
+    """
 
     def __init__(self, bot):
-        self.active_games = {}
         self.bot = bot
+        self.active_games = {}  # Key: channel ID, value: GameCore
+        self.join_timers = {}  # Key: game.host (Discord member), value: JoinTimer
 
-    async def check_valid_new_game(self, ctx) -> bool:
+    def occupy_channel(self, channel, game) -> None:
+        self.active_games[channel] = game
+
+    def vacate_channel(self, channel) -> None:
+        self.active_games.pop(channel)
+
+    def add_join_timer(self, host, join_timer):
+        self.join_timers[host] = join_timer
+
+    def remove_join_timer(self, host):
+        self.join_timers.pop(host)
+
+    def force_start(self):
+        # if game in channel and initiator is host
+        pass
+
+    def quit(self):
+        # User quits the game (if possible)
+        pass
+
+    async def is_valid_channel(self, ctx) -> bool:
         channel = ctx.message.channel
         if self._is_game_in_channel(channel):
             await self.bot.say("Another game is already underway in this channel.")
@@ -14,17 +38,11 @@ class ChannelManager:
             return True
 
     async def check_valid_join(self, ctx) -> bool:
-        error = self._check_invalid_join_error(ctx)
+        error = self._get_invalid_join_error(ctx)
         if error:
             await self.bot.say(error)
         else:
             return True
-
-    def add_game(self, channel, game) -> None:
-        self.active_games[channel] = game
-
-    def vacate_channel(self, channel) -> None:
-        self.active_games.pop(channel)
 
     async def add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
@@ -32,7 +50,7 @@ class ChannelManager:
         await self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
 
-    def _check_invalid_join_error(self, ctx) -> bool:
+    def _get_invalid_join_error(self, ctx) -> bool:
         channel = ctx.message.channel
         user = ctx.message.author
         error = False
@@ -57,4 +75,3 @@ class ChannelManager:
         if self._is_game_in_channel(channel):
             game = self.active_games[channel]
             return any(in_game_user for in_game_user in game.users if in_game_user is user)
-

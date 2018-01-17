@@ -10,7 +10,7 @@ class JoinTimer:
     async def cancel_wait(self):
         self.end_wait()
 
-    async def set_join_waiting_period(self) -> None:
+    async def run(self) -> None:
         self.waiting = True
         while self.waiting:
             await self._say_setup_message()
