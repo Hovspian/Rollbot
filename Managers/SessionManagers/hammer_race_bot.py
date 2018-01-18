@@ -12,31 +12,35 @@ class HammerRaceInitializer(GameInitializer):
 
     async def initialize_classic(self, ctx):
         if await self._can_create_game(ctx):
-            game = ClassicHammer(self.bot, ctx)
-            self._create_session(game)
+            race = ClassicHammer(self.bot, ctx)
+            await self._create_session(race)
 
     async def initialize_comparison(self, ctx):
         if await self._can_create_game(ctx):
-            game = ComparisonHammer(self.bot, ctx)
-            self._create_session(game)
+            race = ComparisonHammer(self.bot, ctx)
+            await self._create_session(race)
 
     async def initialize_versus(self, ctx):
         if await self._can_create_game(ctx):
             race = VersusHammer(self.bot, ctx)
-            self._create_session(race)
+            await self._create_session(race)
 
     async def _create_session(self, race: HammerRace):
         self._add_game(race.ctx, race)
-        if race.join_timer:
-            await self._run_join_timer(race)
+        await self._check_join_timer(race)
         await race.run()
         self._remove_game(race.ctx)
 
-    async def _run_join_timer(self, game):
-        timer = game.join_timer
-        self.channel_manager.add_join_timer(game.host, timer)
+    async def _check_join_timer(self, race: HammerRace):
+        if race.join_timer:
+            await self._say_setup_message(race.ctx)
+            await self._run_join_timer(race)
+
+    async def _run_join_timer(self, race: HammerRace):
+        timer = race.join_timer
+        self.channel_manager.add_join_timer(race.host, timer)
         await timer.run()
-        self.channel_manager.remove_join_timer(game.host)
+        self.channel_manager.remove_join_timer(race.host)
 
     async def _say_setup_message(self, ctx) -> None:
         host_name = ctx.message.author.display_name
