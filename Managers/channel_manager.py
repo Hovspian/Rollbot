@@ -37,14 +37,14 @@ class ChannelManager:
         else:
             return True
 
-    async def check_valid_join(self, ctx) -> bool:
+    async def check_valid_join(self, ctx):
         error = self._get_invalid_join_error(ctx)
         if error:
             await self.bot.say(error)
         else:
-            return True
+            self._add_user_to_game(ctx)
 
-    async def add_user_to_game(self, ctx) -> None:
+    async def _add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
         user = ctx.message.author
         await self.active_games[channel].add_user(user)
@@ -66,12 +66,10 @@ class ChannelManager:
         return channel in self.active_games.keys()
 
     def _is_game_in_progress(self, channel) -> bool:
-        if self._is_game_in_channel(channel):
-            game = self.active_games[channel]
-            return game.in_progress
+        game = self.active_games[channel]
+        return game.in_progress
 
     def _is_user_in_game(self, channel, user) -> bool:
-        # Search the game's users attribute
-        if self._is_game_in_channel(channel):
-            game = self.active_games[channel]
-            return any(in_game_user for in_game_user in game.users if in_game_user is user)
+        # Search the game's users for a match
+        game = self.active_games[channel]
+        return any(in_game_user for in_game_user in game.users if in_game_user is user)

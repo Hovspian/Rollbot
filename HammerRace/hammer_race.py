@@ -1,3 +1,6 @@
+import asyncio
+from abc import abstractmethod
+
 from Core.helper_functions import message_without_command
 from Core.core_game_class import GameCore
 from HammerRace.participant import Participant
@@ -5,18 +8,25 @@ from HammerRace.race_track import RaceTrack
 
 
 class HammerRace(GameCore):
-    # Manage relationship between feedback, participants and race
 
-    def __init__(self, ctx):
-        super().__init__(ctx)
+    def __init__(self, bot, ctx):
+        super().__init__(bot, ctx)
         self.distance_to_finish = 40
         self.winners = []
         self.race_track = RaceTrack(self)
         self.message = message_without_command(ctx.message.content)
+        self.join_timer = None
 
-    def next_round(self) -> None:
-        [self._player_turn(player) for player in self.players]
-        self._check_race_end()
+    async def run(self) -> None:
+        self.start_game()
+        await self.bot.say(self.round_report())
+
+        while self.in_progress:
+            await asyncio.sleep(2.0)
+            self._next_round()
+            await self.bot.say(self.round_report())
+
+        await self.bot.say(self._get_outcome_report())
 
     def valid_num_players(self) -> bool:
         within_min_players = len(self.players) > 1
@@ -26,10 +36,13 @@ class HammerRace(GameCore):
     def round_report(self) -> str:
         return self.race_track.draw_track()
 
-    def outcome_report(self) -> str:
-        winners = self._get_winner_names()
-        report = "The winners are {}" if self._has_multiple_winners() else "The winner is {}"
-        return report.format(winners)
+    @abstractmethod
+    def _get_outcome_report(self) -> str:
+        raise NotImplementedError
+
+    def _next_round(self) -> None:
+        [self._player_turn(player) for player in self.players]
+        self._check_race_end()
 
     def _is_winner(self, player: Participant) -> bool:
         return self._get_steps_left(player.progress) <= 0

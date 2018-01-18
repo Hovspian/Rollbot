@@ -1,11 +1,13 @@
 from typing import List
 from Core.constants import *
+from Core.join_timer import JoinTimer
 from HammerRace.hammer_race import *
 
 
 class ClassicHammer(HammerRace):
-    def __init__(self, ctx):
-        super().__init__(ctx)
+
+    def __init__(self, bot, ctx):
+        super().__init__(bot, ctx)
         self.overriding_answer = None  # TBD
         self.init_players()
 
@@ -15,7 +17,7 @@ class ClassicHammer(HammerRace):
         hammer = super()._init_player(short_name="h", name=":hammer:")
         self.overriding_answer = hammer.name
 
-    def outcome_report(self) -> str:
+    def _get_outcome_report(self) -> str:
         answer = self._get_answer()
         report = SPACE.join(["The answer is", answer])
         if self.message != '':
@@ -40,21 +42,28 @@ class ComparisonHammer(HammerRace):
     Example: /hammer eggs, bread, banana
     """
 
-    def __init__(self, ctx):
-        super().__init__(ctx)
+    def __init__(self, bot, ctx):
+        super().__init__(bot, ctx)
         self._options = self._set_options(self.message)
         self.invalid_players_error = "Please enter 2-5 options, separated by commas. " \
-                                          "Example: ```/compare bread, eggs, hammer```"
+                                     "Example: ```/compare bread, eggs, hammer```"
         self._init_players()
 
-    def outcome_report(self) -> str:
+    async def run(self):
+        if self.valid_num_players():
+            super().run()
+        else:
+            await self.bot.say(self.invalid_players_error)
+
+    def _get_outcome_report(self) -> str:
         return SPACE.join(["Out of",
                            self.message,
                            ":\n",
-                           super().outcome_report()])
+                           super()._get_outcome_report()])
 
     def _init_players(self) -> None:
-        [self._init_option(option) for option in self._options]
+        for option in self._options:
+            self._init_option(option)
 
     def _init_option(self, option: str) -> None:
         option = option.strip()
@@ -69,23 +78,29 @@ class ComparisonHammer(HammerRace):
 class VersusHammer(HammerRace):
 
     """
-    Game mode allowing users to join the race.
+    Game mode allows users to join the race.
     """
 
-    def __init__(self, ctx):
-        HammerRace.__init__(self, ctx)
+    def __init__(self, bot, ctx):
+        HammerRace.__init__(self, bot, ctx)
         self.losers = []
         self.multiplier = 1
         self.invalid_players_error = "A race needs at least two players."
+        self.join_timer = JoinTimer()
 
-    def get_start_message(self) -> str:
-        return SPACE.join(["Race between", self._get_player_names()])
+    async def run(self):
+        if self.valid_num_players():
+            starting_message = SPACE.join(["Race between", self._get_player_names()])
+            self.bot.say(starting_message)
+            super().run()
+        else:
+            await self.bot.say(self.invalid_players_error)
 
-    def outcome_report(self) -> str:
+    def _get_outcome_report(self) -> str:
         if not self.losers:
             return "Tie!"
         else:
-            return LINEBREAK.join([super().outcome_report(), self._report_gold_owed()])
+            return LINEBREAK.join([super()._get_outcome_report(), self._report_gold_owed()])
 
     def get_avatar(self, player):
         short_name = player.display_name[0]

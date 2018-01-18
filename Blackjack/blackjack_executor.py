@@ -1,6 +1,6 @@
 from Core.player_avatar import *
 from Blackjack.announcer import BlackjackAnnouncer
-from Blackjack.blackjack import Blackjack
+from Blackjack.blackjack_mechanics import BlackjackMechanics
 from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import Hand, PlayerHand
 from Blackjack.result_checker import BlackjackResultChecker
@@ -17,9 +17,11 @@ class RollbotHost:
 
 class BlackjackExecutor(GameCore):
 
+    """ 'When' Blackjack rules are applied """
+
     def __init__(self, bot, ctx):
         super().__init__(ctx)
-        self.blackjack = Blackjack()
+        self.blackjack = BlackjackMechanics()
         self.avatar_handler = BlackjackAvatarHandler()
         self.dealer = self.init_dealer(RollbotHost())
         self.dealer_name = self.dealer.display_name

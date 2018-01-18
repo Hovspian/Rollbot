@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from Core.constants import *
 from GridGames.Slots.modes import *
-from Managers.GameManagers.slot_machine_bot import SlotMachineBot
+from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager

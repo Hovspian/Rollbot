@@ -3,7 +3,7 @@ from Blackjack.blackjack_executor import BlackjackExecutor
 from Blackjack.join_timer import BlackjackJoinTimer
 from Core.core_game_class import GameCore
 from Core.time_limit import TimeLimit
-from Managers.GameManagers.game_initializer import GameInitializer, SessionOptions
+from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
 
 
 class BlackjackBot:
@@ -44,6 +44,7 @@ class BlackjackInitializer(GameInitializer):
 
     """
     Handles blackjack sessions.
+    TODO instead of a single time limit, should be on a per-player basis
     """
 
     def __init__(self, options: SessionOptions):
@@ -52,9 +53,9 @@ class BlackjackInitializer(GameInitializer):
     async def initialize_game(self, ctx):
         if self._can_create_game(ctx):
             blackjack = BlackjackExecutor(self.bot, ctx)
-            await self._run_session(blackjack)
+            await self._create_session(blackjack)
 
-    async def _run_session(self, ctx):
+    async def _create_session(self, ctx):
         blackjack = self._get_game_to_create(ctx)
         self._add_game(ctx, blackjack)
         await self._run_join_timer(blackjack)

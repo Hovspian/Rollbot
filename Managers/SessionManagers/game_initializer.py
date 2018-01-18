@@ -12,7 +12,9 @@ class SessionOptions:
 class GameInitializer:
 
     """
-    For games that have persistence
+    For games that have persistence.
+    Some games have join timers, while others start immediately.
+    Some games have time limits, but not all games need them.
     """
 
     def __init__(self, options: SessionOptions):
@@ -22,15 +24,14 @@ class GameInitializer:
 
     async def initialize_game(self, ctx):
         if await self._can_create_game(ctx):
-            self._run_session(ctx)
+            self._create_session(ctx)
 
     def get_games(self):
         return self.games
 
-    def _run_session(self, ctx):
-        game = self._get_game_to_create(ctx)
-        self._add_game(ctx, game)
-        self._remove_game(ctx)
+    def _create_session(self, game: GameCore):
+        self._add_game(game.ctx, game)
+        self._remove_game(game.ctx)
 
     def _add_game(self, ctx, game):
         channel = ctx.message.channel
@@ -57,7 +58,3 @@ class GameInitializer:
     @staticmethod
     def _is_in_game(game, user) -> bool:
         return any(in_game_user for in_game_user in game.users if in_game_user is user)
-
-    @abstractmethod
-    def _get_game_to_create(self, ctx) -> GameCore:
-        raise NotImplementedError

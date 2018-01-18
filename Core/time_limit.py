@@ -6,6 +6,7 @@ class TimeLimit:
 
     # Sets a time limit on the game session.
     # Games end when they are complete or time has run out.
+    # Timer breaks upon !game.in_progress.
 
     def __init__(self, bot, game):
         self.bot = bot

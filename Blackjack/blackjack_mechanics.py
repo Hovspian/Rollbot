@@ -3,9 +3,9 @@ from Core.helper_functions import *
 from Blackjack.hand import *
 
 
-class Blackjack:
+class BlackjackMechanics:
 
-    # Internal mechanics
+    """ 'What' the rules are """
 
     def __init__(self):
         self.round = 0

@@ -1,14 +1,12 @@
-from Core.player_avatar import PlayerAvatar
-
-
 class GameCore:
-    def __init__(self, ctx):
+    def __init__(self, bot, ctx):
+        self.bot = bot
         self.ctx = ctx
         self.host = ctx.message.author
         self.host_name = self.host.display_name
         self.users = []  # All Discord users joining a game
         self.players = []  # Game participants
-        self.in_progress = False
+        self.in_progress = False  # Flag for game started
         self.max_time_left = 180
         self.add_user(self.host)
 
