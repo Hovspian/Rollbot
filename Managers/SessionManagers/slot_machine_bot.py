@@ -1,7 +1,9 @@
+from Managers.SessionManagers.game_initializer import GameInitializer
 from Managers.data_manager import SessionDataManager
+from Slots.slot_machine import SlotMachine
 
 
-class SlotMachineBot:
+class SlotMachineBot(GameInitializer):
 
     """
     Handles slot games and their payouts.
@@ -11,10 +13,36 @@ class SlotMachineBot:
         self.bot = bot
         self.data_manager = data_manager
 
-    async def play_slots(self, slot_machine):
-        slot_machine.play_slot()
-        self.save_payout(slot_machine)
-        await self.report(slot_machine)
+    async def initialize_slots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def initialize_bigslots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def initialize_giantslots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def initialize_mapleslots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def initialize_bigmapleslots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def initialize_giantmapleslots(self, ctx):
+        if await self._can_create_game(ctx):
+            pass
+
+    async def _create_session(self, game: SlotMachine):
+        self._add_game(game.ctx, game)
+        game.run()
+        self.save_payout(game)
+        await self.report(game)
+        self._remove_game(game.ctx)
 
     async def report(self, slot_machine):
         host_name = slot_machine.get_host_name()

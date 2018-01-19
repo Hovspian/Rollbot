@@ -10,6 +10,12 @@ class ChannelManager:
         self.active_games = {}  # Key: channel ID, value: GameCore
         self.join_timers = {}  # Key: game.host (Discord member), value: JoinTimer
 
+    def get_game(self, channel):
+        return self.active_games[channel]
+
+    def get_games(self):
+        return self.active_games
+
     def occupy_channel(self, channel, game) -> None:
         self.active_games[channel] = game
 
@@ -33,6 +39,7 @@ class ChannelManager:
     async def is_valid_channel(self, ctx) -> bool:
         channel = ctx.message.channel
         if self._is_game_in_channel(channel):
+            #  TODO this message should remove itself after 5 seconds.
             await self.bot.say("Another game is already underway in this channel.")
         else:
             return True
@@ -40,6 +47,7 @@ class ChannelManager:
     async def check_valid_join(self, ctx):
         error = self._get_invalid_join_error(ctx)
         if error:
+            #  TODO also remove itself
             await self.bot.say(error)
         else:
             self._add_user_to_game(ctx)

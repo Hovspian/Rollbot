@@ -1,11 +1,10 @@
 import math
-
-from Core.helper_functions import *
 from Core.core_game_class import GameCore
-from GridGames.Slots.bias_mechanic import SlotsBias
-from GridGames.Slots.feedback import SlotsFeedback
-from GridGames.Slots.result_checker import ResultChecker
+from Core.helper_functions import *
 from GridGames.grid import GridHandler
+from Slots.bias_mechanic import SlotsBias
+from Slots.feedback import SlotsFeedback
+from Slots.result_checker import ResultChecker
 
 
 class SlotMachine(GameCore):
@@ -23,7 +22,7 @@ class SlotMachine(GameCore):
         self.payout_multiplier = 1
         self.bias_mechanic = SlotsBias(self)
 
-    def play_slot(self) -> None:
+    def run(self) -> None:
 
         def _roll_columns() -> None:
             reel = self._get_reel()

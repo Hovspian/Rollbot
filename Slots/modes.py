@@ -1,9 +1,10 @@
 import random
-import math
 from typing import List
-from GridGames.Slots.symbols import *
+
 from GridGames.Slots.bias_mechanic import SlotsBias
-from GridGames.Slots.slot_machine import SlotMachine
+from GridGames.Slots.symbols import *
+
+from Slots.slot_machine import SlotMachine
 
 
 class BigSlots(SlotMachine):

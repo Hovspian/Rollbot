@@ -1,18 +1,21 @@
 import discord
 from discord.ext import commands
+
 from Core.constants import *
-from GridGames.Slots.modes import *
+from Managers.SessionManagers.blackjack_bot import BlackjackBot
+from Managers.SessionManagers.game_initializer import SessionOptions
+from Managers.SessionManagers.hammer_race_bot import HammerRaceInitializer
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
+from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
 from Managers.session_manager import SessionManager
 from Managers.statistics import StatisticsBot
-from Managers.GameManagers.slot_machine_bot import SlotMachineBot
 from Managers.GameManagers.roll_game_bot import RollGameBot
 from RollGames.roll import Roll
 from RollGames.rollgame import RollGame
 from RollGames.roll_game_modes import NormalRollGame
-from Core.constants import *
+from Slots.modes import *
 from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
@@ -21,6 +24,10 @@ client = discord.Client()
 data_manager = SessionDataManager()
 session_manager = SessionManager(bot, data_manager)
 channel_manager = ChannelManager(bot)
+scratchcard_bot = ScratchCardBot(bot)
+session_options = SessionOptions(bot, channel_manager, data_manager)
+blackjack_bot = BlackjackBot(session_options)
+hammer_race_bot = HammerRaceInitializer(session_options)
 stats_bot = StatisticsBot(bot, data_manager)
 slot_machine_bot = SlotMachineBot(bot, data_manager)
 roll_game_bot = session_manager.roll_game_bot
@@ -76,8 +83,8 @@ async def countdown(ctx, bet = 100):
 
 @bot.command(pass_context=True)
 async def join(ctx):
-    """ Allows the user to join the current game """
-    await session_manager.join_game(ctx)
+    # Allows the user to join the channel game
+    await channel_manager.check_valid_join(ctx)
 
 
 # Blackjack commands
@@ -85,27 +92,27 @@ async def join(ctx):
 
 @bot.command(pass_context=True)
 async def blackjack(ctx):
-    await session_manager.create_blackjack(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
 async def hit(ctx):
-    await blackjack_bot.perform_action(ctx, "hit")
+    pass
 
 
 @bot.command(pass_context=True)
 async def stand(ctx):
-    await blackjack_bot.perform_action(ctx, "stand")
+    pass
 
 
 @bot.command(pass_context=True)
 async def split(ctx):
-    await blackjack_bot.perform_action(ctx, "split")
+    pass
 
 
 @bot.command(pass_context=True)
 async def doubledown(ctx):
-    await blackjack_bot.perform_action(ctx, "doubledown")
+    pass
 
 
 # End Blackjack commands
@@ -117,17 +124,17 @@ async def quit(ctx):
 
 @bot.command(pass_context=True)
 async def askhammer(ctx):
-    await session_manager.askhammer(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
 async def compare(ctx):
-    await session_manager.comparison_hammer(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
 async def versushammer(ctx):
-    await session_manager.versushammer(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
@@ -143,32 +150,32 @@ async def butts():
 
 @bot.command(pass_context=True)
 async def slots(ctx):
-    await slot_machine_bot.play_slots(ClassicSlots(ctx))
+    await slot_machine_bot._create_session(ClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
-    await slot_machine_bot.play_slots(BigClassicSlots(ctx))
+    await slot_machine_bot._create_session(BigClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantslots(ctx):
-    await slot_machine_bot.play_slots(GiantClassicSlots(ctx))
+    await slot_machine_bot._create_session(GiantClassicSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def mapleslots(ctx):
-    await slot_machine_bot.play_slots(MapleSlots(ctx))
+    await slot_machine_bot._create_session(MapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def bigmapleslots(ctx):
-    await slot_machine_bot.play_slots(BigMapleSlots(ctx))
+    await slot_machine_bot._create_session(BigMapleSlots(ctx))
 
 
 @bot.command(pass_context=True)
 async def giantmapleslots(ctx):
-    await slot_machine_bot.play_slots(GiantMapleSlots(ctx))
+    await slot_machine_bot._create_session(GiantMapleSlots(ctx))
 
 
 @bot.command(pass_context=True)

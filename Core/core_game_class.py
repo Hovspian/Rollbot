@@ -9,6 +9,7 @@ class GameCore:
         self.in_progress = False  # Flag for game started
         self.max_time_left = 180
         self.add_user(self.host)
+        self.id = 0  # Unique int to identify game type. See GAME_ID in constants.py
 
     def add_user(self, user) -> None:
         self.users.append(user)

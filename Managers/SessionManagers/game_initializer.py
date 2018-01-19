@@ -4,9 +4,13 @@ from Core.core_game_class import GameCore
 
 
 class SessionOptions:
-    def __init__(self, bot, channel_manager):
+
+    # Interface for GameInitializer properties
+
+    def __init__(self, bot, channel_manager, data_manager):
         self.bot = bot
         self.channel_manager = channel_manager
+        self.data_manager = data_manager
 
 
 class GameInitializer:
@@ -20,14 +24,11 @@ class GameInitializer:
     def __init__(self, options: SessionOptions):
         self.bot = options.bot
         self.channel_manager = options.channel_manager
-        self.games = {}
+        self.data_manager = options.data_manager
 
     async def initialize_game(self, ctx):
-        if await self._can_create_game(ctx):
-            self._create_session(ctx)
 
-    def get_games(self):
-        return self.games
+            self._create_session(ctx)
 
     def _create_session(self, game: GameCore):
         self._add_game(game.ctx, game)
@@ -36,20 +37,18 @@ class GameInitializer:
     def _add_game(self, ctx, game):
         channel = ctx.message.channel
         self.channel_manager.occupy_channel(channel, game)
-        self.games[channel] = game
 
     def _remove_game(self, ctx):
         channel = ctx.message.channel
         self.channel_manager.vacate_channel(channel)
-        self.games.pop(channel)
 
     async def _can_create_game(self, ctx) -> bool:
         return await self.channel_manager.is_valid_channel(ctx) and \
-               await self._is_valid_new_game(ctx)
+                await self._is_valid_new_game(ctx)
 
     async def _is_valid_new_game(self, ctx) -> bool:
         user = ctx.message.author
-        for game in self.games:
+        for game in self.channel_manager.get_games():
             if self._is_in_game(game, user):
                 await self.bot.say("Please finish your current game first.")
                 return False

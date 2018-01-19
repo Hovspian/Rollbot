@@ -19,12 +19,12 @@ class HammerRace(GameCore):
 
     async def run(self) -> None:
         self.start_game()
-        await self.bot.say(self.round_report())
+        await self.bot.say(self._round_report())
 
         while self.in_progress:
             await asyncio.sleep(2.0)
             self._next_round()
-            await self.bot.say(self.round_report())
+            await self.bot.say(self._round_report())
 
         await self.bot.say(self._get_outcome_report())
 
@@ -33,7 +33,10 @@ class HammerRace(GameCore):
         within_max_players = len(self.players) <= 5
         return within_min_players and within_max_players
 
-    def round_report(self) -> str:
+    def is_winner(self, player: Participant) -> bool:
+        return self._get_steps_left(player.progress) <= 0
+
+    def _round_report(self) -> str:
         return self.race_track.draw_track()
 
     @abstractmethod
@@ -44,18 +47,15 @@ class HammerRace(GameCore):
         [self._player_turn(player) for player in self.players]
         self._check_race_end()
 
-    def _is_winner(self, player: Participant) -> bool:
-        return self._get_steps_left(player.progress) <= 0
-
     def _init_player(self, short_name: str, name: str):
         player = Participant(short_name, name)
         self.players.append(player)
         return player
 
-    def _player_turn(self, participant: Participant) -> None:
-        participant.make_move()
-        if self._is_winner(participant):
-            self._add_winner(participant)
+    def _player_turn(self, player: Participant) -> None:
+        player.make_move()
+        if self.is_winner(player):
+            self._add_winner(player)
 
     def _check_race_end(self) -> None:
         if self.is_race_end():

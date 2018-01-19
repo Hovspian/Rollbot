@@ -3,6 +3,7 @@ from Blackjack.blackjack_executor import BlackjackExecutor
 from Blackjack.join_timer import BlackjackJoinTimer
 from Core.core_game_class import GameCore
 from Core.time_limit import TimeLimit
+from Core.constants import GAME_ID
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
 
 
@@ -13,27 +14,33 @@ class BlackjackBot:
     """
 
     def __init__(self, options: SessionOptions):
+        self.channel_manager = options.channel_manager
         self.bot = options.bot
         self.initializer = BlackjackInitializer(options)
+        self.id = GAME_ID["BLACKJACK"]
 
     async def create_game(self, ctx):
         self.initializer.initialize_game(ctx)
 
     async def make_move(self, ctx, action):
-        blackjack = self._get_game(ctx)
-        if blackjack:
-            move_checker = BlackjackMoveChecker(self.bot, blackjack)
+        game = self._get_game(ctx)
+        if self._game_is_blackjack(game):
+            move_checker = BlackjackMoveChecker(self.bot, game)
             await move_checker.perform_action(ctx, action)
         else:
-            await self.bot.say("You aren't in the game. Join the next one?")
+            await self.bot.say("You aren't in a Blackjack game. Join the next one?")
 
     def _get_game(self, ctx):
-        # Return the game that the user is in, if any.
         user = ctx.message.author
-        for game in self.initializer.get_games():
-            if self._is_in_game(game, user):
-                return game
+        channel = ctx.message.channel
+        game = self.channel_manager.get_game(channel)
+        if channel and self._is_in_game(game, user):
+            return game
         return False
+
+    def _game_is_blackjack(self, game: GameCore):
+        if game:
+            return self.id == game.id
 
     @staticmethod
     def _is_in_game(game, user) -> bool:

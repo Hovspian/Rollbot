@@ -71,3 +71,11 @@ SPACE = ' '
 DOUBLE_SPACE = '  '
 CODE_TAG = '```'
 LINEBREAK = '\n'
+
+GAME_ID = {
+    "SLOTS": 1,
+    "RACE": 2,
+    "SCRATCHCARD": 3,
+    "HAMMERPOT": 4,
+    "BLACKJACK": 5
+}

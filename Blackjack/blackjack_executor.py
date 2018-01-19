@@ -5,6 +5,7 @@ from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import Hand, PlayerHand
 from Blackjack.result_checker import BlackjackResultChecker
 from Core.core_game_class import GameCore
+from Core.constants import GAME_ID
 
 
 class RollbotHost:
@@ -29,7 +30,7 @@ class BlackjackExecutor(GameCore):
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
         self.dealer_executor = BlackjackDealer(self)
         self.max_time_left = 10 * 60  # 10 minutes
-        self.results = {}
+        self.id = GAME_ID['BLACKJACK']
 
     def init_dealer(self, host) -> PlayerAvatar:
         # TODO let players host blackjack games

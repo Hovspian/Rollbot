@@ -1,3 +1,4 @@
+from Core.core_game_class import GameCore
 from Core.join_timer import JoinTimer
 from Core.constants import *
 from Core.helper_functions import roll
@@ -8,6 +9,7 @@ class BlackjackJoinTimer(JoinTimer):
         super().__init__()
         self.bot = bot
         self.game = game
+        self.host = game.host
         self.random_messages = ["Generating a deck from thin air.",
                                 "Assembling a precarious house of cards.",
                                 "Structuring the deck into a totally legit, static order.",

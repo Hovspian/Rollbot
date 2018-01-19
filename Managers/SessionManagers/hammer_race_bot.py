@@ -43,6 +43,7 @@ class HammerRaceInitializer(GameInitializer):
         self.channel_manager.remove_join_timer(race.host)
 
     async def _say_setup_message(self, ctx) -> None:
+        #  TODO goes into a JoinTimer descendant?
         host_name = ctx.message.author.display_name
         setup_message = f"{host_name} is starting a race. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)

@@ -9,9 +9,9 @@ class ClassicHammer(HammerRace):
     def __init__(self, bot, ctx):
         super().__init__(bot, ctx)
         self.overriding_answer = None  # TBD
-        self.init_players()
+        self._init_players()
 
-    def init_players(self) -> None:
+    def _init_players(self) -> None:
         super()._init_player(short_name="y", name="yes")
         super()._init_player(short_name="n", name="no")
         hammer = super()._init_player(short_name="h", name=":hammer:")
@@ -51,7 +51,7 @@ class ComparisonHammer(HammerRace):
 
     async def run(self):
         if self.valid_num_players():
-            super().run()
+            await super().run()
         else:
             await self.bot.say(self.invalid_players_error)
 
@@ -86,13 +86,13 @@ class VersusHammer(HammerRace):
         self.losers = []
         self.multiplier = 1
         self.invalid_players_error = "A race needs at least two players."
-        self.join_timer = JoinTimer()
+        self.join_timer = JoinTimer()  # TODO that's not right
 
     async def run(self):
-        if self.valid_num_players():
+        if self.valid_num_players():  # TODO full at 5 people
             starting_message = SPACE.join(["Race between", self._get_player_names()])
-            self.bot.say(starting_message)
-            super().run()
+            await self.bot.say(starting_message)
+            await super().run()
         else:
             await self.bot.say(self.invalid_players_error)
 
@@ -101,6 +101,10 @@ class VersusHammer(HammerRace):
             return "Tie!"
         else:
             return LINEBREAK.join([super()._get_outcome_report(), self._report_gold_owed()])
+
+    def add_player(self, player):
+        # TODO use _init_players?
+        pass
 
     def get_avatar(self, player):
         short_name = player.display_name[0]
