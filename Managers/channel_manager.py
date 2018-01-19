@@ -1,3 +1,5 @@
+import asyncio
+
 class ChannelManager:
 
     """
@@ -39,16 +41,16 @@ class ChannelManager:
     async def is_valid_channel(self, ctx) -> bool:
         channel = ctx.message.channel
         if self._is_game_in_channel(channel):
-            #  TODO this message should remove itself after 5 seconds.
-            await self.bot.say("Another game is already underway in this channel.")
+            temp_message = await self.bot.say("Another game is already underway in this channel.")
+            await self._auto_remove_message(temp_message)
         else:
             return True
 
     async def check_valid_join(self, ctx):
         error = self._get_invalid_join_error(ctx)
         if error:
-            #  TODO also remove itself
-            await self.bot.say(error)
+            temp_message = await self.bot.say(error)
+            await self._auto_remove_message(temp_message)
         else:
             self._add_user_to_game(ctx)
 
@@ -81,3 +83,7 @@ class ChannelManager:
         # Search the game's users for a match
         game = self.active_games[channel]
         return any(in_game_user for in_game_user in game.users if in_game_user is user)
+
+    async def _auto_remove_message(self, message):
+        await asyncio.sleep(5.0)
+        self.bot.remove_message(message)
