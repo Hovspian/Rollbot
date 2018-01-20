@@ -43,7 +43,7 @@ class ChannelManager:
         channel = ctx.message.channel
         if self._is_game_in_channel(channel):
             temp_message = await self.bot.say("Another game is already underway in this channel.")
-            await self._auto_remove_message(temp_message)
+            await self._auto_delete_message(temp_message)
         else:
             return True
 
@@ -51,7 +51,7 @@ class ChannelManager:
         error = self._get_invalid_join_error(ctx)
         if error:
             temp_message = await self.bot.say(error)
-            await self._auto_remove_message(temp_message)
+            await self._auto_delete_message(temp_message)
         else:
             self._add_user_to_game(ctx)
 
@@ -85,6 +85,6 @@ class ChannelManager:
         game = self.active_games[channel]
         return any(in_game_user for in_game_user in game.users if in_game_user is user)
 
-    async def _auto_remove_message(self, message):
+    async def _auto_delete_message(self, message):
         await asyncio.sleep(5.0)
-        self.bot.remove_message(message)
+        await self.bot.delete_message(message)
