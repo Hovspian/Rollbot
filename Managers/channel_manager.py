@@ -31,9 +31,13 @@ class ChannelManager:
     def remove_join_timer(self, host):
         self.join_timers.pop(host)
 
-    def force_start(self):
-        # if game in channel and initiator is host
-        pass
+    async def check_valid_forcestart(self, ctx):
+        error = self._get_invalid_forcestart_error(ctx)
+        if error:
+            temp_message = await self.bot.say(error)
+            await self._auto_delete_message(temp_message)
+        else:
+            pass  # force start call on the join timer
 
     def quit(self):
         # User quits the game (if possible)
@@ -61,10 +65,22 @@ class ChannelManager:
         await self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
 
-    def _get_invalid_join_error(self, ctx) -> bool:
+    def _get_invalid_forcestart_error(self, ctx) -> str:
         channel = ctx.message.channel
         user = ctx.message.author
-        error = False
+        error = None
+        if not self._is_game_in_channel(channel):
+            error = "No game in this channel."
+        elif self._is_game_in_progress(channel):
+            error = "Game is already in progress."
+        elif not self._is_user_host(channel, user):
+            error = "Only the game host can forcestart the game."
+        return error
+
+    def _get_invalid_join_error(self, ctx) -> str:
+        channel = ctx.message.channel
+        user = ctx.message.author
+        error = None
         if not self._is_game_in_channel(channel):
             error = "No game in this channel."
         elif self._is_game_in_progress(channel):
@@ -84,6 +100,10 @@ class ChannelManager:
         # Search the game's users for a match
         game = self.active_games[channel]
         return any(in_game_user for in_game_user in game.users if in_game_user is user)
+
+    def _is_user_host(self, channel, user) -> bool:
+        game = self.active_games[channel]
+        return user == game.host
 
     async def _auto_delete_message(self, message):
         await asyncio.sleep(5.0)

@@ -136,6 +136,10 @@ async def versushammer(ctx):
 
 
 @bot.command(pass_context=True)
+async def forcestart(ctx):
+    pass
+
+@bot.command(pass_context=True)
 async def butts():
     num_butts = random.randint(1, 20)
     butts_message = [':peach:' * num_butts]
