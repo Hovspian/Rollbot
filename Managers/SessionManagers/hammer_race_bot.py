@@ -75,7 +75,7 @@ class VersusHammerInitializer(GameInitializer):
     async def _run_join_timer(self, race: HammerRace):
         timer = race.join_timer  # TODO incorrect
         self.channel_manager.add_join_timer(race.host, timer)
-        await timer.run()
+        await timer.run()  # TODO handled by channel manager?
         self.channel_manager.remove_join_timer(race.host)
 
     async def _say_setup_message(self, ctx) -> None:
