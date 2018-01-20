@@ -4,7 +4,7 @@ from discord.ext import commands
 from Core.constants import *
 from Managers.SessionManagers.blackjack_bot import BlackjackBot
 from Managers.SessionManagers.game_initializer import SessionOptions
-from Managers.SessionManagers.hammer_race_bot import ClassicRaceInitializer
+from Managers.SessionManagers.hammer_race_bot import HammerRaceBot
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.channel_manager import ChannelManager
@@ -24,13 +24,11 @@ client = discord.Client()
 data_manager = SessionDataManager()
 session_manager = SessionManager(bot, data_manager)
 channel_manager = ChannelManager(bot)
-scratchcard_bot = ScratchCardBot(bot)
 session_options = SessionOptions(bot, channel_manager, data_manager)
 blackjack_bot = BlackjackBot(session_options)
-hammer_race_bot = ClassicRaceInitializer(session_options)
+hammer_race_bot = HammerRaceBot(session_options)
+slot_machine_bot = SlotMachineBot(session_options)
 stats_bot = StatisticsBot(bot, data_manager)
-slot_machine_bot = SlotMachineBot(bot, data_manager)
-roll_game_bot = session_manager.roll_game_bot
 
 
 @bot.event
@@ -150,52 +148,52 @@ async def butts():
 
 @bot.command(pass_context=True)
 async def slots(ctx):
-    await slot_machine_bot._create_session(ClassicSlots(ctx))
+    await slot_machine_bot.initialize_slots(ctx)
 
 
 @bot.command(pass_context=True)
 async def bigslots(ctx):
-    await slot_machine_bot._create_session(BigClassicSlots(ctx))
+    await slot_machine_bot.initialize_bigslots(ctx)
 
 
 @bot.command(pass_context=True)
 async def giantslots(ctx):
-    await slot_machine_bot._create_session(GiantClassicSlots(ctx))
+    await slot_machine_bot.initialize_giantslots(ctx)
 
 
 @bot.command(pass_context=True)
 async def mapleslots(ctx):
-    await slot_machine_bot._create_session(MapleSlots(ctx))
+    await slot_machine_bot.initialize_mapleslots(ctx)
 
 
 @bot.command(pass_context=True)
 async def bigmapleslots(ctx):
-    await slot_machine_bot._create_session(BigMapleSlots(ctx))
+    await slot_machine_bot.initialize_bigmapleslots(ctx)
 
 
 @bot.command(pass_context=True)
 async def giantmapleslots(ctx):
-    await slot_machine_bot._create_session(GiantMapleSlots(ctx))
+    await slot_machine_bot.initialize_giantmapleslots(ctx)
 
 
 @bot.command(pass_context=True)
 async def hammerpot(ctx):
-    await session_manager.create_hammerpot(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
 async def scratchcard(ctx):
-    await session_manager.create_scratch_card(ctx)
+    pass
 
 
 @bot.command(pass_context=True)
 async def pick(ctx):
-    await scratch_card_bot.make_action(ctx, "pick")
+    pass
 
 
 @bot.command(pass_context=True)
 async def scratch(ctx):
-    await scratch_card_bot.make_action(ctx, "scratch")
+    pass
 
 
 @bot.command(pass_context=True)

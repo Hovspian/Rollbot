@@ -1,12 +1,9 @@
 import asyncio
-
-from Core.core_game_class import GameCore
 from Core.helper_functions import *
 from Core.time_limit import TimeLimit
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
 from GridGames.ScratchCard.Classic.classic_mode import ClassicScratchCard
-from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from GridGames.ScratchCard.scratch_card import ScratchCard
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions

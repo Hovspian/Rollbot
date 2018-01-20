@@ -13,13 +13,14 @@ class SlotMachine(GameCore):
         super().__init__(ctx)
         self.default_outcomes = []
         self.num_columns = 3
-        self.grid_handler = GridHandler(self.num_columns)
+        self.results_grid = GridHandler(self.num_columns)
         self.first_reel_size = int(math.ceil(self.num_columns * 1.5))
         self.reels = []
         self.winning_combos = []
         self.winning_symbols = []
         self.payout_amount = 0
         self.payout_multiplier = 1
+        self.results = []
         self.bias_mechanic = SlotsBias(self)
 
     def run(self) -> None:
@@ -27,15 +28,16 @@ class SlotMachine(GameCore):
         def _roll_columns() -> None:
             reel = self._get_reel()
             column = self._generate_column(reel)
-            self.grid_handler.add_column(column)
+            self.results_grid.add_column(column)
 
         [_roll_columns() for i in range(self.num_columns)]
+        self.results = self.results_grid.get_grid()
         self._check_results()
         self._resolve_payout()
 
     def render_slots(self) -> str:
-        rows = self.grid_handler.get_rows()
-        symbols = [self.grid_handler.get_emotes(row) for row in rows]
+        rows = self.results_grid.get_rows()
+        symbols = [self.results_grid.get_emotes(row) for row in rows]
         return '\n'.join(symbols)
 
     def get_outcome_report(self) -> str:
@@ -54,7 +56,7 @@ class SlotMachine(GameCore):
     def calculate_payout(self) -> int:
         winning_symbols = self.winning_symbols
         if winning_symbols:
-            sum_payout = sum([self.grid_handler.get_value(symbol) for symbol in winning_symbols])
+            sum_payout = sum([self.results_grid.get_value(symbol) for symbol in winning_symbols])
             num_winning_symbols = len(winning_symbols)
             total_payout = sum_payout * num_winning_symbols * self.payout_multiplier
             return int(math.floor(total_payout))
@@ -73,7 +75,7 @@ class SlotMachine(GameCore):
         return self._generate_reel(self.default_outcomes, self.first_reel_size)
 
     def _rebuild_reel(self) -> List[dict]:
-        first_column = self.grid_handler.columns[0]
+        first_column = self.results_grid.columns[0]
         first_reel = self.reels[0]
         include_symbols = self._roll_num_included_symbols()
         rerolled_reel = self._generate_reel(first_reel, include_symbols)

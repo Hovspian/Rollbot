@@ -4,7 +4,6 @@ from typing import List
 class ResultChecker:
     def __init__(self, slot_machine):
         self.slot_machine = slot_machine
-        self.get_rows = slot_machine.get_rows
         self.results = slot_machine.results
         self.winning_symbols = slot_machine.winning_symbols
         self.winning_combos = slot_machine.winning_combos
@@ -15,7 +14,7 @@ class ResultChecker:
         self._check_top_right_diagonal()
 
     def _check_rows(self):
-        [self._check_combo(row, combo_name='row') for row in self.get_rows(self.results)]
+        [self._check_combo(row, combo_name='row') for row in self._get_rows(self.results)]
 
     def _check_top_left_diagonal(self) -> None:
         top_left_diagonal = self._get_diagonal(self.results)
@@ -25,6 +24,15 @@ class ResultChecker:
         reversed_columns = reversed(self.results)
         top_right_diagonal = self._get_diagonal(reversed_columns)
         self._check_combo(top_right_diagonal, combo_name='diagonal')
+
+    @staticmethod
+    def _get_rows(grid):
+
+        def _get_row(i):
+            print("i", i)
+            return [grid[column][i] for column, item in enumerate(grid)]
+
+        return [_get_row(i) for i, item in enumerate(grid)]
 
     @staticmethod
     def _get_diagonal(columns) -> List[dict]:
