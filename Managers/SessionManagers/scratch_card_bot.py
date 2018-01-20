@@ -1,12 +1,13 @@
 from Core.helper_functions import *
-from Core.join_timer import SessionManager
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.Parsers.line_parser import LineParser
+from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
 from GridGames.ScratchCard.Hammerpot.hammerpot import Hammerpot
 from GridGames.ScratchCard.scratch_card import ScratchCard
+from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
 
 
-class ScratchCardBot(SessionManager):
+class ScratchCardBot:
     # Handles user-game relationship for scratch cards / hammerpot
 
     def __init__(self, bot, data_manager):
@@ -14,6 +15,8 @@ class ScratchCardBot(SessionManager):
         self.data_manager = data_manager
         self.parser = LineParser()
         self.error_handler = InputErrorHandler(bot)
+        self.initializer = None
+        self.payout_handler = None
 
     async def initialize_game(self, game):
         self.add_game(game)
@@ -74,3 +77,8 @@ class ScratchCardBot(SessionManager):
             return game
         else:
             await self.bot.say("You don't have an active card.")
+
+
+class ScratchCardInitializer(GameInitializer):
+    def __init___(self, options: SessionOptions):
+        super().__init__(options)

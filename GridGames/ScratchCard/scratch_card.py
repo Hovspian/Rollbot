@@ -17,6 +17,7 @@ class ScratchCard(GameCore):
         self.grid_handler = None  # TBD
         self.card_grid = None  # TBD
         self.underlying_symbols = []  # TBD
+        self.title = "Scratch Card"
         self.start_game()
 
     def initialize_card(self) -> None:

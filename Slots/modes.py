@@ -1,8 +1,8 @@
 import random
 from typing import List
 
-from GridGames.Slots.bias_mechanic import SlotsBias
-from GridGames.Slots.symbols import *
+from Slots.bias_mechanic import SlotsBias
+from Slots.symbols import *
 
 from Slots.slot_machine import SlotMachine
 

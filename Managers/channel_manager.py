@@ -1,10 +1,11 @@
 import asyncio
 
+
 class ChannelManager:
 
     """
     Restricts one ongoing game per channel.
-    States controlled by GameInitializer and bot commands.
+    Methods called by GameInitializer and bot commands.
     """
 
     def __init__(self, bot):
