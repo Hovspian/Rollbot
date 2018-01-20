@@ -51,9 +51,9 @@ class SlotMachine(GameCore):
         result_checker.analyze_results()
 
     def _resolve_payout(self):
-        self.payout_amount += self.calculate_payout()
+        self.payout_amount += self._calculate_payout()
 
-    def calculate_payout(self) -> int:
+    def _calculate_payout(self) -> int:
         winning_symbols = self.winning_symbols
         if winning_symbols:
             sum_payout = sum([self.results_grid.get_value(symbol) for symbol in winning_symbols])
@@ -85,9 +85,9 @@ class SlotMachine(GameCore):
     def _generate_reel(symbols, reel_size) -> List[dict]:
         reel = []
 
-        def roll_add_to_reel(i) -> None:
+        def roll_add_to_reel(i) -> dict:
             symbol = get_symbol(i)
-            reel.append(symbol)
+            return symbol
 
         def get_symbol(i) -> dict:
             previous_symbol = get_previous_symbol(i)
@@ -103,8 +103,7 @@ class SlotMachine(GameCore):
                 previous_symbol = reel[i - 1]
                 return previous_symbol
 
-        [roll_add_to_reel(i) for i in range(reel_size)]
-        return reel
+        return [roll_add_to_reel(i) for i in range(reel_size)]
 
     def _roll_num_included_symbols(self) -> int:
         return random.randint(1, self.num_columns + 1)

@@ -29,7 +29,6 @@ class ResultChecker:
     def _get_rows(grid):
 
         def _get_row(i):
-            print("i", i)
             return [grid[column][i] for column, item in enumerate(grid)]
 
         return [_get_row(i) for i, item in enumerate(grid)]
