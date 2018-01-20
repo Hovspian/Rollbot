@@ -26,13 +26,13 @@ class GameInitializer:
         self.channel_manager = options.channel_manager
         self.data_manager = options.data_manager
 
+    @abstractmethod
     async def initialize_game(self, ctx):
+        raise NotImplementedError
 
-            self._create_session(ctx)
-
+    @abstractmethod
     def _create_session(self, game: GameCore):
-        self._add_game(game.ctx, game)
-        self._remove_game(game.ctx)
+        raise NotImplementedError
 
     def _add_game(self, ctx, game):
         channel = ctx.message.channel

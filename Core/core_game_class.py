@@ -1,6 +1,5 @@
 class GameCore:
-    def __init__(self, bot, ctx):
-        self.bot = bot
+    def __init__(self, ctx):
         self.ctx = ctx
         self.host = ctx.message.author
         self.host_name = self.host.display_name

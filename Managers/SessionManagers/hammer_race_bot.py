@@ -10,40 +10,55 @@ class HammerRaceInitializer(GameInitializer):
     def __init__(self, options: SessionOptions):
         super().__init__(options)
 
-    async def initialize_classic(self, ctx):
+    async def initialize_game(self, ctx):
         if await self._can_create_game(ctx):
             race = ClassicHammer(self.bot, ctx)
             await self._create_session(race)
 
-    async def initialize_comparison(self, ctx):
+    async def _create_session(self, race: HammerRace):
+        self._add_game(race.ctx, race)
+        await race.run()
+        self._remove_game(race.ctx)
+
+
+class ComparisonInitializer(GameInitializer):
+
+    def __init__(self, options: SessionOptions):
+        super().__init__(options)
+
+    async def initialize_game(self, ctx):
         if await self._can_create_game(ctx):
             race = ComparisonHammer(self.bot, ctx)
             await self._create_session(race)
 
-    async def initialize_versus(self, ctx):
+    async def _create_session(self, race: HammerRace):
+        self._add_game(race.ctx, race)
+        await race.run()
+        self._remove_game(race.ctx)
+
+
+class VersusHammerInitializer(GameInitializer):
+    def __init__(self, options: SessionOptions):
+        super().__init__(options)
+
+    async def initialize_game(self, ctx):
         if await self._can_create_game(ctx):
             race = VersusHammer(self.bot, ctx)
             await self._create_session(race)
 
     async def _create_session(self, race: HammerRace):
         self._add_game(race.ctx, race)
-        await self._check_join_timer(race)
+        await self._run_join_timer(race)
         await race.run()
         self._remove_game(race.ctx)
 
-    async def _check_join_timer(self, race: HammerRace):
-        if race.join_timer:
-            await self._say_setup_message(race.ctx)
-            await self._run_join_timer(race)
-
     async def _run_join_timer(self, race: HammerRace):
-        timer = race.join_timer
+        timer = race.join_timer  # TODO incorrect
         self.channel_manager.add_join_timer(race.host, timer)
         await timer.run()
         self.channel_manager.remove_join_timer(race.host)
 
     async def _say_setup_message(self, ctx) -> None:
-        #  TODO goes into a JoinTimer descendant?
         host_name = ctx.message.author.display_name
         setup_message = f"{host_name} is starting a race. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)
