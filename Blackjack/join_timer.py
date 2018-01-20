@@ -6,10 +6,7 @@ from Core.helper_functions import roll
 
 class BlackjackJoinTimer(JoinTimer):
     def __init__(self, bot, game):
-        super().__init__()
-        self.bot = bot
-        self.game = game
-        self.host = game.host
+        super().__init__(bot, game)
         self.random_messages = ["Generating a deck from thin air.",
                                 "Assembling a precarious house of cards.",
                                 "Structuring the deck into a totally legit, static order.",
@@ -24,9 +21,12 @@ class BlackjackJoinTimer(JoinTimer):
 
     async def _say_last_call_message(self):
         random_message = roll(self.random_messages)
-        message = SPACE.join([random_message, "Last call to sign up!"])
-        await self.bot.say(message)
+        last_call = SPACE.join([random_message, "Last call to sign up!"])
+        temp_message = await self.bot.say(last_call)
+        self._auto_delete_message(temp_message)
 
     async def _say_start_message(self):
         dealer = self.game.dealer_name
-        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, and plays are made against their hand.")
+        temp_message = await self.bot.say(f"Starting Blackjack. Your dealer is {dealer},"
+                                     "and plays are made against their hand.")
+        self._auto_delete_message(temp_message)
