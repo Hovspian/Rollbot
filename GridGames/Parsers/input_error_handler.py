@@ -16,7 +16,7 @@ class InputErrorHandler:
         self.bot = bot
         self.parser = CoordinateParser()
 
-    async def validate(self, game, raw_input) -> List[str]:
+    async def validate_coordinates(self, game, raw_input) -> List[str]:
         formatted_input = self.parser.format_input(raw_input)
         valid_entries = await self._initial_validate(game, formatted_input)
         if valid_entries:

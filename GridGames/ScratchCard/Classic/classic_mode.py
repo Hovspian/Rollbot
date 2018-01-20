@@ -12,7 +12,7 @@ class ClassicScratchCard(ScratchCard):
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
         self.results = []
-        self.announcement = ScratchCardFeedback(self)
+        self.feedback = ScratchCardFeedback(self)
         self.default_values = [EMPTY_TILE,
                                FIVE,
                                FIVE,

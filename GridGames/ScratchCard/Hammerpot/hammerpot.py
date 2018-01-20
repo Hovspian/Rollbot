@@ -17,15 +17,10 @@ class Hammerpot(ScratchCard):
         self.payouts = {}
         self.winnable_sums = []
         self.chosen_sum = 0
-        self.announcement = HammerpotFeedback(self)
         self.grid_handler = GridHandler(self.num_columns)
         self.card_renderer = None  # TBD
         self.initialize_card()
-
-    def grid_handler_options(self):
-        options = GridOptions()
-        options.num_columns = self.num_columns
-        options.renderer = RenderHammerpot(self)
+        self.feedback = HammerpotFeedback(self)
 
     def initialize_card(self):
         super().initialize_card()

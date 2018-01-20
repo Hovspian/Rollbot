@@ -12,7 +12,7 @@ class ScratchCard(GameCore):
         self.num_columns = 3
         self.attempts_remaining = self.num_columns * 2
         self.winnings = 0
-        self.announcement = None  # TBD
+        self.feedback = None  # TBD
         self.card_renderer = None  # TBD
         self.grid_handler = None  # TBD
         self.card_grid = None  # TBD
