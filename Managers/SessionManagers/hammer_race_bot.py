@@ -5,7 +5,27 @@ from Managers.SessionManagers.game_initializer import GameInitializer, SessionOp
 from Managers.data_manager import SessionDataManager
 
 
-class HammerRaceInitializer(GameInitializer):
+class HammerRaceBot:
+    def __init__(self, options: SessionOptions):
+        self.channel_manager = options.channel_manager
+        self.bot = options.bot
+        self.classic_initializer = ClassicRaceInitializer(options)
+        self.comparison_initializer = ComparisonInitializer(options)
+        self.versus_initializer = VersusHammerInitializer(options)
+        # self.payout_handler = HammerPayoutHandler()
+
+    async def create_classic_race(self, ctx):
+        await self.classic_initializer.initialize_game(ctx)
+
+    async def create_comparison(self, ctx):
+        self.comparison_initializer.initialize_game(ctx)
+
+    async def create_versus(self, ctx):
+        self.versus_initializer.initialize_game(ctx)
+        # TODO sort payouts
+
+
+class ClassicRaceInitializer(GameInitializer):
 
     def __init__(self, options: SessionOptions):
         super().__init__(options)

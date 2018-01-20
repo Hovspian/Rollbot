@@ -4,7 +4,7 @@ from discord.ext import commands
 from Core.constants import *
 from Managers.SessionManagers.blackjack_bot import BlackjackBot
 from Managers.SessionManagers.game_initializer import SessionOptions
-from Managers.SessionManagers.hammer_race_bot import HammerRaceInitializer
+from Managers.SessionManagers.hammer_race_bot import ClassicRaceInitializer
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.channel_manager import ChannelManager
@@ -27,7 +27,7 @@ channel_manager = ChannelManager(bot)
 scratchcard_bot = ScratchCardBot(bot)
 session_options = SessionOptions(bot, channel_manager, data_manager)
 blackjack_bot = BlackjackBot(session_options)
-hammer_race_bot = HammerRaceInitializer(session_options)
+hammer_race_bot = ClassicRaceInitializer(session_options)
 stats_bot = StatisticsBot(bot, data_manager)
 slot_machine_bot = SlotMachineBot(bot, data_manager)
 roll_game_bot = session_manager.roll_game_bot
