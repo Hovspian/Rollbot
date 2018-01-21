@@ -10,7 +10,6 @@ from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
-from Managers.session_manager import SessionManager
 from Managers.statistics import StatisticsBot
 from Managers.GameManagers.roll_game_bot import RollGameBot
 from RollGames.roll import Roll
@@ -23,7 +22,6 @@ description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='&', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
-session_manager = SessionManager(bot, data_manager)
 channel_manager = ChannelManager(bot)
 session_options = SessionOptions(bot, channel_manager, data_manager)
 blackjack_bot = BlackjackBot(session_options)
