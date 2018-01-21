@@ -1,4 +1,7 @@
 import asyncio
+
+from Core.constants import GAME_ID
+from Core.core_game_class import GameCore
 from Core.helper_functions import *
 from Core.time_limit import TimeLimit
 from GridGames.Parsers.input_error_handler import InputErrorHandler
@@ -20,16 +23,16 @@ class ScratchCardBot:
         self.payout_handler = None
 
     async def create_classic(self, ctx):
-        self.classic_initializer.initialize_game(ctx)
+        await self.classic_initializer.initialize_game(ctx)
 
     async def create_hammerpot(self, ctx):
-        self.hammerpot_initializer.initialize_game(ctx)
+        await self.hammerpot_initializer.initialize_game(ctx)
 
     async def scratch(self, ctx):
-        self.move_handler.attempt_scratch(ctx)
+        await self.move_handler.attempt_scratch(ctx)
 
     async def pick_line(self, ctx):
-        self.move_handler.attempt_pick_line(ctx)
+        await self.move_handler.attempt_pick_line(ctx)
 
 
 class ScratchCardInitializer(GameInitializer):
@@ -87,12 +90,12 @@ class ScratchCardMoveHandler:
         self.parser = LineParser()
 
     async def attempt_scratch(self, ctx):
-        if self._is_permitted_move(ctx):
-            self._scratch(ctx)
+        if await self._is_permitted_move(ctx):
+            await self._scratch(ctx)
 
     async def attempt_pick_line(self, ctx):
-        if self._is_permitted_move(ctx):
-            self._pick_line(ctx)
+        if await self._is_permitted_move(ctx) and await self._is_pick_valid(ctx):
+            await self._pick_line(ctx)
 
     async def _scratch(self, ctx):
         game = await self.get_game(ctx)
@@ -112,7 +115,8 @@ class ScratchCardMoveHandler:
             await self.announcer.report_turn(game)
 
     async def _is_permitted_move(self, ctx):
-        return await self.get_game(ctx) and await self._check_game_host(ctx)
+        game = await self.get_game(ctx)
+        return game and await self._check_game_host(ctx)
 
     async def _check_game_host(self, ctx) -> bool:
         game_host = await self.get_game_host(ctx)
@@ -127,11 +131,24 @@ class ScratchCardMoveHandler:
         return game.host
 
     async def get_game(self, ctx):
-        game = self.channel_manager.get_game(ctx)
-        if game:  # TODO and game matches ID
+        channel = ctx.message.channel
+        game = self.channel_manager.get_game(channel)
+        if game and self._is_matching_game(game):
             return game
         else:
             await self.announcer.no_active_card_error()
+
+    # Only Hammerpot uses /pick so far.
+    async def _is_pick_valid(self, ctx) -> bool:
+        game = await self.get_game(ctx)
+        if game.id == GAME_ID["HAMMERPOT"]:
+            return True
+        else:
+            await self.announcer.wrong_game_error()
+
+    @staticmethod
+    async def _is_matching_game(game: GameCore):
+        return game.id == GAME_ID["SCRATCHCARD"] or game.id == GAME_ID["HAMMERPOT"]
 
 
 class ScratchCardMoveAnnouncer:
@@ -149,12 +166,16 @@ class ScratchCardMoveAnnouncer:
         host_name = game_host.display_name
         temp_message = await self.bot.say(f'The current game host is {host_name}. '
                                           'Please make a game in another channel.')
-        self._delay_delete_message(temp_message)
+        await self._auto_delete_message(temp_message)
 
     async def no_active_card_error(self):
         temp_message = await self.bot.say("You don't have an active card.")
-        self._delay_delete_message(temp_message)
+        await self._auto_delete_message(temp_message)
 
-    async def _delay_delete_message(self, message):
+    async def wrong_game_error(self):
+        temp_message = await self.bot.say("That command is for another game.")
+        await self._auto_delete_message(temp_message)
+
+    async def _auto_delete_message(self, message):
         await asyncio.sleep(5.0)
         await self.bot.delete_message(message)

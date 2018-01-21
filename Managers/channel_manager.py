@@ -14,7 +14,8 @@ class ChannelManager:
         self.join_timers = {}  # Key: game.host (Discord member), value: JoinTimer
 
     def get_game(self, channel):
-        return self.active_games[channel]
+        if self._is_game_in_channel(channel):
+            return self.active_games[channel]
 
     def get_games(self):
         return self.active_games

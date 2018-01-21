@@ -184,22 +184,22 @@ async def giantmapleslots(ctx):
 
 @bot.command(pass_context=True)
 async def hammerpot(ctx):
-    scratchcard_bot.create_hammerpot(ctx)
+    await scratchcard_bot.create_hammerpot(ctx)
 
 
 @bot.command(pass_context=True)
 async def scratchcard(ctx):
-    scratchcard_bot.create_classic(ctx)
+    await scratchcard_bot.create_classic(ctx)
 
 
 @bot.command(pass_context=True)
 async def pick(ctx):
-    scratchcard_bot.pick_line(ctx)
+    await scratchcard_bot.pick_line(ctx)
 
 
 @bot.command(pass_context=True)
 async def scratch(ctx):
-    scratchcard_bot.scratch(ctx)
+    await scratchcard_bot.scratch(ctx)
 
 
 @bot.command(pass_context=True)
