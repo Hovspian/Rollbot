@@ -1,8 +1,11 @@
+from Core.constants import GAME_ID
 from Core.helper_functions import *
 from GridGames.ScratchCard.Classic.feedback import ScratchCardFeedback
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card import ScratchCard
+from GridGames.grid import GridHandler
 from GridGames.render_card import CardRenderer
+import math
 
 
 class ClassicScratchCard(ScratchCard):
@@ -23,6 +26,8 @@ class ClassicScratchCard(ScratchCard):
                                FIFTY,
                                FIFTY,
                                HUNDRED]
+        self.grid_handler = GridHandler(self.num_columns)
+        self.id = GAME_ID["SCRATCHCARD"]
         self.initialize_card()
 
     @staticmethod
@@ -59,6 +64,7 @@ class ClassicScratchCard(ScratchCard):
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
+            self.winnings = self.calculate_payout()
             self.end_game()
 
     def _scratch(self, y, x):
@@ -87,3 +93,15 @@ class ClassicScratchCard(ScratchCard):
         while results:
             count_match()
             results = filter_value(results, results[0])
+
+    def calculate_payout(self) -> int:
+        if self.winning_symbols:
+            sum_payout = sum([self.get_value(symbol) for symbol in self.winning_symbols])
+            num_winning_symbols = len(self.winning_symbols)
+            total_payout = sum_payout * num_winning_symbols
+            return int(math.floor(total_payout))
+        return 0
+    
+    @staticmethod
+    def get_value(symbol):
+        return symbol['value']

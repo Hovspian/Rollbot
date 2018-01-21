@@ -1,3 +1,4 @@
+from Core.constants import GAME_ID
 from Core.helper_functions import *
 from GridGames.grid import GridHandler, GridOptions
 from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
@@ -19,6 +20,7 @@ class Hammerpot(ScratchCard):
         self.chosen_sum = 0
         self.grid_handler = GridHandler(self.num_columns)
         self.card_renderer = None  # TBD
+        self.id = GAME_ID["HAMMERPOT"]
         self.initialize_card()
         self.feedback = HammerpotFeedback(self)
 

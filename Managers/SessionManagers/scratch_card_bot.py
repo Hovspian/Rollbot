@@ -46,6 +46,7 @@ class ScratchCardInitializer(GameInitializer):
 
     async def _create_session(self, game: ScratchCard):
         self._add_game(game.ctx, game)
+        await self.say_starting_message(game)
         await self._run_time_limit(game)
         self._remove_game(game.ctx)
 
@@ -54,7 +55,7 @@ class ScratchCardInitializer(GameInitializer):
         await time_limit.run()
 
     async def say_starting_message(self, game):
-        message = game.announcement.get_starting_message()
+        message = game.feedback.get_starting_message()
         await self.bot.say(message)
 
 
@@ -69,6 +70,7 @@ class HammerpotInitializer(GameInitializer):
 
     async def _create_session(self, game: ScratchCard):
         self._add_game(game.ctx, game)
+        await self.say_starting_message(game)
         await self._run_time_limit(game)
         self._remove_game(game.ctx)
 
@@ -77,7 +79,7 @@ class HammerpotInitializer(GameInitializer):
         await time_limit.run()
 
     async def say_starting_message(self, game):
-        message = game.announcement.get_starting_message()
+        message = game.feedback.get_starting_message()
         await self.bot.say(message)
 
 
@@ -133,7 +135,7 @@ class ScratchCardMoveHandler:
     async def get_game(self, ctx):
         channel = ctx.message.channel
         game = self.channel_manager.get_game(channel)
-        if game and self._is_matching_game(game):
+        if game and await self._is_matching_game(game):
             return game
         else:
             await self.announcer.no_active_card_error()
