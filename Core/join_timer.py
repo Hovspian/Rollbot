@@ -25,7 +25,7 @@ class JoinTimer:
             await asyncio.sleep(5)
             await self._say_start_message()
             break
-        self._auto_delete_messages()
+        await self._auto_delete_messages()
 
     async def _say_setup_message(self):
         host = self.game.host_name
@@ -38,6 +38,7 @@ class JoinTimer:
         self.messages_to_cleanup.append(temp_message)
 
     async def _say_start_message(self):
+        # TODO this triggers even if it fails the num players check
         pass
 
     async def _auto_delete_messages(self):

@@ -13,9 +13,17 @@ class RollGame(GameCore):
         self.users = []
         self.in_progress = False
         self.result = []
+        self.invalid_players_error = "A roll game needs at least two players."
 
     async def start_rolls(self):
-        self.start_game()
+        if self.valid_num_players():
+            await self.start_game()
+            self.end_game()
+        else:
+            await self.bot.say(self.invalid_players_error)
+
+    async def start_game(self):
+        super().start_game()
         await self.bot.say("Waiting for rolls")
         await self.wait_for_rolls(self.bet)
         await self.bot.say("Determining results")
@@ -27,7 +35,9 @@ class RollGame(GameCore):
             await self.bot.say("It's a tie.")
         else:
             await self.bot.say(f"{loser} owes {winner} {result[2]}g")
-        self.end_game()
+
+    def valid_num_players(self) -> bool:
+        return len(self.players) > 1
 
     @staticmethod
     async def forced_roll(player: discord.member.Member, max: int):

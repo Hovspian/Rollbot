@@ -31,9 +31,10 @@ class RollGameInitializer(GameInitializer):
         super().__init__(options)
 
     async def initialize_game(self, ctx, *bet):
-        if self._can_create_game(ctx):
-            game = self.get_game_to_create(self.bot, ctx, bet)
-            await self._create_session(game)
+        if await self._can_create_game(ctx):
+            game = self.get_game_to_create()
+            initialized = game(self.bot, ctx, bet)
+            await self._create_session(initialized)
 
     async def _create_session(self, game: RollGame):
         self._add_game(game.ctx, game)
@@ -60,7 +61,7 @@ class NormalRollInitializer(RollGameInitializer):
     def __init__(self, options):
         super().__init__(options)
 
-    async def get_game_to_create(self):
+    def get_game_to_create(self):
         return NormalRollGame
 
     async def _run_join_timer(self, game):
@@ -73,7 +74,7 @@ class DifferenceRollInitializer(RollGameInitializer):
     def __init__(self, options):
         super().__init__(options)
 
-    async def get_game_to_create(self):
+    def get_game_to_create(self):
         return DifferenceRollGame
 
     async def _run_join_timer(self, game):
@@ -86,7 +87,7 @@ class CountdownRollInitializer(RollGameInitializer):
     def __init__(self, options):
         super().__init__(options)
 
-    async def get_game_to_create(self):
+    def get_game_to_create(self):
         return CountdownRollGame
 
     async def _run_join_timer(self, game):

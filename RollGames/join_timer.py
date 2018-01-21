@@ -21,7 +21,7 @@ class NormalRollJoinTimer(JoinTimer):
         super().__init__(bot, game)
 
     async def _say_start_message(self):
-        await self.bot.say("Start rolling from 1-100.")
+        await self.bot.say("Start rolling from 1-100!")
 
 
 class DifferenceRollJoinTimer(JoinTimer):
@@ -31,7 +31,7 @@ class DifferenceRollJoinTimer(JoinTimer):
 
     async def _say_start_message(self):
         bet = self.game.bet
-        await self.bot.say(f"Start rolling from 1-{bet}.")
+        await self.bot.say(f"Start rolling from 1-{bet}!")
 
 
 class CountdownRollJoinTimer(JoinTimer):
