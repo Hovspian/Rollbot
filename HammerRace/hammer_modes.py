@@ -1,20 +1,20 @@
 from typing import List
 from Core.constants import *
 from Core.join_timer import JoinTimer
+from Core.player_avatar import PlayerAvatar
 from HammerRace.hammer_race import *
 
 
 class ClassicHammer(HammerRace):
-
     def __init__(self, bot, ctx):
         super().__init__(bot, ctx)
         self.overriding_answer = None  # TBD
         self._init_players()
 
     def _init_players(self) -> None:
-        super()._init_player(short_name="y", name="yes")
-        super()._init_player(short_name="n", name="no")
-        hammer = super()._init_player(short_name="h", name=":hammer:")
+        super()._init_participant(short_name="y", name="yes")
+        super()._init_participant(short_name="n", name="no")
+        hammer = super()._init_participant(short_name="h", name=":hammer:")
         self.overriding_answer = hammer.name
 
     def _get_outcome_report(self) -> str:
@@ -36,7 +36,6 @@ class ClassicHammer(HammerRace):
 
 
 class ComparisonHammer(HammerRace):
-
     """
     Game mode compares inputted choices.
     Example: /hammer eggs, bread, banana
@@ -56,19 +55,18 @@ class ComparisonHammer(HammerRace):
             await self.bot.say(self.invalid_players_error)
 
     def _get_outcome_report(self) -> str:
-        return SPACE.join(["Out of",
-                           self.message,
-                           ":\n",
-                           super()._get_outcome_report()])
+        return LINEBREAK.join([f"Out of {self.message}:",
+                               self._get_winner_report()])
 
     def _init_players(self) -> None:
         for option in self._options:
-            self._init_option(option)
+            if option:
+                self._init_option(option)
 
     def _init_option(self, option: str) -> None:
         option = option.strip()
         first_letter = option[0]
-        super()._init_player(short_name=first_letter, name=option)
+        super()._init_participant(short_name=first_letter, name=option)
 
     @staticmethod
     def _set_options(message: str) -> List[str]:
@@ -76,21 +74,20 @@ class ComparisonHammer(HammerRace):
 
 
 class VersusHammer(HammerRace):
-
     """
     Game mode allows users to join the race.
     """
 
     def __init__(self, bot, ctx):
-        HammerRace.__init__(self, bot, ctx)
-        self.losers = []
-        self.multiplier = 1
+        super().__init__(bot, ctx)
+        self.losers = []  # PlayerAvatar[]
+        self.total_payout = 0  # The final amount owed by all debtors
         self.invalid_players_error = "A race needs at least two players."
-        self.join_timer = JoinTimer()  # TODO that's not right
+        self.payouts_to_resolve = []
 
     async def run(self):
         if self.valid_num_players():  # TODO full at 5 people
-            starting_message = SPACE.join(["Race between", self._get_player_names()])
+            starting_message = SPACE.join(["Race between", self._get_participant_names()])
             await self.bot.say(starting_message)
             await super().run()
         else:
@@ -100,45 +97,67 @@ class VersusHammer(HammerRace):
         if not self.losers:
             return "Tie!"
         else:
-            return LINEBREAK.join([super()._get_outcome_report(), self._report_gold_owed()])
+            return LINEBREAK.join([self._get_winner_report(), self._report_gold_owed()])
 
-    def add_player(self, player):
-        # TODO use _init_players?
-        pass
+    def add_user(self, user):
+        super().add_user(user)
+        self.add_player(user)
 
-    def get_avatar(self, player):
-        short_name = player.display_name[0]
-        name = player.display_name
-        return super()._init_player(short_name, name)
+    def add_player(self, user):
+        avatar = self.get_avatar(user)
+        player_avatar = PlayerAvatar(user, avatar)
+        super().add_player(player_avatar.avatar)
+
+    def get_avatar(self, user):
+        short_name = user.display_name[0]
+        name = user.display_name
+        return self._init_participant(short_name, name)
 
     def _report_gold_owed(self) -> str:
-        reports = [self._get_gold_owed(loser) for loser in self.losers]
+        reports = [self._get_gold_owed_report(loser) for loser in self.losers]
         return LINEBREAK.join(reports)
 
     def _check_race_end(self) -> None:
         if self.is_race_end():
             self.end_game()
-            self._resolve_losers()
+            self._resolve_payouts()
 
-    def _resolve_losers(self) -> None:
+    def _resolve_payouts(self) -> None:
+        self._resolve_losses()  # Tally up total earnings from losers
+        self._resolve_wins()  # Then pay them out
+
+    def _resolve_losses(self):
         for player in self.players:
-            if player not in self.winners:
-                gold_owed = self._calculate_gold_owed(player)
-                self._add_loser(player, gold_owed)
+            participant = player.avatar
+            if participant not in self.winners:
+                self._resolve_loss(player)
 
-    def _calculate_gold_owed(self, player: Participant) -> int:
-        steps_left = self._get_steps_left(player.progress)
-        return steps_left * self.multiplier + 5
+    def _resolve_loss(self, player: PlayerAvatar):
+        participant = player.avatar
+        gold_owed = self._calculate_gold_owed(participant)
+        player.gold_difference -= gold_owed
+        self._add_loser(player)
+        self.total_payout += gold_owed
 
-    def _add_loser(self, player, gold) -> None:
+    def _calculate_gold_owed(self, participant: Participant) -> int:
+        steps_left = self._get_steps_left(participant.progress)
+        return steps_left + 5
+
+    def _add_loser(self, player) -> None:
+        self.losers.append(player)
+
+    def _get_gold_owed_report(self, loser: PlayerAvatar) -> str:
         num_winners = len(self.winners)
-        debtor = {'name': player.name,
-                  'gold': gold,
-                  'divided_gold': gold // num_winners}
-        self.losers.append(debtor)
+        amount = (-loser.gold_difference) // num_winners  # A losing .gold_difference is a negative int
+        return f'{loser.name} owes {amount} gold to each winner.'
 
-    @staticmethod
-    def _get_gold_owed(loser: dict) -> str:
-        user = loser['name']
-        amount = loser['divided_gold']
-        return f'{user} owes {amount} gold to each winner.'
+    def _resolve_wins(self):
+        for player in self.players:
+            participant = player.avatar
+            if participant in self.winners:
+                self._resolve_win(player)
+
+    def _resolve_win(self, player: PlayerAvatar):
+        num_winners = len(self.winners)
+        gold_won = self.total_payout // num_winners
+        player.gold_difference += gold_won

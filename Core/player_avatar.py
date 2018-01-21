@@ -6,9 +6,10 @@ class PlayerAvatar:
     """ Couples Discord member objects and their avatar within a game """
     def __init__(self, user, avatar: any):
         self.user = user
-        self.display_name = user.display_name
+        self.name = user.display_name
         self.avatar = avatar
         self.afk = 0
+        self.gold_difference = 0  # Set at the end of a game
 
 
 class AvatarHandler:
@@ -25,7 +26,7 @@ class AvatarHandler:
 
     @staticmethod
     def get_name(player: PlayerAvatar) -> str:
-        return player.display_name
+        return player.name
 
 
 class BlackjackAvatarHandler(AvatarHandler):

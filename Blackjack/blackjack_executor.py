@@ -25,7 +25,7 @@ class BlackjackExecutor(GameCore):
         self.blackjack = BlackjackMechanics()
         self.avatar_handler = BlackjackAvatarHandler()
         self.dealer = self.init_dealer(RollbotHost())
-        self.dealer_name = self.dealer.display_name
+        self.dealer_name = self.dealer.name
         self.standing_players = []  # Match against the dealer's hand at the end of the game
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
         self.dealer_executor = BlackjackDealer(self)

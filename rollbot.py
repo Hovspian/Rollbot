@@ -124,17 +124,17 @@ async def quit(ctx):
 
 @bot.command(pass_context=True)
 async def askhammer(ctx):
-    pass
+    await hammer_race_bot.create_classic_race(ctx)
 
 
 @bot.command(pass_context=True)
 async def compare(ctx):
-    pass
+    await hammer_race_bot.create_comparison(ctx)
 
 
 @bot.command(pass_context=True)
 async def versushammer(ctx):
-    pass
+    await hammer_race_bot.create_versus(ctx)
 
 
 @bot.command(pass_context=True)

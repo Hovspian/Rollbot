@@ -18,10 +18,10 @@ class HammerRaceBot:
         await self.classic_initializer.initialize_game(ctx)
 
     async def create_comparison(self, ctx):
-        self.comparison_initializer.initialize_game(ctx)
+        await self.comparison_initializer.initialize_game(ctx)
 
     async def create_versus(self, ctx):
-        self.versus_initializer.initialize_game(ctx)
+        await self.versus_initializer.initialize_game(ctx)
         # TODO sort payouts
 
 
@@ -73,7 +73,7 @@ class VersusHammerInitializer(GameInitializer):
         self._remove_game(race.ctx)
 
     async def _run_join_timer(self, race: HammerRace):
-        timer = race.join_timer  # TODO incorrect
+        timer = JoinTimer(self.bot, race)
         self.channel_manager.add_join_timer(race.host, timer)
         await timer.run()  # TODO handled by channel manager?
         self.channel_manager.remove_join_timer(race.host)

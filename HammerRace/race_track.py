@@ -22,7 +22,7 @@ class RaceTrack:
         return LINEBREAK.join(race_track_list)
 
     def _get_participant_slots(self) -> str:
-        lane_list = [self._draw_lanes(participant) for participant in self.race.participants]
+        lane_list = [self._draw_lanes(player) for player in self.race.players]
         return LINEBREAK.join(lane_list)
 
     def _draw_border(self) -> str:
@@ -37,7 +37,7 @@ class RaceTrack:
         empty_lane = f'|{spacer}|   |'
 
         def final_participant() -> bool:
-            return participant == self.race.participants[-1]
+            return participant == self.race.players[-1]
 
         return participant_lane if final_participant() else LINEBREAK.join([participant_lane, empty_lane])
 

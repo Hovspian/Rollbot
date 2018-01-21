@@ -1,6 +1,7 @@
 import asyncio
 from abc import abstractmethod
 
+from Core.constants import GAME_ID
 from Core.helper_functions import message_without_command
 from Core.core_game_class import GameCore
 from HammerRace.participant import Participant
@@ -10,12 +11,15 @@ from HammerRace.race_track import RaceTrack
 class HammerRace(GameCore):
 
     def __init__(self, bot, ctx):
-        super().__init__(bot, ctx)
+        super().__init__(ctx)
+        self.bot = bot
         self.distance_to_finish = 40
         self.winners = []
+        self.participants = []  # Participant[]. Participant is Versus's avatar object.
         self.race_track = RaceTrack(self)
         self.message = message_without_command(ctx.message.content)
-        self.join_timer = None
+        self.id = GAME_ID["RACE"]
+        self.title = "Race"
 
     async def run(self) -> None:
         self.start_game()
@@ -29,12 +33,12 @@ class HammerRace(GameCore):
         await self.bot.say(self._get_outcome_report())
 
     def valid_num_players(self) -> bool:
-        within_min_players = len(self.players) > 1
-        within_max_players = len(self.players) <= 5
+        within_min_players = len(self.participants) > 1
+        within_max_players = len(self.participants) <= 5
         return within_min_players and within_max_players
 
-    def is_winner(self, player: Participant) -> bool:
-        return self._get_steps_left(player.progress) <= 0
+    def is_winner(self, participant: Participant) -> bool:
+        return self._get_steps_left(participant.progress) <= 0
 
     def _round_report(self) -> str:
         return self.race_track.draw_track()
@@ -43,19 +47,24 @@ class HammerRace(GameCore):
     def _get_outcome_report(self) -> str:
         raise NotImplementedError
 
+    def _get_winner_report(self) -> str:
+        winners = self._get_winner_names()
+        report = "The winners are {}" if self._has_multiple_winners() else "The winner is {}"
+        return report.format(winners)
+
     def _next_round(self) -> None:
-        [self._player_turn(player) for player in self.players]
+        [self._participant_turn(participant) for participant in self.participants]
         self._check_race_end()
 
-    def _init_player(self, short_name: str, name: str):
-        player = Participant(short_name, name)
-        self.players.append(player)
-        return player
+    def _init_participant(self, short_name: str, name: str):
+        participant = Participant(short_name, name)
+        self.participants.append(participant)
+        return participant
 
-    def _player_turn(self, player: Participant) -> None:
-        player.make_move()
-        if self.is_winner(player):
-            self._add_winner(player)
+    def _participant_turn(self, participant: Participant) -> None:
+        participant.make_move()
+        if self.is_winner(participant):
+            self._add_winner(participant)
 
     def _check_race_end(self) -> None:
         if self.is_race_end():
@@ -74,8 +83,8 @@ class HammerRace(GameCore):
     def _has_multiple_winners(self) -> bool:
         return len(self.winners) > 1
 
-    def _get_player_names(self) -> str:
-        return ', '.join(player.name for player in self.players)
+    def _get_participant_names(self) -> str:
+        return ', '.join(participant.name for participant in self.participants)
 
     def _get_winner_names(self) -> str:
         return ', '.join(winner.name for winner in self.winners)

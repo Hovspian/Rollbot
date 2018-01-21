@@ -4,7 +4,7 @@ class GameCore:
         self.host = ctx.message.author
         self.host_name = self.host.display_name
         self.users = []  # All Discord users joining a game
-        self.players = []  # Game participants
+        self.players = []  # PlayerAvatar[] if applicable
         self.in_progress = False  # Flag for game started/ended. Determines whether /join and /forcestart are possible.
         self.max_time_left = 180
         self.add_user(self.host)
