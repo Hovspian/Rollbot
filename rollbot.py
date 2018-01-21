@@ -92,27 +92,27 @@ async def join(ctx):
 
 @bot.command(pass_context=True)
 async def blackjack(ctx):
-    pass
+    blackjack_bot.create_game(ctx)
 
 
 @bot.command(pass_context=True)
 async def hit(ctx):
-    pass
+    blackjack_bot.make_move(ctx, 'hit')
 
 
 @bot.command(pass_context=True)
 async def stand(ctx):
-    pass
+    blackjack_bot.make_move(ctx, 'stand')
 
 
 @bot.command(pass_context=True)
 async def split(ctx):
-    pass
+    blackjack_bot.make_move(ctx, 'split')
 
 
 @bot.command(pass_context=True)
 async def doubledown(ctx):
-    pass
+    blackjack_bot.make_move(ctx, 'doubledown')
 
 
 # End Blackjack commands

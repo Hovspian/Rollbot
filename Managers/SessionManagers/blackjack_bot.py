@@ -1,3 +1,5 @@
+import asyncio
+
 from Blackjack.blackjack_executor import BlackjackExecutor
 from Blackjack.join_timer import BlackjackJoinTimer
 from Core.core_game_class import GameCore
@@ -23,11 +25,9 @@ class BlackjackBot:
 
     async def make_move(self, ctx, action):
         game = self._get_game(ctx)
-        if self._game_is_blackjack(game):
+        if await self._game_is_blackjack(game):
             move_checker = BlackjackMoveChecker(self.bot, game)
             await move_checker.perform_action(ctx, action)
-        else:
-            await self.bot.say("You aren't in a Blackjack game. Join the next one?")
 
     def _get_game(self, ctx):
         user = ctx.message.author
@@ -37,13 +37,20 @@ class BlackjackBot:
             return game
         return False
 
-    def _game_is_blackjack(self, game: GameCore):
+    async def _game_is_blackjack(self, game: GameCore):
         if game:
             return self.id == game.id
+        else:
+            temp_message = await self.bot.say("You aren't in a Blackjack game. Join the next one?")
+            self._auto_delete_message(temp_message)
 
     @staticmethod
     def _is_in_game(game, user) -> bool:
         return any(in_game_user for in_game_user in game.users if in_game_user is user)
+
+    async def _auto_delete_message(self, message):
+        await asyncio.sleep(5.0)
+        await self.bot.delete_message(message)
 
 
 class BlackjackInitializer(GameInitializer):
@@ -110,7 +117,8 @@ class BlackjackMoveChecker:
     async def _can_make_move(self, user) -> bool:
         move_error = self._check_move_error(user)
         if move_error:
-            await self.bot.say(move_error)
+            temp_message = await self.bot.say(move_error)
+            await self._auto_delete_message(temp_message)
         else:
             return True
 
@@ -125,3 +133,7 @@ class BlackjackMoveChecker:
     def _is_valid_turn(self, user) -> bool:
         first_in_queue = self.game.get_current_player().user
         return user is first_in_queue
+
+    async def _auto_delete_message(self, message):
+        await asyncio.sleep(5.0)
+        await self.bot.delete_message(message)

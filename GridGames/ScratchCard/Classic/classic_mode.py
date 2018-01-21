@@ -101,7 +101,7 @@ class ClassicScratchCard(ScratchCard):
             total_payout = sum_payout * num_winning_symbols
             return int(math.floor(total_payout))
         return 0
-    
+
     @staticmethod
     def get_value(symbol):
         return symbol['value']
