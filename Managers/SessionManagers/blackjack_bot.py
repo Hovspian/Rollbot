@@ -21,7 +21,7 @@ class BlackjackBot:
         self.id = GAME_ID["BLACKJACK"]
 
     async def create_game(self, ctx):
-        self.initializer.initialize_game(ctx)
+        await self.initializer.initialize_game(ctx)
 
     async def make_move(self, ctx, action):
         game = self._get_game(ctx)
@@ -35,7 +35,6 @@ class BlackjackBot:
         game = self.channel_manager.get_game(channel)
         if channel and self._is_in_game(game, user):
             return game
-        return False
 
     async def _game_is_blackjack(self, game: GameCore):
         if game:
@@ -64,16 +63,16 @@ class BlackjackInitializer(GameInitializer):
         super().__init__(options)
 
     async def initialize_game(self, ctx):
-        if self._can_create_game(ctx):
+        if await self._can_create_game(ctx):
             blackjack = BlackjackExecutor(self.bot, ctx)
             await self._create_session(blackjack)
 
-    async def _create_session(self, ctx):
-        blackjack = self._get_game_to_create(ctx)
-        self._add_game(ctx, blackjack)
+    async def _create_session(self, blackjack: BlackjackExecutor):
+        self._add_game(blackjack.ctx, blackjack)
         await self._run_join_timer(blackjack)
+        await blackjack.start_game()
         await self._run_time_limit(blackjack)
-        self._remove_game(ctx)
+        self._remove_game(blackjack.ctx)
 
     async def _run_join_timer(self, blackjack):
         join_timer = BlackjackJoinTimer(self.bot, blackjack)
@@ -84,9 +83,6 @@ class BlackjackInitializer(GameInitializer):
     async def _run_time_limit(self, game):
         time_limit = TimeLimit(self.bot, game)
         await time_limit.run()
-
-    def _get_game_to_create(self, ctx) -> GameCore:
-        return BlackjackExecutor(self.bot, ctx)
 
 
 class BlackjackMoveChecker:

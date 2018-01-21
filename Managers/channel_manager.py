@@ -58,7 +58,7 @@ class ChannelManager:
             temp_message = await self.bot.say(error)
             await self._auto_delete_message(temp_message)
         else:
-            self._add_user_to_game(ctx)
+            await self._add_user_to_game(ctx)
 
     async def _add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel

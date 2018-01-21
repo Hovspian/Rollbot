@@ -198,6 +198,10 @@ class BlackjackExecutor(GameCore):
     def get_dealer_hand(self) -> Hand:
         return self.avatar_handler.get_first_hand(self.dealer)
 
+    def add_user(self, user):
+        super().add_user(user)
+        self.add_player(user)
+
     def add_player(self, user) -> None:
         # Couples the avatar and user in a PlayerAvatar class
         avatar = self.get_avatar()

@@ -21,6 +21,7 @@ class JoinTimer:
             await asyncio.sleep(self.join_time - 5)
             await self._say_last_call_message()
             await asyncio.sleep(5)
+            await self._say_start_message()
             break
 
     async def _end_wait(self) -> None:
@@ -30,11 +31,11 @@ class JoinTimer:
         host = self.game.host_name
         temp_message = await self.bot.say(f"{host} is starting a {self.game.title}."
                                      f"Type `/join` in the next {self.join_time} seconds to join.")
-        self._auto_delete_message(temp_message)
+        await self._auto_delete_message(temp_message)
 
     async def _say_last_call_message(self):
         temp_message = await self.bot.say("Last chance to sign up!")
-        self._auto_delete_message(temp_message)
+        await self._auto_delete_message(temp_message)
 
     async def _say_start_message(self):
         pass
