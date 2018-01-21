@@ -74,9 +74,7 @@ class VersusHammerInitializer(GameInitializer):
 
     async def _run_join_timer(self, race: HammerRace):
         timer = JoinTimer(self.bot, race)
-        self.channel_manager.add_join_timer(race.host, timer)
-        await timer.run()  # TODO handled by channel manager?
-        self.channel_manager.remove_join_timer(race.host)
+        await self.channel_manager.add_join_timer(race.host, timer)
 
     async def _say_setup_message(self, ctx) -> None:
         host_name = ctx.message.author.display_name

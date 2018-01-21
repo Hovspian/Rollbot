@@ -76,9 +76,7 @@ class BlackjackInitializer(GameInitializer):
 
     async def _run_join_timer(self, blackjack):
         join_timer = BlackjackJoinTimer(self.bot, blackjack)
-        self.channel_manager.add_join_timer(blackjack.host, join_timer)
-        await join_timer.run()
-        self.channel_manager.remove_join_timer(blackjack.host)
+        await self.channel_manager.add_join_timer(blackjack.host, join_timer)
 
     async def _run_time_limit(self, game):
         time_limit = TimeLimit(self.bot, game)

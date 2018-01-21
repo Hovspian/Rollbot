@@ -26,8 +26,10 @@ class ChannelManager:
     def vacate_channel(self, channel) -> None:
         self.active_games.pop(channel)
 
-    def add_join_timer(self, host, join_timer):
+    async def add_join_timer(self, host, join_timer):
         self.join_timers[host] = join_timer
+        await join_timer.run()
+        self.remove_join_timer(host)
 
     def remove_join_timer(self, host):
         self.join_timers.pop(host)

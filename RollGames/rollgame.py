@@ -1,16 +1,33 @@
 import discord, random, asyncio
+
+from Core.core_game_class import GameCore
 from RollGames.roll import Roll
 from Managers.data_manager import SessionDataManager
 
 
-class RollGame:
+class RollGame(GameCore):
     def __init__(self, bot, ctx, bet):
+        super().__init__(ctx)
         self.bot = bot
         self.bet = bet
-        self.ctx = ctx
         self.users = []
         self.in_progress = False
         self.result = []
+
+    async def start_rolls(self):
+        self.start_game()
+        await self.bot.say("Waiting for rolls")
+        await self.wait_for_rolls(self.bet)
+        await self.bot.say("Determining results")
+        result = await self.determine(self.player_rolls)
+        loser = self.get_name(result[0][0])
+        winner = self.get_name(result[1][0])
+        the_difference = result[1][1] - result[0][1]
+        if the_difference == 0:
+            await self.bot.say("It's a tie.")
+        else:
+            await self.bot.say(f"{loser} owes {winner} {result[2]}g")
+        self.end_game()
 
     @staticmethod
     async def forced_roll(player: discord.member.Member, max: int):
@@ -23,17 +40,8 @@ class RollGame:
     def get_name(author):
         return author.display_name
 
-    async def add_user(self, player: discord.member.Member):
-        self.users.append(player)
-
-    async def wait_for_rolls(self):
+    async def wait_for_rolls(self, max):
         raise NotImplementedError
 
-    async def determine(self):
-        raise NotImplementedError
-
-    def play_message(self):
-        raise NotImplementedError
-
-    async def add_roll(self, roll):
+    async def determine(self, rolls):
         raise NotImplementedError

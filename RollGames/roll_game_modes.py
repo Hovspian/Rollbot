@@ -1,10 +1,13 @@
 import asyncio, random
+from abc import abstractmethod
+
+import discord, random, asyncio
 from RollGames.rollgame import RollGame
 from discord.ext.commands.context import Context
 
 
 class StaticRollGame(RollGame):
-    def __init__(self, bot, ctx : Context, bet):
+    def __init__(self, bot, ctx: Context, bet):
         super().__init__(bot, ctx, bet)
         self.player_rolls = []
 
@@ -41,6 +44,7 @@ class StaticRollGame(RollGame):
 class NormalRollGame(StaticRollGame):
     def __init__(self, bot, ctx, bet):
         super().__init__(bot, ctx, bet)
+        self.title = "Normal Roll"
 
     def play_message(self):
         return "Everyone from 1-100"
@@ -65,6 +69,7 @@ class NormalRollGame(StaticRollGame):
 class DifferenceRollGame(StaticRollGame):
     def __init__(self, bot, ctx, bet):
         super().__init__(bot, ctx, bet)
+        self.title = "Difference Roll"
 
     def play_message(self):
         if self.bet > 0:
@@ -90,6 +95,7 @@ class DifferenceRollGame(StaticRollGame):
 class CountdownRollGame(RollGame):
     def __init__(self, bot, ctx, bet):
         super().__init__(bot, ctx, bet)
+        self.title = "Countdown Roll"
         if bet > 1:
             self.next_roll = bet
         else:
@@ -107,12 +113,10 @@ class CountdownRollGame(RollGame):
         winners = self.users[:-1]
         owed = self.bet // len(winners)
         loser_result = (loser, -self.bet)
-
         winner_list = []
         for player in winners:
             winner_list.append((player, owed))
         result = [loser_result, winner_list]
-
         self.result = result
 
     async def add_roll(self, roll):

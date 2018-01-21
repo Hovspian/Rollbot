@@ -5,16 +5,13 @@ from Core.constants import *
 from Managers.SessionManagers.blackjack_bot import BlackjackBot
 from Managers.SessionManagers.game_initializer import SessionOptions
 from Managers.SessionManagers.hammer_race_bot import HammerRaceBot
+from Managers.SessionManagers.roll_game_bot import RollGameBot
 from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
-from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
 from Managers.statistics import StatisticsBot
-from Managers.GameManagers.roll_game_bot import RollGameBot
 from RollGames.roll import Roll
-from RollGames.rollgame import RollGame
-from RollGames.roll_game_modes import NormalRollGame
 from Slots.modes import *
 from discordtoken import TOKEN
 
@@ -28,6 +25,7 @@ blackjack_bot = BlackjackBot(session_options)
 hammer_race_bot = HammerRaceBot(session_options)
 slot_machine_bot = SlotMachineBot(session_options)
 scratchcard_bot = ScratchCardBot(session_options)
+rollgame_bot = RollGameBot(session_options)
 stats_bot = StatisticsBot(bot, data_manager)
 
 
@@ -65,27 +63,25 @@ async def rollgame(ctx):
 
 
 @rollgame.command(pass_context=True)
-async def normal(ctx, bet = 100):
-    await session_manager.create_normal_rollgame(ctx, bet)
+async def normal(ctx, bet=100):
+    await rollgame_bot.create_normal_roll(ctx, bet)
 
 
 @rollgame.command(pass_context=True)
-async def difference(ctx, bet = 100):
-    await session_manager.create_difference_rollgame(ctx, bet)
+async def difference(ctx, bet=100):
+    await rollgame_bot.create_difference_roll(ctx, bet)
 
 
 @rollgame.command(pass_context=True)
-async def countdown(ctx, bet = 100):
-    await session_manager.create_countdown_rollgame(ctx, bet)
+async def countdown(ctx, bet=100):
+    await rollgame_bot.create_countdown_roll(ctx, bet)
 
-
+"""
+Allows the user to join the channel's active game.
+"""
 @bot.command(pass_context=True)
 async def join(ctx):
-    # Allows the user to join the channel game
     await channel_manager.check_valid_join(ctx)
-
-
-# Blackjack commands
 
 
 @bot.command(pass_context=True)
