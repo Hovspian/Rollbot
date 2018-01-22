@@ -8,18 +8,17 @@ class LocalDataManager:
         self.players = self.data_handler.get_data()
 
     def update_gold(self, user, gold_earned):
-        if user not in self.players:
-            print("Creating a new gold storage for", user)
-            self.players[user] = {'gold': 0}
-        self.players[user]['gold'] += gold_earned
+        if user.id not in self.players:
+            self.players[user.id] = {'gold': 0}
+        self.players[user.id]['gold'] += gold_earned
         self.update_data()
 
     def update_data(self):
         self.data_handler.save_data(self.players)
 
     def get_gold(self, user):
-        if user in self.players:
-            return self.players[user]['gold']
+        if user.id in self.players:
+            return self.players[user.id]['gold']
 
 
 class PersistentDataHandler:
