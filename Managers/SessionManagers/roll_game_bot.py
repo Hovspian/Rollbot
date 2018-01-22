@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from Core.time_limit import TimeLimit
 from Managers.SessionManagers.game_initializer import SessionOptions, GameInitializer
 from RollGames.join_timer import NormalRollJoinTimer, DifferenceRollJoinTimer, CountdownRollJoinTimer

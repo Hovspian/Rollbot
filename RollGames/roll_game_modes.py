@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-import asyncio, random
-from abc import abstractmethod
-
 import discord, random, asyncio
-from RollGames.rollgame import RollGame
-=======
 import asyncio
-
->>>>>>> Remove unused imports.
 from discord.ext.commands.context import Context
-
 from RollGames.roll import Roll
 from RollGames.rollgame import RollGame
 

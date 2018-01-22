@@ -23,7 +23,6 @@ class BlackjackExecutor(GameCore):
     def __init__(self, bot, ctx):
         super().__init__(ctx)
         self.blackjack = BlackjackMechanics()
-        self.avatar_handler = BlackjackAvatarHandler()
         self.dealer = self.init_dealer(RollbotHost())
         self.dealer_name = self.dealer.name
         self.standing_players = []  # Match against the dealer's hand at the end of the game
@@ -32,10 +31,11 @@ class BlackjackExecutor(GameCore):
         self.max_time_left = 10 * 60  # 10 minutes
         self.id = GAME_ID['BLACKJACK']
 
-    def init_dealer(self, host) -> PlayerAvatar:
+    def init_dealer(self, host) -> BlackjackAvatar:
         # TODO let players host blackjack games
         if host is not None:
-            return self.avatar_handler.create_avatar(host, Hand())
+            dealer_avatar = self._get_dealer_avatar()
+            return BlackjackAvatar(host, dealer_avatar)
 
     async def start_game(self):
         super().start_game()
@@ -46,8 +46,8 @@ class BlackjackExecutor(GameCore):
 
     def dispense_cards(self) -> None:
 
-        def add_initial_cards(player: PlayerAvatar):
-            starting_hand = self.avatar_handler.get_first_hand(player)
+        def add_initial_cards(player: BlackjackAvatar):
+            starting_hand = player.get_first_hand()
             num_cards = 2
             for i in range(num_cards):
                 self.blackjack.deal_card(starting_hand)
@@ -63,9 +63,8 @@ class BlackjackExecutor(GameCore):
             await self.announce_cards(player)
 
     async def announce_cards(self, player):
-        player_name = self.avatar_handler.get_name(player)
-        hand = self.avatar_handler.get_first_hand(player)
-        await self.announcer.player_cards(player_name, hand)
+        hand = player.get_first_hand()
+        await self.announcer.player_cards(player.name, hand)
 
     async def check_initial_dealer_cards(self) -> None:
         is_game_end = await self.dealer_executor.is_dealer_blackjack()
@@ -91,7 +90,7 @@ class BlackjackExecutor(GameCore):
 
     async def player_turn(self) -> None:
         current_player = self.players[0]
-        player_name = self.avatar_handler.get_name(current_player)
+        player_name = current_player.name
         hand = self.get_current_player_hand()
         await self.announcer.next_turn(player_name, hand)
 
@@ -142,7 +141,7 @@ class BlackjackExecutor(GameCore):
 
     def get_current_player_hands(self) -> List[PlayerHand]:
         current_player = self.get_current_player()
-        hands = self.avatar_handler.get_hands(current_player)
+        hands = current_player.get_hands()
         return hands
 
     async def check_hit_bust(self) -> None:
@@ -173,17 +172,15 @@ class BlackjackExecutor(GameCore):
         [await self.resolve_outcomes(player) for player in self.players]
         super().end_game()
 
-    async def resolve_outcomes(self, player) -> None:
-        player_name = self.avatar_handler.get_name(player)
-        hands = self.avatar_handler.get_hands(player)
-        self.results[player] = 0
+    async def resolve_outcomes(self, player: BlackjackAvatar) -> None:
+        hands = player.get_hands()
         for hand in hands:
-            await self.announcer.player_hand(player_name, hand)
+            await self.announcer.player_hand(player.name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
             await hand_checker.check_outcome()
             self.results[player] += hand.get_winnings() - hand.get_wager()
 
-    def get_current_player(self) -> PlayerAvatar:
+    def get_current_player(self) -> BlackjackAvatar:
         return self.players[0]
 
     def knock_out_current_player(self) -> None:
@@ -196,7 +193,7 @@ class BlackjackExecutor(GameCore):
                 return hand
 
     def get_dealer_hand(self) -> Hand:
-        return self.avatar_handler.get_first_hand(self.dealer)
+        return self.dealer.get_first_hand()
 
     def add_user(self, user):
         super().add_user(user)
@@ -205,10 +202,15 @@ class BlackjackExecutor(GameCore):
     def add_player(self, user) -> None:
         # Couples the avatar and user in a PlayerAvatar class
         avatar = self.get_avatar()
-        player_avatar = PlayerAvatar(user, avatar)
+        player_avatar = BlackjackAvatar(user, avatar)
         super().add_player(player_avatar)
 
     @staticmethod
     def get_avatar() -> List[PlayerHand]:
         # Players own a list of hands: initially one hand, but can be multiple after a split
         return [PlayerHand()]
+
+    @staticmethod
+    def _get_dealer_avatar()-> List[Hand]:
+        # Dealers do not have many of the options that players do.
+        return [Hand()]
