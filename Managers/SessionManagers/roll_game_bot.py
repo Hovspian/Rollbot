@@ -1,5 +1,3 @@
-from Core.core_game_class import GameCore
-from Core.join_timer import JoinTimer
 from Core.time_limit import TimeLimit
 from Managers.SessionManagers.game_initializer import SessionOptions, GameInitializer
 from RollGames.join_timer import NormalRollJoinTimer, DifferenceRollJoinTimer, CountdownRollJoinTimer

@@ -1,6 +1,6 @@
 from typing import List
+
 from Core.constants import *
-from Core.join_timer import JoinTimer
 from Core.player_avatar import PlayerAvatar
 from HammerRace.hammer_race import *
 

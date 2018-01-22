@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 import asyncio, random
 from abc import abstractmethod
 
 import discord, random, asyncio
 from RollGames.rollgame import RollGame
+=======
+import asyncio
+
+>>>>>>> Remove unused imports.
 from discord.ext.commands.context import Context
+
+from RollGames.roll import Roll
+from RollGames.rollgame import RollGame
 
 
 class StaticRollGame(RollGame):
@@ -128,4 +136,3 @@ class CountdownRollGame(RollGame):
             self.users.append(roll.roller)
             if roll.rolled > 1:
                 await self.bot.say(f"Waiting for roll to {self.next_roll} from {self.users[0].display_name}")
-
