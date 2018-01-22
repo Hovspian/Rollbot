@@ -37,8 +37,12 @@ class HammerRace(GameCore):
         within_max_players = len(self.participants) <= 5
         return within_min_players and within_max_players
 
+    def get_steps_left(self, progress: int) -> int:
+        character_space = 1
+        return self.distance_to_finish - progress - character_space
+
     def is_winner(self, participant: Participant) -> bool:
-        return self._get_steps_left(participant.progress) <= 0
+        return self.get_steps_left(participant.progress) <= 0
 
     def _round_report(self) -> str:
         return self.race_track.draw_track()
@@ -69,10 +73,6 @@ class HammerRace(GameCore):
     def _check_race_end(self) -> None:
         if self.is_race_end():
             self.end_game()
-
-    def _get_steps_left(self, progress: int) -> int:
-        character_space = 1
-        return self.distance_to_finish - progress - character_space
 
     def _add_winner(self, participant: Participant) -> None:
         self.winners.append(participant)

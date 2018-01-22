@@ -106,7 +106,7 @@ class VersusHammer(HammerRace):
     def add_player(self, user):
         avatar = self.get_avatar(user)
         player_avatar = PlayerAvatar(user, avatar)
-        super().add_player(player_avatar.avatar)
+        super().add_player(player_avatar)
 
     def get_avatar(self, user):
         short_name = user.display_name[0]
@@ -140,7 +140,7 @@ class VersusHammer(HammerRace):
         self.total_payout += gold_owed
 
     def _calculate_gold_owed(self, participant: Participant) -> int:
-        steps_left = self._get_steps_left(participant.progress)
+        steps_left = self.get_steps_left(participant.progress)
         return steps_left + 5
 
     def _add_loser(self, player) -> None:
