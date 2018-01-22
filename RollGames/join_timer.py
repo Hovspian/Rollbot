@@ -10,9 +10,8 @@ class RollGameJoinTimer(JoinTimer):
         host = self.game.host_name
         bet = self.game.bet
         game_title = self.game.title
-        temp_message = await self.bot.say(f"{host} is creating a {game_title} with {bet}g bet. "
+        await self.bot.say(f"{host} is creating a {game_title} with {bet}g bet. "
                                           f"Type /join in the next {self.join_time} seconds to join.")
-        self.messages_to_cleanup.append(temp_message)
 
 
 class NormalRollJoinTimer(JoinTimer):

@@ -11,11 +11,11 @@ from HammerRace.race_track import RaceTrack
 class HammerRace(GameCore):
 
     def __init__(self, bot, ctx):
+        self.participants = []  # Participant[]. Participant is Versus's avatar object.
         super().__init__(ctx)
         self.bot = bot
         self.distance_to_finish = 40
         self.winners = []
-        self.participants = []  # Participant[]. Participant is Versus's avatar object.
         self.race_track = RaceTrack(self)
         self.message = message_without_command(ctx.message.content)
         self.id = GAME_ID["RACE"]

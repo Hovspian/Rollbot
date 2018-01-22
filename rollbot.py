@@ -16,7 +16,7 @@ from Slots.modes import *
 from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='&', description=description)
+bot = commands.Bot(command_prefix='.', description=description)
 client = discord.Client()
 data_manager = SessionDataManager()
 channel_manager = ChannelManager(bot)
