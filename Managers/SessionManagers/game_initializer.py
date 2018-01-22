@@ -27,10 +27,6 @@ class GameInitializer:
         self.data_manager = options.data_manager
 
     @abstractmethod
-    async def initialize_game(self, ctx):
-        raise NotImplementedError
-
-    @abstractmethod
     def _create_session(self, game: GameCore):
         raise NotImplementedError
 

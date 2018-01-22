@@ -10,7 +10,7 @@ class RollGame(GameCore):
         super().__init__(ctx)
         self.bot = bot
         self.bet = bet
-        self.users = []
+        self.player_rolls = []
         self.in_progress = False
         self.result = []
         self.invalid_players_error = "A roll game needs at least two players."
@@ -38,6 +38,10 @@ class RollGame(GameCore):
 
     def valid_num_players(self) -> bool:
         return len(self.players) > 1
+
+    def add_user(self, user):
+        super().add_user(user)
+        self.add_player(user)
 
     @staticmethod
     async def forced_roll(player: discord.member.Member, max: int):

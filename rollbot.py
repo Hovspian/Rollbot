@@ -54,6 +54,8 @@ async def roll(ctx, max=100):
         await game.add_roll(Roll(roll, roller, max))
     except AttributeError:
         pass
+        print("Tried to roll for an existing game but failed.")
+    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
 
 @bot.group(pass_context=True)
@@ -76,11 +78,10 @@ async def difference(ctx, bet=100):
 async def countdown(ctx, bet=100):
     await rollgame_bot.create_countdown_roll(ctx, bet)
 
-"""
-Allows the user to join the channel's active game.
-"""
+
 @bot.command(pass_context=True)
 async def join(ctx):
+    """ Allows the user to join the channel's active game. """
     await channel_manager.check_valid_join(ctx)
 
 

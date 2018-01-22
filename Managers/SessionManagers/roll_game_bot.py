@@ -30,7 +30,7 @@ class RollGameInitializer(GameInitializer):
     def __init__(self, options):
         super().__init__(options)
 
-    async def initialize_game(self, ctx, *bet):
+    async def initialize_game(self, ctx, bet):
         if await self._can_create_game(ctx):
             game = self.get_game_to_create()
             initialized = game(self.bot, ctx, bet)
