@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 import discord, random, asyncio
 
 from Core.core_game_class import GameCore
@@ -11,7 +13,6 @@ class RollGame(GameCore):
         self.bot = bot
         self.bet = bet
         self.player_rolls = []
-        self.in_progress = False
         self.result = []
         self.invalid_players_error = "A roll game needs at least two players."
 
@@ -24,17 +25,18 @@ class RollGame(GameCore):
 
     async def start_game(self):
         super().start_game()
-        await self.bot.say("Waiting for rolls")
-        await self.wait_for_rolls(self.bet)
-        await self.bot.say("Determining results")
-        result = await self.determine(self.player_rolls)
-        loser = self.get_name(result[0][0])
-        winner = self.get_name(result[1][0])
-        the_difference = result[1][1] - result[0][1]
-        if the_difference == 0:
-            await self.bot.say("It's a tie.")
+        await self.wait_for_rolls()
+        await self.determine()
+
+        if self.result[0][1] == 0:
+            await self.bot.say("It's a tie")
         else:
-            await self.bot.say(f"{loser} owes {winner} {result[2]}g")
+            loser = self.get_name(self.result[0][0])
+            winners = []
+            for tup in self.result[1]:
+                winners.append(self.get_name(tup[0]))
+            split_winners = ', '.join(winners)
+            await self.bot.say(f"{loser} owes {split_winners} {self.result[1][0][1]}g")
 
     def valid_num_players(self) -> bool:
         return len(self.players) > 1
@@ -54,8 +56,14 @@ class RollGame(GameCore):
     def get_name(author):
         return author.display_name
 
-    async def wait_for_rolls(self, max):
+    @abstractmethod
+    async def wait_for_rolls(self):
         raise NotImplementedError
 
-    async def determine(self, rolls):
+    @abstractmethod
+    async def determine(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def add_roll(self, roll):
         raise NotImplementedError

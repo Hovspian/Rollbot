@@ -65,7 +65,7 @@ class ChannelManager:
     async def _add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
         user = ctx.message.author
-        await self.active_games[channel].add_user(user)
+        self.active_games[channel].add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
 
     def _get_invalid_forcestart_error(self, ctx) -> str:

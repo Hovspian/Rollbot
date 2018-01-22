@@ -14,7 +14,7 @@ class StaticRollGame(RollGame):
         while len(self.users) > len(self.player_rolls):
             await asyncio.sleep(1)
 
-    async def determine_winner_and_loser(self):
+    async def determine(self):
         """Determines the winner or loser of a game. If there is a tie, it will reroll for them."""
 
         self.player_rolls.sort(key=lambda roll: roll[1])
@@ -45,11 +45,8 @@ class NormalRollGame(StaticRollGame):
         super().__init__(bot, ctx, bet)
         self.title = "Normal Roll"
 
-    def play_message(self):
-        return "Everyone from 1-100"
-
     async def determine(self):
-        super_result = await self.determine_winner_and_loser()
+        super_result = await super().determine()
         loser = super_result[0]
         winner = super_result[1]
         if self.player_rolls[0][1] == self.player_rolls[len(self.player_rolls) - 1][1]:
@@ -61,7 +58,7 @@ class NormalRollGame(StaticRollGame):
         self.result = result
 
     async def add_roll(self, roll):
-        if roll.roller in self.users and roll.roller not in self.player_rolls and roll.max == 100 and self.in_progress:
+        if roll.roller in self.users and roll.roller not in self.player_rolls and roll.max == 100:
             self.player_rolls.append((roll.roller, roll.rolled))
 
 
@@ -70,14 +67,8 @@ class DifferenceRollGame(StaticRollGame):
         super().__init__(bot, ctx, bet)
         self.title = "Difference Roll"
 
-    def play_message(self):
-        if self.bet > 0:
-            return f"Everyone roll from 1-{self.bet}"
-        else:
-            return "Everyone roll from 1-100"
-
     async def determine(self):
-        super_result = await self.determine_winner_and_loser()
+        super_result = await super().determine()
         loser = super_result[0]
         winner = super_result[1]
         owed = self.player_rolls[len(self.player_rolls) - 1][1] - self.player_rolls[0][1]
@@ -86,7 +77,7 @@ class DifferenceRollGame(StaticRollGame):
         self.result = result
 
     async def add_roll(self, roll):
-        if roll.roller in self.users and roll.roller not in self.player_rolls and self.in_progress and \
+        if roll.roller in self.users and roll.roller not in self.player_rolls and \
                 (roll.max == self.bet or (roll.max == 100 and self.bet < 1)):
             self.player_rolls.append((roll.roller, roll.rolled))
 
@@ -99,9 +90,6 @@ class CountdownRollGame(RollGame):
             self.next_roll = bet
         else:
             self.next_roll = 100
-
-    def play_message(self):
-        return f"Waiting for roll to {self.next_roll} from {self.get_name(self.users[0])}"
 
     async def wait_for_rolls(self):
         while self.next_roll > 1:
@@ -119,7 +107,7 @@ class CountdownRollGame(RollGame):
         self.result = result
 
     async def add_roll(self, roll):
-        if self.next_roll == 1 or not self.in_progress:
+        if self.next_roll == 1:
             return
         if roll.roller is self.users[0] and roll.max == self.next_roll:
             self.next_roll = roll.rolled

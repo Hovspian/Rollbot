@@ -10,15 +10,24 @@ from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.channel_manager import ChannelManager
 from Managers.data_manager import SessionDataManager
+from Managers.local_data_manager import LocalDataManager
 from Managers.statistics import StatisticsBot
 from RollGames.roll import Roll
 from Slots.modes import *
 from discordtoken import TOKEN
 
+
+def get_data_manager():
+    try:
+        return SessionDataManager()
+    except:
+        print("No connection to the database. Falling back to local data.")
+        return LocalDataManager()
+
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='.', description=description)
+bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
-data_manager = SessionDataManager()
+data_manager = get_data_manager()
 channel_manager = ChannelManager(bot)
 session_options = SessionOptions(bot, channel_manager, data_manager)
 blackjack_bot = BlackjackBot(session_options)
@@ -47,14 +56,14 @@ async def roll(ctx, max=100):
         return
 
     roll = random.randint(1, max)
-    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
     try:
-        game = channel_manager.get_game(ctx)
+        channel = ctx.message.channel
+        game = channel_manager.get_game(channel)
         await game.add_roll(Roll(roll, roller, max))
     except AttributeError:
-        pass
-        print("Tried to roll for an existing game but failed.")
+        print("Existing game is not accepting rolls.")
+
     await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
 
 

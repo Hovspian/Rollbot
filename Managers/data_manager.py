@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 
+
 class SessionDataManager:
     def __init__(self):
         dynamodb = boto3.resource('dynamodb')
