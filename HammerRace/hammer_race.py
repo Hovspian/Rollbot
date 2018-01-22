@@ -20,17 +20,21 @@ class HammerRace(GameCore):
         self.message = message_without_command(ctx.message.content)
         self.id = GAME_ID["RACE"]
         self.title = "Race"
+        self.messages_to_cleanup = []
 
     async def run(self) -> None:
         self.start_game()
-        await self.bot.say(self._round_report())
+        initial = await self.bot.say(self._round_report())
+        self._add_message_to_cleanup(initial)
 
         while self.in_progress:
             await asyncio.sleep(2.0)
             self._next_round()
-            await self.bot.say(self._round_report())
+            message = await self.bot.say(self._round_report())
+            self._add_message_to_cleanup(message)
 
         await self.bot.say(self._get_outcome_report())
+        await self._cleanup()
 
     def valid_num_players(self) -> bool:
         within_min_players = len(self.participants) > 1
@@ -88,3 +92,14 @@ class HammerRace(GameCore):
 
     def _get_winner_names(self) -> str:
         return ', '.join(winner.name for winner in self.winners)
+
+    def _add_message_to_cleanup(self, message):
+        self.messages_to_cleanup.append(message)
+
+    async def _cleanup(self):
+        await asyncio.sleep(5.0)
+        last_message = len(self.messages_to_cleanup) - 1
+        for i, message in enumerate(self.messages_to_cleanup):
+            if i != last_message:
+                await self.bot.delete_message(message)
+                await asyncio.sleep(1.0)
