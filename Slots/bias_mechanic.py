@@ -17,6 +17,9 @@ class SlotsBias:
         self._check_bias_directions()
 
     def get_index(self, reel) -> int:
+        """
+        Which row/diagonal to bias toward
+        """
         if self._has_bias() and self.results:
             index = self.get_match_index(reel)
         else:
