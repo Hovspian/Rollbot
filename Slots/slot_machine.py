@@ -8,7 +8,6 @@ from Slots.result_checker import ResultChecker
 
 
 class SlotMachine(GameCore):
-
     def __init__(self, ctx):
         super().__init__(ctx)
         self.default_outcomes = []
@@ -76,33 +75,27 @@ class SlotMachine(GameCore):
     def _rebuild_reel(self) -> List[dict]:
         first_column = self.grid_handler.columns[0]
         first_reel = self.reels[0]
-        include_symbols = self._roll_num_included_symbols()
-        rerolled_reel = self._generate_reel(first_reel, include_symbols)
+        reel_size = self._roll_num_included_symbols()
+        rerolled_reel = self._generate_reel(first_reel, reel_size)
         return rerolled_reel + first_column
 
     @staticmethod
-    def _generate_reel(symbols, reel_size) -> List[dict]:
-        reel = []
-
-        def roll_add_to_reel(i) -> dict:
-            symbol = get_symbol(i)
-            return symbol
+    def _generate_reel(from_reel, reel_size) -> List[dict]:
+        new_reel = []
 
         def get_symbol(i) -> dict:
-            previous_symbol = get_previous_symbol(i)
-            if previous_symbol:
-                filtered_container = filter_value(container=symbols, value_to_filter=previous_symbol)
-                symbol = roll(filtered_container)
+            if len(new_reel) > 1:
+                previous_symbol = new_reel[i - 1]
+                filtered_container = filter_value(container=from_reel, value_to_filter=previous_symbol)
+                result = roll(filtered_container)
+                return result
             else:
-                symbol = roll(symbols)
-            return symbol
+                return roll(from_reel)
 
-        def get_previous_symbol(i) -> dict:
-            if reel:
-                previous_symbol = reel[i - 1]
-                return previous_symbol
-
-        return [roll_add_to_reel(i) for i in range(reel_size)]
+        for i in range(reel_size):
+            symbol = get_symbol(i)
+            new_reel.append(symbol)
+        return new_reel
 
     def _roll_num_included_symbols(self) -> int:
         return random.randint(1, self.num_columns + 1)
