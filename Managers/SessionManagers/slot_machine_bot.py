@@ -1,6 +1,6 @@
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
 from Managers.data_manager import SessionDataManager
-from Slots.modes import ClassicSlots, BigClassicSlots, GiantSlots, MapleSlots, BigMapleSlots, GiantMapleSlots
+from Slots.modes import ClassicSlots, BigClassicSlots, GiantClassicSlots, MapleSlots, BigMapleSlots, GiantMapleSlots
 from Slots.slot_machine import SlotMachine
 
 
@@ -30,8 +30,8 @@ class SlotMachineBot(GameInitializer):
 
     async def initialize_giantslots(self, ctx):
         if await self._can_create_game(ctx):
-            slots = GiantSlots(ctx)
-            self._create_session(slots)
+            slots = GiantClassicSlots(ctx)
+            await self._create_session(slots)
 
     async def initialize_mapleslots(self, ctx):
         if await self._can_create_game(ctx):

@@ -15,9 +15,6 @@ class BigSlots(SlotMachine):
         self.init_reel_size = self.num_columns * 2
         self.bias_mechanic = BigSlotsBias(self)
 
-    def _roll_num_included_symbols(self):
-        return random.randint(1, self.num_columns)
-
 
 class BigSlotsBias(SlotsBias):
     def __init__(self, slot_machine):
@@ -37,9 +34,6 @@ class GiantSlots(SlotMachine):
         self.num_columns = 7
         self.payout_multiplier = 2
         self.bias_mechanic = GiantSlotsBias(self)
-
-    def _roll_num_included_symbols(self):
-        return random.randint(0, self.num_columns - 1)
 
 
 class GiantSlotsBias(SlotsBias):
