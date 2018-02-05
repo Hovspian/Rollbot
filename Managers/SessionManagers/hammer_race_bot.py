@@ -3,7 +3,7 @@ import asyncio
 from Core.join_timer import JoinTimer
 from HammerRace.hammer_modes import *
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
-from Managers.data_manager import SessionDataManager
+from Managers.remote_data_manager import RemoteDataManager
 
 
 class HammerRaceBot:
@@ -89,7 +89,7 @@ class HammerPayoutHandler:
     TODO actually use this one day, maybe
     """
 
-    def __init__(self, game: VersusHammer, data_manager: SessionDataManager):
+    def __init__(self, game: VersusHammer, data_manager: RemoteDataManager):
         self.game = game
         self.data_manager = data_manager
 

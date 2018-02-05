@@ -1,5 +1,4 @@
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
-from Managers.data_manager import SessionDataManager
 from Slots.modes import ClassicSlots, BigClassicSlots, GiantClassicSlots, MapleSlots, BigMapleSlots, GiantMapleSlots
 from Slots.slot_machine import SlotMachine
 
@@ -14,9 +13,6 @@ class SlotMachineBot(GameInitializer):
         super().__init__(options)
         self.bot = options.bot
         self.data_manager = options.data_manager
-
-    def initialize_game(self, ctx):
-        pass
 
     async def initialize_slots(self, ctx):
         if await self._can_create_game(ctx):
@@ -51,19 +47,20 @@ class SlotMachineBot(GameInitializer):
     async def _create_session(self, slots: SlotMachine):
         self._add_game(slots.ctx, slots)
         slots.run()
-        self.save_payout(slots)
-        await self.report(slots)
+        await self._report(slots)
         self._remove_game(slots.ctx)
+        self._save_payout(slots)
 
-    async def report(self, slot_machine):
+    async def _report(self, slot_machine):
         host_name = slot_machine.get_host_name()
         report = '\n'.join([f"{host_name}'s slot results",
                             slot_machine.get_outcome_report()])
         await self.bot.say(slot_machine.render_slots())
         await self.bot.say(report)
 
-    def save_payout(self, slot_machine):
-        user = slot_machine.get_host()
+    def _save_payout(self, slot_machine):
+        to_user = slot_machine.get_host()
         gold_amount = slot_machine.get_payout_amount()
         if gold_amount != 0:
-            self.data_manager.update_gold(user, gold_amount)
+            from_rollbot = self.bot.user
+            self.data_manager.transfer_gold(to_user, gold_amount, from_rollbot)

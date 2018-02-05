@@ -4,7 +4,7 @@ import discord, random, asyncio
 
 from Core.core_game_class import GameCore
 from RollGames.roll import Roll
-from Managers.data_manager import SessionDataManager
+from Managers.remote_data_manager import RemoteDataManager
 
 
 class RollGame(GameCore):

@@ -1,4 +1,5 @@
 import discord
+from botocore.exceptions import NoRegionError
 from discord.ext import commands
 
 from Core.constants import *
@@ -9,7 +10,7 @@ from Managers.SessionManagers.roll_game_bot import RollGameBot
 from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
 from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.channel_manager import ChannelManager
-from Managers.data_manager import SessionDataManager
+from Managers.remote_data_manager import RemoteDataManager
 from Managers.local_data_manager import LocalDataManager
 from Managers.statistics import StatisticsBot
 from RollGames.roll import Roll
@@ -17,25 +18,16 @@ from Slots.modes import *
 from discordtoken import TOKEN
 
 
-def get_data_manager():
-    try:
-        return SessionDataManager()
-    except:
-        print("No connection to the database. Falling back to local data.")
-        return LocalDataManager()
-
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='/', description=description)
+bot = commands.Bot(command_prefix='.', description=description)
 client = discord.Client()
-data_manager = get_data_manager()
-channel_manager = ChannelManager(bot)
-session_options = SessionOptions(bot, channel_manager, data_manager)
-blackjack_bot = BlackjackBot(session_options)
-hammer_race_bot = HammerRaceBot(session_options)
-slot_machine_bot = SlotMachineBot(session_options)
-scratchcard_bot = ScratchCardBot(session_options)
-rollgame_bot = RollGameBot(session_options)
-stats_bot = StatisticsBot(bot, data_manager)
+blackjack_bot = None
+channel_manager = None
+hammer_race_bot = None
+slot_machine_bot = None
+scratchcard_bot = None
+rollgame_bot = None
+stats_bot = None
 
 
 @bot.event
@@ -44,6 +36,36 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('-' * len(bot.user.id))
+    initialize_modules()
+
+
+def get_data_manager():
+    try:
+        return RemoteDataManager()
+    except:
+        print("No connection to the database. Falling back to local data.")
+        return LocalDataManager(bot)
+
+
+def initialize_modules():
+    global blackjack_bot
+    global channel_manager
+    global hammer_race_bot
+    global slot_machine_bot
+    global scratchcard_bot
+    global rollgame_bot
+    global stats_bot
+
+    data_manager = get_data_manager()
+    channel_manager = ChannelManager(bot)
+    session_options = SessionOptions(bot, channel_manager, data_manager)
+
+    blackjack_bot = BlackjackBot(session_options)
+    hammer_race_bot = HammerRaceBot(session_options)
+    slot_machine_bot = SlotMachineBot(session_options)
+    scratchcard_bot = ScratchCardBot(session_options)
+    rollgame_bot = RollGameBot(session_options)
+    stats_bot = StatisticsBot(bot, data_manager)
 
 
 @bot.command(pass_context=True)
@@ -207,8 +229,14 @@ async def scratch(ctx):
 
 
 @bot.command(pass_context=True)
-async def gold(ctx):
-    await stats_bot.query_gold(ctx)
+async def gold(ctx, query=None):
+    await stats_bot.query_gold(ctx, query)
+
+
+@bot.command(pass_context=True)
+async def winnings(ctx):
+    await stats_bot.query_gold_stats(ctx)
+
 
 
 bot.remove_command('help')

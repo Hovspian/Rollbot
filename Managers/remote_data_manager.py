@@ -2,22 +2,22 @@ import boto3
 from botocore.exceptions import ClientError
 
 
-class SessionDataManager:
+class RemoteDataManager:
     def __init__(self):
         dynamodb = boto3.resource('dynamodb')
         self.table = dynamodb.Table('Gold')
 
-    def update_gold(self, user, gold_earned):
+    def update_gold(self, user, gold_earned, from_user):
         name = str(user)
         try:
             self.table.update_item(
-                Key = {'username': name},
-                UpdateExpression = 'SET gold = gold + :val',
-                ExpressionAttributeValues = {':val': gold_earned}
+                Key={'username': name},
+                UpdateExpression='SET gold = gold + :val',
+                ExpressionAttributeValues={':val': gold_earned}
             )
         except ClientError:
             self.table.put_item(
-                Item = {
+                Item={
                     'username': name,
                     'gold': gold_earned
                 }
