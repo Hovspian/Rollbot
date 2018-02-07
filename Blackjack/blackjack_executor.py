@@ -184,12 +184,6 @@ class BlackjackExecutor(GameCore):
     def knock_out_current_player(self) -> None:
         del self.players[0]
 
-    @staticmethod
-    def _get_active_hand(hands: List[PlayerHand]) -> PlayerHand:
-        for hand in hands:
-            if hand.is_active:
-                return hand
-
     def get_dealer_hand(self) -> Hand:
         return self.dealer.get_first_hand()
 
@@ -202,6 +196,10 @@ class BlackjackExecutor(GameCore):
         avatar = self.get_avatar()
         player_avatar = BlackjackAvatar(user, avatar)
         super().add_player(player_avatar)
+
+    @staticmethod
+    def _get_active_hand(hands: List[PlayerHand]) -> PlayerHand:
+        return next(hand for hand in hands if hand.is_active)
 
     @staticmethod
     def get_avatar() -> List[PlayerHand]:
