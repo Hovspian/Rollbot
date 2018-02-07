@@ -17,7 +17,7 @@ class SlotMachine(GameCore):
         self.reels = []
         self.winning_combos = []
         self.winning_symbols = []
-        self.payout_amount = 0
+        self.payout = 0
         self.payout_multiplier = 1
         self.results = self.grid_handler.get_grid()
         self.bias_mechanic = SlotsBias(self)
@@ -41,15 +41,15 @@ class SlotMachine(GameCore):
     def get_outcome_report(self) -> str:
         return SlotsFeedback(self).get_outcome_report()
 
-    def get_payout_amount(self) -> int:
-        return self.payout_amount
+    def get_payout(self) -> int:
+        return self.payout
 
     def _check_results(self) -> None:
         result_checker = ResultChecker(self)
         result_checker.analyze_results()
 
     def _resolve_payout(self):
-        self.payout_amount += self._calculate_payout()
+        self.payout += self._calculate_payout()
 
     def _calculate_payout(self) -> int:
         winning_symbols = self.winning_symbols
