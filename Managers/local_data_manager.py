@@ -95,10 +95,9 @@ class LocalDataManager:
     def __create_gold_stat_if_not_exists(self, user_one, user_two) -> None:
         """
         Create a statistic for tracking gold won/lost from another user.
-        Structure: { gold_stats: { user_id: {gold: int, name: str},
-                                   user_id2: {gold: int, name: str},
-                                   ... }
-                                  }
+        Structure: gold_stats = { user_id: {gold: int, name: str},
+                                  user_id2: {gold: int, name: str},
+                                  ... }
         """
         user_one_stats = self.players[user_one.id]['gold_stats']
         if user_two.id in user_one_stats:
