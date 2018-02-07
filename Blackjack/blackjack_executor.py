@@ -50,11 +50,8 @@ class BlackjackExecutor(GameCore):
 
     async def show_player_cards(self) -> None:
         for player in self.players:
-            await self.announce_cards(player)
-
-    async def announce_cards(self, player):
-        hand = player.get_first_hand()
-        await self.announcer.player_cards(player.name, hand)
+            hand = player.get_first_hand()
+            await self.announcer.player_cards(player.name, hand)
 
     async def check_initial_dealer_cards(self) -> None:
         is_game_end = await self.dealer_executor.is_dealer_blackjack()
