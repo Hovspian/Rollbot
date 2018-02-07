@@ -12,7 +12,7 @@ class PlayerAvatar:
         self.gold_difference = 0  # Set at the end of a game
 
 
-class BlackjackAvatar(PlayerAvatar):
+class BlackjackPlayer(PlayerAvatar):
 
     """ Method names for clarity """
 
