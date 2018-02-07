@@ -14,12 +14,12 @@ class LocalDataManager:
         self.__initialize_rollbot()
         self.__recently_updated = False  # Flag to throttle the frequency of file writes
 
-    def batch_transfer(self, payouts: dict):
+    async def batch_transfer(self, payouts: dict):
         for payout in payouts:
             self.transfer_gold(payout['to_user'],
                                payout['gold_difference'],
                                payout['from_user'])
-        self.write_out_data()
+        await self.write_out_data()
 
     def transfer_gold(self, to_user, gold_difference, from_user):
         """
@@ -41,8 +41,8 @@ class LocalDataManager:
         self.__save_data()
         self.__recently_updated = True
         await asyncio.sleep(300)  # 5 minutes
-        self.__recently_updated = False
         self.__save_data()  # Update again to catch anything from those 5 minutes
+        self.__recently_updated = False
 
     def get_gold(self, user) -> int:
         """
