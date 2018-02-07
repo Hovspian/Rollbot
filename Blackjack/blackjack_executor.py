@@ -9,7 +9,6 @@ from Core.constants import GAME_ID
 
 
 class BlackjackExecutor(GameCore):
-
     """ 'When' Blackjack rules are applied """
 
     def __init__(self, bot, ctx):
@@ -39,20 +38,17 @@ class BlackjackExecutor(GameCore):
         await self.check_initial_dealer_cards()
 
     def dispense_cards(self) -> None:
-
-        def add_initial_cards(player: BlackjackAvatar):
-            starting_hand = player.get_first_hand()
-            num_cards = 2
-            for i in range(num_cards):
-                self.blackjack.deal_card(starting_hand)
-
         for player in self.players:
-            add_initial_cards(player)
+            self.add_initial_cards(player)
+        self.add_initial_cards(self.dealer)
 
-        add_initial_cards(self.dealer)
+    def add_initial_cards(self, player: BlackjackAvatar):
+        starting_hand = player.get_first_hand()
+        num_cards = 2
+        for i in range(num_cards):
+            self.blackjack.deal_card(starting_hand)
 
     async def show_player_cards(self) -> None:
-
         for player in self.players:
             await self.announce_cards(player)
 
@@ -207,6 +203,6 @@ class BlackjackExecutor(GameCore):
         return [PlayerHand()]
 
     @staticmethod
-    def _get_dealer_avatar()-> List[Hand]:
+    def _get_dealer_avatar() -> List[Hand]:
         # Dealers do not have many of the options that players do.
         return [Hand()]
