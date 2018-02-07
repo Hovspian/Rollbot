@@ -54,12 +54,12 @@ class BlackjackResultChecker:
 
     async def _is_winner(self) -> bool:
         player_busted = await self._check_bust()
-        dealer_value = self._get_dealer_hand_value()
-        hand_value = self.player_hand.get_value()
         if player_busted:
             return False
-        else:
-            return hand_value > dealer_value
+
+        hand_value = self.player_hand.get_value()
+        dealer_value = self._get_dealer_hand_value()
+        return hand_value > dealer_value
 
     async def _check_bust(self) -> bool:
         if self.player_hand.is_bust():

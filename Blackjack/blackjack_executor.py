@@ -8,14 +8,6 @@ from Core.core_game_class import GameCore
 from Core.constants import GAME_ID
 
 
-class RollbotHost:
-    """ A fake host for Blackjack """
-
-    def __init__(self):
-        self.display_name = "Rollbot"
-        self.gold = 10000
-
-
 class BlackjackExecutor(GameCore):
 
     """ 'When' Blackjack rules are applied """
@@ -23,19 +15,21 @@ class BlackjackExecutor(GameCore):
     def __init__(self, bot, ctx):
         super().__init__(ctx)
         self.blackjack = BlackjackMechanics()
-        self.dealer = self.init_dealer(RollbotHost())
+        self.bot = bot
+        self.dealer = self.init_dealer()
         self.dealer_name = self.dealer.name
         self.standing_players = []  # Match against the dealer's hand at the end of the game
         self.announcer = BlackjackAnnouncer(bot, self.dealer_name)
         self.dealer_executor = BlackjackDealer(self)
         self.max_time_left = 10 * 60  # 10 minutes
+        self.payouts = []
         self.id = GAME_ID['BLACKJACK']
 
-    def init_dealer(self, host) -> BlackjackAvatar:
+    def init_dealer(self) -> BlackjackAvatar:
         # TODO let players host blackjack games
-        if host is not None:
-            dealer_avatar = self._get_dealer_avatar()
-            return BlackjackAvatar(host, dealer_avatar)
+        user = self.bot.user
+        dealer_avatar = self._get_dealer_avatar()
+        return BlackjackAvatar(user, dealer_avatar)
 
     async def start_game(self):
         super().start_game()
@@ -178,7 +172,11 @@ class BlackjackExecutor(GameCore):
             await self.announcer.player_hand(player.name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
             await hand_checker.check_outcome()
-            self.results[player] += hand.get_winnings() - hand.get_wager()
+            self.payouts.append({
+                'to_user': player.user,
+                'gold_difference': hand.get_winnings(),
+                'from_user': self.dealer
+            })
 
     def get_current_player(self) -> BlackjackAvatar:
         return self.players[0]
@@ -207,7 +205,7 @@ class BlackjackExecutor(GameCore):
 
     @staticmethod
     def get_avatar() -> List[PlayerHand]:
-        # Players own a list of hands: initially one hand, but can be multiple after a split
+        # Players own a list of hands: initially one hand, but can be multiple after a split.
         return [PlayerHand()]
 
     @staticmethod
