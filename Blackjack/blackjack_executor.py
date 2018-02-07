@@ -20,21 +20,19 @@ class BlackjackExecutor(GameCore):
         self.dealer = self.init_dealer()
         self.standing_players = []  # Match against the dealer's hand at the end of the game
         self.announcer = BlackjackAnnouncer(bot, self.dealer)
-        self.dealer_executor = BlackjackDealer(self)
         self.max_time_left = 10 * 60  # 10 minutes
         self.id = GAME_ID['BLACKJACK']
 
-    def init_dealer(self) -> BlackjackPlayer:
+    def init_dealer(self) -> BlackjackDealer:
         # TODO let players host blackjack games
         user = self.bot.user
-        dealer_avatar = self.__get_dealer_avatar()
-        return BlackjackPlayer(user, dealer_avatar)
+        return BlackjackDealer(user, self)
 
     async def start_game(self):
         super().start_game()
         self.__dispense_cards()
         await self.__show_player_cards()
-        await self.dealer_executor.show_face_up()
+        await self.dealer.show_face_up()
         await self.__check_initial_dealer_cards()
 
     def get_dealer_hand(self) -> Hand:
@@ -108,7 +106,7 @@ class BlackjackExecutor(GameCore):
             await self.announcer.player_cards(player.name, hand)
 
     async def __check_initial_dealer_cards(self) -> None:
-        if await self.dealer_executor.is_blackjack():
+        if await self.dealer.is_blackjack():
             await self.end_game()
         else:
             await self.__next_turn()
@@ -124,7 +122,7 @@ class BlackjackExecutor(GameCore):
     async def __check_dealer_turn(self) -> None:
         are_players_standing = self.standing_players
         if are_players_standing:
-            await self.dealer_executor.make_move()
+            await self.dealer.make_move()
         else:
             await self.announcer.no_players_left()
 
@@ -189,7 +187,7 @@ class BlackjackExecutor(GameCore):
             self.payouts.append({
                 'to_user': player.user,
                 'gold_difference': hand.get_winnings(),
-                'from_user': self.dealer
+                'from_user': self.dealer.user
             })
 
     def __get_current_player(self) -> BlackjackPlayer:
@@ -206,8 +204,3 @@ class BlackjackExecutor(GameCore):
     def __get_avatar() -> List[PlayerHand]:
         # Players own a list of hands: initially one hand, but can be multiple after a split.
         return [PlayerHand()]
-
-    @staticmethod
-    def __get_dealer_avatar() -> List[Hand]:
-        # Dealers do not have many of the options that players do.
-        return [Hand()]

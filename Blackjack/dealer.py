@@ -1,13 +1,21 @@
-class BlackjackDealer:
+from typing import List
+
+from Blackjack.blackjack_executor import BlackjackExecutor
+from Blackjack.hand import Hand
+from Core.player_avatar import BlackjackPlayer
+
+
+class BlackjackDealer(BlackjackPlayer):
 
     """
     Dealer AI mechanics.
     """
 
-    def __init__(self, executor):
-        self.hand = executor.get_dealer_hand()
+    def __init__(self, user, executor: BlackjackExecutor):
+        super().__init__(user, avatar=[Hand()])
         self.blackjack = executor.blackjack
         self.announcer = executor.announcer
+        self.hand = self.get_first_hand()  # Though the avatar is a list, dealers only get one hand, ever.
 
     async def show_face_up(self):
         first_card = self.hand.get_first_card()
@@ -20,7 +28,7 @@ class BlackjackDealer:
 
     async def make_move(self) -> None:
         await self.announcer.dealer_turn(self.hand)
-        await self.hit_loop()
+        await self.__hit_loop()
         await self.__end_turn()
 
     async def check_bust(self) -> bool:
@@ -28,7 +36,7 @@ class BlackjackDealer:
             await self.announcer.declare_dealer_bust()
             return True
 
-    async def hit_loop(self) -> None:
+    async def __hit_loop(self) -> None:
         """
         Continue drawing cards until the hand has a value of 17, or is busted.
         """
