@@ -21,7 +21,7 @@ class BlackjackDealer(BlackjackPlayer):
         first_card = self.hand.get_first_card()
         await self.announcer.dealer_card(first_card)
 
-    async def is_blackjack(self) -> bool:
+    async def has_blackjack(self) -> bool:
         ace_or_ten = await self.__is_ace_or_ten()
         dealer_blackjack = await self.__check_blackjack()
         return ace_or_ten and dealer_blackjack
@@ -38,7 +38,7 @@ class BlackjackDealer(BlackjackPlayer):
 
     async def __hit_loop(self) -> None:
         """
-        Continue drawing cards until the hand has a value of 17, or is busted.
+        Continue drawing cards until the hand has a value of 17+.
         """
         while self.hand.get_value() < 17:
             card = self.blackjack.hit(self.hand)

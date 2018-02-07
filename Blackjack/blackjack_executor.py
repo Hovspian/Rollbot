@@ -106,7 +106,7 @@ class BlackjackExecutor(GameCore):
             await self.announcer.player_cards(player.name, hand)
 
     async def __check_initial_dealer_cards(self) -> None:
-        if await self.dealer.is_blackjack():
+        if await self.dealer.has_blackjack():
             await self.end_game()
         else:
             await self.__next_turn()

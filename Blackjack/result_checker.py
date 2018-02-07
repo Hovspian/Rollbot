@@ -1,9 +1,10 @@
+from Blackjack.blackjack_executor import BlackjackExecutor
 from Blackjack.hand import PlayerHand
 
 
 class BlackjackResultChecker:
 
-    def __init__(self, executor, player_hand: PlayerHand):
+    def __init__(self, executor: BlackjackExecutor, player_hand: PlayerHand):
         self.blackjack = executor.blackjack
         self.announcer = executor.announcer
         self.dealer_hand = executor.get_dealer_hand()
@@ -43,9 +44,9 @@ class BlackjackResultChecker:
 
     def _is_blackjack_win(self) -> bool:
         # Player wins if their hand is blackjack while the dealer's is not.
-        is_host_blackjack = self.blackjack.is_blackjack(self.dealer_hand)
+        is_dealer_blackjack = self.blackjack.is_blackjack(self.dealer_hand)
         is_player_blackjack = self.blackjack.is_blackjack(self.player_hand)
-        return is_player_blackjack and not is_host_blackjack
+        return is_player_blackjack and not is_dealer_blackjack
 
     def _is_stand_off(self) -> bool:
         is_host_blackjack = self.blackjack.is_blackjack(self.dealer_hand)
