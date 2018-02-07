@@ -14,7 +14,7 @@ class LocalDataManager:
         self.__initialize_rollbot()
         self.__recently_updated = False  # Flag to throttle the frequency of file writes
 
-    async def batch_transfer(self, payouts: dict):
+    async def transfer(self, payouts: dict):
         for payout in payouts:
             self.transfer_gold(payout['to_user'],
                                payout['gold_difference'],
@@ -23,7 +23,8 @@ class LocalDataManager:
 
     def transfer_gold(self, to_user, gold_difference, from_user):
         """
-        Records how much total gold has been transferred between two users.
+        How much total gold has been transferred between two users.
+        This function is one-way only. The record goes on to_user's profile.
         """
         self.__create_profile_if_not_exists(to_user)
         self.__create_profile_if_not_exists(from_user)
@@ -38,8 +39,8 @@ class LocalDataManager:
         if self.__recently_updated:
             return
 
-        self.__save_data()
         self.__recently_updated = True
+        self.__save_data()
         await asyncio.sleep(300)  # 5 minutes
         self.__save_data()  # Update again to catch anything from those 5 minutes
         self.__recently_updated = False
@@ -53,7 +54,7 @@ class LocalDataManager:
 
     def get_gold_stats(self, user) -> dict:
         """
-        Gold won from/lost to all other users.
+        Gold won from/lost to other users on the profile.
         """
         user_id = self.players[user.id]
         if user_id is not None:
@@ -64,7 +65,7 @@ class LocalDataManager:
 
     def __get_final_gold_difference(self, to_user, gold_difference, from_user) -> int:
         """
-        When calculating how much gold will be transferred, users can't lose more gold than they have.
+        When transferring gold, users can't lose more gold than they have.
         """
         first_user = self.players[to_user.id]
         second_user = self.players[from_user.id]
@@ -95,16 +96,12 @@ class LocalDataManager:
     def __create_gold_stat_if_not_exists(self, user_one, user_two) -> None:
         """
         Create a statistic for tracking gold won/lost from another user.
-        Structure: gold_stats = { user_id: {gold: int, name: str},
-                                  user_id2: {gold: int, name: str},
-                                  ... }
         """
         user_one_stats = self.players[user_one.id]['gold_stats']
         if user_two.id in user_one_stats:
             return
-        user_one_stats[user_two.id] = {}
-        user_one_stats[user_two.id]['gold'] = 0
-        user_one_stats[user_two.id]['name'] = user_two.display_name
+        user_one_stats[user_two.id] = {'gold': 0,
+                                       'name': user_two.display_name}
 
     def __save_data(self):
         self.players[self.bot.user.id]['gold'] = 0  # Infinity isn't valid JSON, so set Rollbot's gold to 0.
