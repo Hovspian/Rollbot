@@ -50,6 +50,10 @@ class BlackjackExecutor(GameCore):
         player_avatar = BlackjackPlayer(user, avatar)
         super().add_player(player_avatar)
 
+    def is_turn(self, user):
+        first_in_queue = self.__get_current_player().user
+        return user is first_in_queue
+
     async def hit(self) -> None:
         hand = self.__get_current_player_hand()
         new_card = self.blackjack.hit(hand)
@@ -78,9 +82,6 @@ class BlackjackExecutor(GameCore):
             await self.announcer.split_successful(hand)
         else:
             await self.announcer.split_fail()
-
-    def get_current_player(self) -> BlackjackPlayer:
-        return self.players[0]
 
     async def end_game(self) -> None:
         # Checks self.players in case the dealer has gotten a blackjack, therefore ending the game.
@@ -150,7 +151,7 @@ class BlackjackExecutor(GameCore):
         return self.__get_active_hand(hands)
 
     def __get_current_player_hands(self) -> List[PlayerHand]:
-        current_player = self.get_current_player()
+        current_player = self.__get_current_player()
         hands = current_player.get_hands()
         return hands
 
@@ -190,6 +191,9 @@ class BlackjackExecutor(GameCore):
                 'gold_difference': hand.get_winnings(),
                 'from_user': self.dealer
             })
+
+    def __get_current_player(self) -> BlackjackPlayer:
+        return self.players[0]
 
     def __knock_out_current_player(self) -> None:
         del self.players[0]

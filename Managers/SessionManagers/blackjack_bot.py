@@ -33,7 +33,7 @@ class BlackjackBot:
         user = ctx.message.author
         channel = ctx.message.channel
         game = self.channel_manager.get_game(channel)
-        if channel and self._is_in_game(game, user):
+        if game and self._is_in_game(game, user):
             return game
 
     async def _game_is_blackjack(self, game: GameCore):
@@ -118,15 +118,11 @@ class BlackjackMoveChecker:
 
     def _check_move_error(self, user) -> any:
         error = False
-        if not self._is_valid_turn(user):
+        if not self.game.is_turn(user):
             error = "It's not your turn. Please wait."
         elif not self.game.in_progress:
             error = "The game is not underway yet."
         return error
-
-    def _is_valid_turn(self, user) -> bool:
-        first_in_queue = self.game.get_current_player().user
-        return user is first_in_queue
 
     async def _auto_delete_message(self, message):
         await asyncio.sleep(5.0)
