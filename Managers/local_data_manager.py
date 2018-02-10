@@ -24,13 +24,18 @@ class LocalDataManager:
     def transfer_gold(self, to_user, gold_difference, from_user):
         """
         How much total gold has been transferred between two users.
-        This function is one-way only. The record goes on to_user's profile.
         """
         self.__create_profile_if_not_exists(to_user)
         self.__create_profile_if_not_exists(from_user)
         amount = self.__get_final_gold_difference(to_user, gold_difference, from_user)
+        self.__update(to_user, amount, from_user)
+
+    def __update(self, to_user, amount, from_user):
         self.__update_gold(to_user, amount)
         self.__update_gold_stats(to_user, amount, from_user)
+        # Apply the reverse for from_user
+        self.__update_gold(from_user, -amount)
+        self.__update_gold_stats(from_user, -amount, to_user)
 
     async def write_out_data(self) -> None:
         """
