@@ -110,14 +110,13 @@ class BlackjackMoveChecker:
 
     async def _can_make_move(self, user) -> bool:
         move_error = self._check_move_error(user)
-        if move_error:
-            temp_message = await self.bot.say(move_error)
-            await self._auto_delete_message(temp_message)
-        else:
+        if move_error is None:
             return True
+        temp_message = await self.bot.say(move_error)
+        await self._auto_delete_message(temp_message)
 
     def _check_move_error(self, user) -> any:
-        error = False
+        error = None
         if not self.game.is_turn(user):
             error = "It's not your turn. Please wait."
         elif not self.game.in_progress:
