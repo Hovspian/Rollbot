@@ -1,5 +1,5 @@
 from Core.player_avatar import *
-from Blackjack.announcer import BlackjackAnnouncer
+from Blackjack.announcer import BlackjackPlayerAnnouncer
 from Blackjack.blackjack_mechanics import BlackjackMechanics
 from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import Hand, PlayerHand
@@ -17,16 +17,17 @@ class BlackjackExecutor(GameCore):
         super().__init__(ctx)
         self.blackjack = BlackjackMechanics()
         self.bot = bot
+        self.announcer = BlackjackPlayerAnnouncer(bot)
         self.dealer = self.init_dealer()
+        self.dealer_name = self.dealer.name
         self.standing_players = []  # Match against the dealer's hand at the end of the game
-        self.announcer = BlackjackAnnouncer(bot, self.dealer)
         self.max_time_left = 10 * 60  # 10 minutes
         self.id = GAME_ID['BLACKJACK']
 
     def init_dealer(self) -> BlackjackDealer:
         # TODO let players host blackjack games
-        user = self.bot.user
-        return BlackjackDealer(user, self)
+        dealer = self.bot.user
+        return BlackjackDealer(dealer, self)
 
     async def start_game(self):
         super().start_game()
@@ -82,7 +83,7 @@ class BlackjackExecutor(GameCore):
             await self.announcer.split_fail()
 
     async def end_game(self) -> None:
-        # Checks self.players in case the dealer has gotten a blackjack, therefore ending the game.
+        # Checks self.players in case the dealer has gotten a blackjack.
         [await self.__resolve_outcomes(player) for player in self.standing_players]
         [await self.__resolve_outcomes(player) for player in self.players]
         super().end_game()
@@ -198,7 +199,9 @@ class BlackjackExecutor(GameCore):
 
     @staticmethod
     def __get_active_hand(hands: List[PlayerHand]) -> PlayerHand:
-        return next(hand for hand in hands if hand.is_active)
+        for hand in hands:
+            if hand.is_active:
+                return hand
 
     @staticmethod
     def __get_avatar() -> List[PlayerHand]:

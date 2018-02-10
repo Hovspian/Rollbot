@@ -1,10 +1,9 @@
-from Blackjack.blackjack_executor import BlackjackExecutor
 from Blackjack.hand import PlayerHand
 
 
 class BlackjackResultChecker:
 
-    def __init__(self, executor: BlackjackExecutor, player_hand: PlayerHand):
+    def __init__(self, executor, player_hand: PlayerHand):
         self.blackjack = executor.blackjack
         self.announcer = executor.announcer
         self.dealer_hand = executor.get_dealer_hand()

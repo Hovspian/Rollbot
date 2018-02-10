@@ -1,7 +1,7 @@
 from typing import List
 
 from Core.constants import *
-from Core.player_avatar import PlayerAvatar
+from Core.player_avatar import Player
 from HammerRace.hammer_race import *
 
 
@@ -105,7 +105,7 @@ class VersusHammer(HammerRace):
 
     def add_player(self, user):
         avatar = self.get_avatar(user)
-        player_avatar = PlayerAvatar(user, avatar)
+        player_avatar = Player(user, avatar)
         super().add_player(player_avatar)
 
     def get_avatar(self, user):
@@ -132,7 +132,7 @@ class VersusHammer(HammerRace):
             if participant not in self.winners:
                 self._resolve_loss(player)
 
-    def _resolve_loss(self, player: PlayerAvatar):
+    def _resolve_loss(self, player: Player):
         participant = player.avatar
         gold_owed = self._calculate_gold_owed(participant)
         player.gold_difference -= gold_owed
@@ -146,7 +146,7 @@ class VersusHammer(HammerRace):
     def _add_loser(self, player) -> None:
         self.losers.append(player)
 
-    def _get_gold_owed_report(self, loser: PlayerAvatar) -> str:
+    def _get_gold_owed_report(self, loser: Player) -> str:
         num_winners = len(self.winners)
         amount = (-loser.gold_difference) // num_winners  # A losing .gold_difference is a negative int
         return f'{loser.name} owes {amount} gold to each winner.'
@@ -157,7 +157,7 @@ class VersusHammer(HammerRace):
             if participant in self.winners:
                 self._resolve_win(player)
 
-    def _resolve_win(self, player: PlayerAvatar):
+    def _resolve_win(self, player: Player):
         num_winners = len(self.winners)
         gold_won = self.total_payout // num_winners
         player.gold_difference += gold_won

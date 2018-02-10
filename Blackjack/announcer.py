@@ -7,32 +7,37 @@ from Core.constants import *
 
 
 class BlackjackAnnouncer:
-    """
-    Handles all bot.say messages.
-
-    """
-
-    def __init__(self, bot, dealer):
+    def __init__(self, bot):
         self.bot = bot
         self.renderer = RenderCard()
-        self.dealer_name = dealer.name
+
+    async def _stagger_messages(self, messages: List[str]) -> None:
+        for message in messages:
+            await asyncio.sleep(1)
+            await self.bot.say(message)
+
+    async def announce_blackjack(self):
+        await self.bot.say("Blackjack!")
+
+
+class BlackjackPlayerAnnouncer(BlackjackAnnouncer):
+
+    """
+    Handles blackjack feedback.
+    """
+
+    def __init__(self, bot):
+        super().__init__(bot)
 
     async def player_cards(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
         await self.bot.say(f"Dealt to {player_name}: {rendered_hand}")
         await asyncio.sleep(1)
 
-    async def next_hand_options(self, hand: PlayerHand):
-        rendered_hand = self.renderer.render_hand(hand)
-        message = LINEBREAK.join(["Please make a play:",
-                                  f"{rendered_hand}",
-                                  "Options: `/hit`  `/stand`  `/doubledown`"])
-        await self.bot.say(message)
-
     async def player_hand(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
         messages = [f"{player_name}'s hand: {rendered_hand}"]
-        await self.__stagger_messages(messages)
+        await self._stagger_messages(messages)
 
     async def next_turn(self, player_name, hand):
         rendered_hand = self.renderer.render_hand(hand)
@@ -41,29 +46,12 @@ class BlackjackAnnouncer:
                                   "Options: `/hit`  `/stand`  `/doubledown`  `/split`"])
         await self.bot.say(message)
 
-    async def dealer_card(self, card):
-        rendered_card = self.renderer.render_card(card)
-        await self.bot.say(f"Dealer's face-up card: {rendered_card}")
-
-    async def dealer_turn(self, hand):
-        dealer_hand = self.__get_dealer_hand_reveal(hand)
-        message = LINEBREAK.join(["It's the dealer's turn.", dealer_hand])
-        await self.bot.say(message)
-
     async def report_hit(self, hand, new_card):
         rendered_hand = self.renderer.render_hand(hand)
         rendered_new_card = self.renderer.render_card(new_card)
         hand_report = LINEBREAK.join([f"You received: {rendered_new_card}",
                                       f"Your hand: {rendered_hand}"])
         await self.bot.say(hand_report)
-
-    async def dealer_hit(self, new_card: dict):
-        rendered_card = self.renderer.render_card(new_card)
-        messages = [f"{self.dealer_name} drew {rendered_card}"]
-        await self.__stagger_messages(messages)
-
-    async def dealer_stand(self):
-        await self.bot.say("The dealer is now standing. Comparing hands...")
 
     async def no_players_left(self):
         await self.bot.say("There are no more competitors left. The game has ended.")
@@ -81,14 +69,8 @@ class BlackjackAnnouncer:
     async def declare_player_bust(self):
         await self.bot.say("It's a bust! The dealer has acquired your wager.")
 
-    async def declare_dealer_bust(self):
-        await self.bot.say(f"{self.dealer_name}'s hand has busted!")
-
     async def ask_hit_again(self):
         await self.bot.say("Hit again?")
-
-    async def announce_blackjack(self):
-        await self.bot.say("Blackjack!")
 
     async def announce_player_blackjack(self, winnings):
         await self.bot.say(f":moneybag: Blackjack! Payout is {winnings} gold. :moneybag:")
@@ -105,19 +87,56 @@ class BlackjackAnnouncer:
     async def double_down_success(self, wager):
         await self.bot.say(f"Your wager is now {wager}. A face-down card has been added to your hand.")
 
-    async def ace_or_ten_message(self, hand):
-        dealer_hand = self.__get_dealer_hand_reveal(hand)
-        messages = [f"{self.dealer_name} is revealing their other card in case of a blackjack...", dealer_hand]
-        await self.__stagger_messages(messages)
-
     async def progressing(self):
         await self.bot.say("Moving on...")
 
+    async def next_hand_options(self, hand: PlayerHand):
+        """
+        For split hands.
+        """
+        rendered_hand = self.renderer.render_hand(hand)
+        message = LINEBREAK.join(["Please make a play:",
+                                  f"{rendered_hand}",
+                                  "Options: `/hit`  `/stand`  `/doubledown`"])
+        await self.bot.say(message)
+
+
+class BlackjackDealerAnnouncer(BlackjackAnnouncer):
+
+    """
+    Methods for announcing blackjack dealer moves.
+    """
+
+    def __init__(self, bot, dealer_name):
+        super().__init__(bot)
+        self.dealer = dealer_name
+
+    async def dealer_card(self, card):
+        rendered_card = self.renderer.render_card(card)
+        await self.bot.say(f"Dealer's face-up card: {rendered_card}")
+
+    async def dealer_turn(self, hand):
+        dealer_hand = self.__get_dealer_hand_reveal(hand)
+        message = LINEBREAK.join(["It's the dealer's turn.", dealer_hand])
+        await self.bot.say(message)
+
+    async def dealer_hit(self, new_card: dict):
+        rendered_card = self.renderer.render_card(new_card)
+        messages = [f"{self.dealer} drew {rendered_card}"]
+        await self._stagger_messages(messages)
+
+    async def declare_dealer_bust(self):
+        await self.bot.say(f"{self.dealer}'s hand has busted!")
+
+    async def ace_or_ten_message(self, hand):
+        dealer_hand = self.__get_dealer_hand_reveal(hand)
+        messages = [f"{self.dealer} is revealing their other card in case of a blackjack...", dealer_hand]
+        await self._stagger_messages(messages)
+
+    async def dealer_stand(self):
+        await self.bot.say("The dealer is now standing. Comparing hands...")
+
     def __get_dealer_hand_reveal(self, hand) -> str:
         rendered_hand = self.renderer.render_hand(hand)
-        return f"{self.dealer_name} shows their hand: {rendered_hand}"
+        return f"{self.dealer} shows their hand: {rendered_hand}"
 
-    async def __stagger_messages(self, messages: List[str]) -> None:
-        for message in messages:
-            await asyncio.sleep(1)
-            await self.bot.say(message)

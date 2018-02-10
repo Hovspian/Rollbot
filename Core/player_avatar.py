@@ -1,24 +1,25 @@
 from typing import List
 
 
-class PlayerAvatar:
+class Player:
 
-    """ Couples Discord member objects and their avatar within a game """
+    """
+    Couples Discord member objects and their avatar within a game.
+    """
+
     def __init__(self, user, avatar: any):
         self.user = user
         self.name = user.display_name
         self.avatar = avatar
         self.afk = 0
-        self.gold_difference = 0  # Set at the end of a game
+        self.gold_difference = 0
 
 
-class BlackjackPlayer(PlayerAvatar):
+class BlackjackPlayer(Player):
 
-    """ Method names for clarity """
-
-    @staticmethod
-    def create_avatar(user, hand) -> PlayerAvatar:
-        return PlayerAvatar(user, [hand])
+    """
+    Methods for clarity.
+    """
 
     def get_first_hand(self) -> any:
         return self.avatar[0]

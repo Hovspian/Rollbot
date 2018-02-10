@@ -1,6 +1,4 @@
-from typing import List
-
-from Blackjack.blackjack_executor import BlackjackExecutor
+from Blackjack.announcer import BlackjackDealerAnnouncer
 from Blackjack.hand import Hand
 from Core.player_avatar import BlackjackPlayer
 
@@ -8,13 +6,13 @@ from Core.player_avatar import BlackjackPlayer
 class BlackjackDealer(BlackjackPlayer):
 
     """
-    Dealer AI mechanics.
+    Dealer AI.
     """
 
-    def __init__(self, user, executor: BlackjackExecutor):
-        super().__init__(user, avatar=[Hand()])
+    def __init__(self, dealer, executor):
+        super().__init__(dealer, avatar=[Hand()])
         self.blackjack = executor.blackjack
-        self.announcer = executor.announcer
+        self.announcer = BlackjackDealerAnnouncer(executor.bot, dealer.display_name)
         self.hand = self.get_first_hand()  # Though the avatar is a list, dealers only get one hand, ever.
 
     async def show_face_up(self):
