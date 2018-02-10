@@ -37,8 +37,8 @@ class BlackjackBot:
             return game
 
     async def _game_is_blackjack(self, game: GameCore):
-        if game:
-            return self.id == game.id
+        if game and self.id == game.id:
+            return True
         else:
             temp_message = await self.bot.say("You aren't in a Blackjack game. Join the next one?")
             self._auto_delete_message(temp_message)
