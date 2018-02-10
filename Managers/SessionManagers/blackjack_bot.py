@@ -73,6 +73,7 @@ class BlackjackInitializer(GameInitializer):
         await blackjack.start_game()
         await self._run_time_limit(blackjack)
         self._remove_game(blackjack.ctx)
+        self.data_manager.transfer(blackjack.payouts)
 
     async def _run_join_timer(self, blackjack):
         join_timer = BlackjackJoinTimer(self.bot, blackjack)

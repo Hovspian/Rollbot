@@ -12,14 +12,13 @@ class LocalDataManager:
         self.data_handler = PersistentDataHandler()
         self.players = self.data_handler.get_data()
         self.__initialize_rollbot()
-        self.__recently_updated = False  # Flag to throttle the frequency of file writes
 
-    async def transfer(self, payouts: dict):
+    def transfer(self, payouts: dict):
         for payout in payouts:
             self.transfer_gold(payout['to_user'],
                                payout['gold_difference'],
                                payout['from_user'])
-        await self.write_out_data()
+        self.__save_data()
 
     def transfer_gold(self, to_user, gold_difference, from_user):
         """
@@ -36,19 +35,6 @@ class LocalDataManager:
         # Apply the reverse for from_user
         self.__update_gold(from_user, -amount)
         self.__update_gold_stats(from_user, -amount, to_user)
-
-    async def write_out_data(self) -> None:
-        """
-        Call this to save data in the local file when all gold transfers have been completed.
-        """
-        if self.__recently_updated:
-            return
-
-        self.__recently_updated = True
-        self.__save_data()
-        await asyncio.sleep(300)  # 5 minutes
-        self.__save_data()  # Update again to catch anything from those 5 minutes
-        self.__recently_updated = False
 
     def get_gold(self, user) -> int:
         """
