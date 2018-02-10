@@ -170,7 +170,14 @@ class BlackjackExecutor(GameCore):
         player_hands = self.__get_current_player_hands()
         hand_to_bust = self.__get_current_player_hand()
         player_hands.remove(hand_to_bust)
+        self.__add_player_loss_payout(hand_to_bust)
         await self.__check_knock_out()
+
+    async def __add_player_loss_payout(self, hand_to_bust):
+        wager = hand_to_bust.get_wager()
+        to_dealer = self.dealer.user
+        from_player = self.__get_current_player()
+        self.__add_payout(to_dealer, wager, from_player)
 
     async def __check_knock_out(self) -> None:
         """
@@ -189,11 +196,14 @@ class BlackjackExecutor(GameCore):
             await self.announcer.player_hand(player.name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
             await hand_checker.check_outcome()
-            self.payouts.append({
-                'to_user': player.user,
-                'gold_difference': hand.get_winnings(),
-                'from_user': self.dealer.user
-            })
+            self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
+
+    def __add_payout(self, to_user, gold_difference, from_user):
+        self.payouts.append({
+            'to_user': to_user,
+            'gold_difference': gold_difference,
+            'from_user': from_user
+        })
 
     def __get_current_player(self) -> BlackjackPlayer:
         return self.players[0]
