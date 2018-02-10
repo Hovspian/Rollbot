@@ -44,7 +44,7 @@ class BlackjackExecutor(GameCore):
         self.add_player(user)
 
     def add_player(self, user) -> None:
-        # Couples the avatar and user in a PlayerAvatar class
+        # Couples the avatar and user in a Player class
         avatar = self.__get_avatar()
         player_avatar = BlackjackPlayer(user, avatar)
         super().add_player(player_avatar)
@@ -83,9 +83,13 @@ class BlackjackExecutor(GameCore):
             await self.announcer.split_fail()
 
     async def end_game(self) -> None:
-        # Checks self.players in case the dealer has gotten a blackjack.
-        [await self.__resolve_outcomes(player) for player in self.standing_players]
-        [await self.__resolve_outcomes(player) for player in self.players]
+        for player in self.standing_players:
+            await self.__resolve_outcomes(player)
+
+        # Check self.players in case the dealer has gotten a blackjack.
+        for player in self.players:
+            await self.__resolve_outcomes(player)
+
         super().end_game()
 
     # Private methods below this point.
