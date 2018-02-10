@@ -63,4 +63,4 @@ class SlotMachineBot(GameInitializer):
         gold_amount = slot_machine.get_payout()
         if gold_amount != 0:
             from_rollbot = self.bot.user
-            self.data_manager.transfer_gold(to_user, gold_amount, from_rollbot)
+            self.data_manager.single_transfer(to_user, gold_amount, from_rollbot)

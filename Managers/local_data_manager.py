@@ -13,28 +13,16 @@ class LocalDataManager:
         self.players = self.data_handler.get_data()
         self.__initialize_rollbot()
 
-    def transfer(self, payouts: dict):
-        for payout in payouts:
-            self.transfer_gold(payout['to_user'],
-                               payout['gold_difference'],
-                               payout['from_user'])
+    def single_transfer(self, to_user, gold_difference, from_user):
+        self.__transfer_gold(to_user, gold_difference, from_user)
         self.__save_data()
 
-    def transfer_gold(self, to_user, gold_difference, from_user):
-        """
-        How much total gold has been transferred between two users.
-        """
-        self.__create_profile_if_not_exists(to_user)
-        self.__create_profile_if_not_exists(from_user)
-        amount = self.__get_final_gold_difference(to_user, gold_difference, from_user)
-        self.__update(to_user, amount, from_user)
-
-    def __update(self, to_user, amount, from_user):
-        self.__update_gold(to_user, amount)
-        self.__update_gold_stats(to_user, amount, from_user)
-        # Apply the reverse for from_user
-        self.__update_gold(from_user, -amount)
-        self.__update_gold_stats(from_user, -amount, to_user)
+    def batch_transfer(self, payouts: dict):
+        for payout in payouts:
+            self.__transfer_gold(payout['to_user'],
+                                 payout['gold_difference'],
+                                 payout['from_user'])
+        self.__save_data()
 
     def get_gold(self, user) -> int:
         """
@@ -50,6 +38,22 @@ class LocalDataManager:
         user_id = self.players[user.id]
         if user_id is not None:
             return self.players[user.id]['gold_stats']
+
+    def __transfer_gold(self, to_user, gold_difference, from_user):
+        """
+        How much total gold has been transferred between two users.
+        """
+        self.__create_profile_if_not_exists(to_user)
+        self.__create_profile_if_not_exists(from_user)
+        amount = self.__get_final_gold_difference(to_user, gold_difference, from_user)
+        self.__update(to_user, amount, from_user)
+
+    def __update(self, to_user, amount, from_user):
+        self.__update_gold(to_user, amount)
+        self.__update_gold_stats(to_user, amount, from_user)
+        # Apply the reverse for from_user
+        self.__update_gold(from_user, -amount)
+        self.__update_gold_stats(from_user, -amount, to_user)
 
     def __update_gold(self, user, amount) -> None:
         self.players[user.id]['gold'] += amount
