@@ -19,9 +19,9 @@ class Hammerpot(ScratchCard):
         self.winnable_sums = []
         self.chosen_sum = 0
         self.grid_handler = GridHandler(self.num_columns)
-        self.card_renderer = None  # TBD
         self.id = GAME_ID["HAMMERPOT"]
         self.initialize_card()
+        self.card_renderer = RenderHammerpot(self)
         self.feedback = HammerpotFeedback(self)
 
     def initialize_card(self):
@@ -29,7 +29,6 @@ class Hammerpot(ScratchCard):
         self._initialize_sums()
         self._initialize_payouts()
         self._reveal_random_tile()
-        self.card_renderer = RenderHammerpot(self)
 
     def pick_line(self, line: List[list]):
         fitted_line = line[:self.num_columns]
@@ -72,7 +71,8 @@ class Hammerpot(ScratchCard):
             self.winnable_payouts[sum_value] = generated_payouts[i]
 
     def _generate_payouts(self):
-        payouts = self._get_biased_payouts()
+        biased_payout = self._get_high_end_payout()
+        payouts = [biased_payout]
         num_payouts_needed = len(self.winnable_sums) - len(payouts)
 
         for i in range(num_payouts_needed):
@@ -83,25 +83,24 @@ class Hammerpot(ScratchCard):
         random.shuffle(payouts)
         return payouts
 
-    def _get_biased_payouts(self) -> List[int]:
-        high_end = self._get_high_end_payout()
-        low_end = self._get_low_end_payout()
-        return [high_end, low_end]
-
     def _initialize_sums(self) -> None:
         # Records the unique sums of the numbers across each column, row and diagonal
+        for column in self.underlying_symbols:
+            self._add_sum(column)
+        for row in self.underlying_symbols:
+            self._add_sum(row)
+        self._initialize_diagonal_sums()
+
+    def _initialize_diagonal_sums(self):
         top_left_diagonal = self._get_top_left_diagonal_tiles()
         top_right_diagonal = self._get_top_right_diagonal_tiles()
+        self._add_sum(top_left_diagonal)
+        self._add_sum(top_right_diagonal)
 
-        def _add_sum(tiles):
-            value_sum = self._get_sum(tiles)
-            if value_sum not in self.winnable_sums:
-                self.winnable_sums.append(value_sum)
-
-        [_add_sum(column) for column in self.underlying_symbols]
-        [_add_sum(row) for row in self.underlying_symbols]
-        _add_sum(top_left_diagonal)
-        _add_sum(top_right_diagonal)
+    def _add_sum(self, tiles):
+        value_sum = self._get_sum(tiles)
+        if value_sum not in self.winnable_sums:
+            self.winnable_sums.append(value_sum)
 
     def _get_top_left_diagonal_tiles(self) -> List[dict]:
         return self.grid_handler.get_top_left_diagonal(self.underlying_symbols)
@@ -111,12 +110,6 @@ class Hammerpot(ScratchCard):
 
     def _get_sum(self, tiles) -> int:
         return sum([self.grid_handler.get_value(tile) for tile in tiles])
-
-    def _get_low_end_payout(self) -> int:
-        # Payout charts are guaranteed one low and one high payout
-        low_end = roll(self.possible_payouts[:-3])
-        self.possible_payouts.remove(low_end)
-        return low_end
 
     def _get_high_end_payout(self) -> int:
         high_end = roll(self.possible_payouts[-3:])
