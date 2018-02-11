@@ -64,7 +64,7 @@ class ClassicScratchCard(ScratchCard):
     def _check_game_end(self) -> None:
         if self.attempts_remaining <= 0:
             self._check_results()
-            self.winnings = self.calculate_payout()
+            self.payout = self.__calculate_payout()
             self.end_game()
 
     def _scratch(self, y, x):
@@ -94,7 +94,7 @@ class ClassicScratchCard(ScratchCard):
             count_match()
             results = filter_value(results, results[0])
 
-    def calculate_payout(self) -> int:
+    def __calculate_payout(self) -> int:
         if self.winning_symbols:
             sum_payout = sum([self.get_value(symbol) for symbol in self.winning_symbols])
             num_winning_symbols = len(self.winning_symbols)

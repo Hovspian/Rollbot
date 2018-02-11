@@ -199,7 +199,7 @@ class BlackjackExecutor(GameCore):
             self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
 
     def __add_payout(self, to_user, gold_difference, from_user):
-        self.payouts.append({
+        self.winnable_payouts.append({
             'to_user': to_user,
             'gold_difference': gold_difference,
             'from_user': from_user

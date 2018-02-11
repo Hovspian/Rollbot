@@ -11,7 +11,7 @@ class ScratchCard(GameCore):
         self.max_time_left = 120
         self.num_columns = 3
         self.attempts_remaining = self.num_columns * 2
-        self.winnings = 0
+        self.payout = 0
         self.feedback = None  # TBD
         self.card_renderer = None  # TBD
         self.grid_handler = None  # TBD
@@ -33,6 +33,9 @@ class ScratchCard(GameCore):
             y = coordinates[0]
             x = coordinates[1]
             self._scratch(y, x)
+
+    def get_payout(self):
+        return self.payout
 
     def _initialize_grids(self) -> None:
         self.underlying_symbols = self.grid_handler.generate_grid(self.underlying_symbols)

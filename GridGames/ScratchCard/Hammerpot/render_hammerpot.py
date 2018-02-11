@@ -72,7 +72,7 @@ class RenderHammerpot(CardRenderer):
 
     def _get_formatted_payouts(self) -> List[str]:
         # Format the card's sum : payout dictionary
-        sums_to_payouts = self.card.payouts.items()
+        sums_to_payouts = self.card.winnable_payouts.items()
         formatted_payouts = []
         for sum_value, payout in sorted(sums_to_payouts):
             respaced_sum = self._respace_sum(str(sum_value))

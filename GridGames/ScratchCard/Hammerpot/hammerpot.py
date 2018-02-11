@@ -15,7 +15,7 @@ class Hammerpot(ScratchCard):
         self.underlying_symbols = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
         self.attempts_remaining = 3
         self.possible_payouts = [1, 3, 5, 10, 15, 25, 50, 75, 100]
-        self.payouts = {}
+        self.winnable_payouts = {}
         self.winnable_sums = []
         self.chosen_sum = 0
         self.grid_handler = GridHandler(self.num_columns)
@@ -39,7 +39,7 @@ class Hammerpot(ScratchCard):
         self._end_game()
 
     def _end_game(self):
-        self.winnings = self._get_payout()
+        self.payout = self._get_matching_payout()
         super().end_game()
 
     def _reveal_line(self, line):
@@ -69,7 +69,7 @@ class Hammerpot(ScratchCard):
         generated_payouts = self._generate_payouts()
 
         for i, sum_value in enumerate(self.winnable_sums):
-            self.payouts[sum_value] = generated_payouts[i]
+            self.winnable_payouts[sum_value] = generated_payouts[i]
 
     def _generate_payouts(self):
         payouts = self._get_biased_payouts()
@@ -114,14 +114,14 @@ class Hammerpot(ScratchCard):
 
     def _get_low_end_payout(self) -> int:
         # Payout charts are guaranteed one low and one high payout
-        low_end = roll(self.possible_payouts[:3])
+        low_end = roll(self.possible_payouts[:-3])
         self.possible_payouts.remove(low_end)
         return low_end
 
     def _get_high_end_payout(self) -> int:
-        high_end = roll(self.possible_payouts[3:])
+        high_end = roll(self.possible_payouts[-3:])
         self.possible_payouts.remove(high_end)
         return high_end
 
-    def _get_payout(self) -> int:
-        return self.payouts[self.chosen_sum]
+    def _get_matching_payout(self) -> int:
+        return self.winnable_payouts[self.chosen_sum]

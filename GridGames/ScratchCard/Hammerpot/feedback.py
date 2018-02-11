@@ -26,7 +26,7 @@ class HammerpotFeedback:
 
     def _get_end_report(self) -> str:
         chosen_sum = self.hammerpot.chosen_sum
-        payout = self.hammerpot.winnings
+        payout = self.hammerpot.payout
         return '\n'.join([f"Your sum is {chosen_sum}!",
                           f":hammer: Payout is {payout} gold. :hammer:"])
 

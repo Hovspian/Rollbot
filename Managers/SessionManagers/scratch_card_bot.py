@@ -17,7 +17,7 @@ class ScratchCardBot:
 
     def __init__(self, options: SessionOptions):
         self.bot = options.bot
-        self.classic_initializer = ScratchCardInitializer(options)
+        self.classic_initializer = ClassicScratchInitializer(options)
         self.hammerpot_initializer = HammerpotInitializer(options)
         self.move_handler = ScratchCardMoveHandler(options.bot, options.channel_manager)
         self.payout_handler = None
@@ -37,18 +37,14 @@ class ScratchCardBot:
 
 class ScratchCardInitializer(GameInitializer):
     def __init___(self, options: SessionOptions):
-        super().__init__(options) #  TODO Doooo repeat yourself
-
-    async def initialize_game(self, ctx):
-        if await self._can_create_game(ctx):
-            scratchcard = ClassicScratchCard(ctx)
-            await self._create_session(scratchcard)
+        super().__init__(options)
 
     async def _create_session(self, game: ScratchCard):
         self._add_game(game.ctx, game)
         await self.say_starting_message(game)
         await self._run_time_limit(game)
         self._remove_game(game.ctx)
+        self._save_payout(game)
 
     async def _run_time_limit(self, game):
         time_limit = TimeLimit(self.bot, game)
@@ -58,8 +54,25 @@ class ScratchCardInitializer(GameInitializer):
         message = game.feedback.get_starting_message()
         await self.bot.say(message)
 
+    def _save_payout(self, game):
+        to_user = game.get_host()
+        gold_amount = game.get_payout()
+        if gold_amount != 0:
+            from_rollbot = self.bot.user
+            self.data_manager.single_transfer(to_user, gold_amount, from_rollbot)
 
-class HammerpotInitializer(GameInitializer):
+
+class ClassicScratchInitializer(ScratchCardInitializer):
+    def __init___(self, options: SessionOptions):
+        super().__init__(options)
+
+    async def initialize_game(self, ctx):
+        if await self._can_create_game(ctx):
+            scratchcard = ClassicScratchCard(ctx)
+            await self._create_session(scratchcard)
+
+
+class HammerpotInitializer(ScratchCardInitializer):
     def __init___(self, options: SessionOptions):
         super().__init__(options)
 
@@ -67,20 +80,6 @@ class HammerpotInitializer(GameInitializer):
         if await self._can_create_game(ctx):
             scratchcard = Hammerpot(ctx)
             await self._create_session(scratchcard)
-
-    async def _create_session(self, game: ScratchCard):
-        self._add_game(game.ctx, game)
-        await self.say_starting_message(game)
-        await self._run_time_limit(game)
-        self._remove_game(game.ctx)
-
-    async def _run_time_limit(self, game):
-        time_limit = TimeLimit(self.bot, game)
-        await time_limit.run()
-
-    async def say_starting_message(self, game):
-        message = game.feedback.get_starting_message()
-        await self.bot.say(message)
 
 
 class ScratchCardMoveHandler:
