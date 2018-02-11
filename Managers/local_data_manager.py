@@ -67,7 +67,7 @@ class LocalDataManager:
 
         if first_user['gold'] + gold_difference < 0:
             return first_user['gold']
-        elif second_user['gold'] + gold_difference < 0:
+        elif second_user['gold'] - gold_difference < 0:
             return second_user['gold']
         else:
             return gold_difference
