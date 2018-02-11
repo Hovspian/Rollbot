@@ -51,7 +51,7 @@ class GoldStats:
     async def say_gold_stats(self, ctx):
         user = ctx.message.author
         gold_stats = self.get_formatted_gold_stats(user)
-        if gold_stats:
+        if len(gold_stats) > 0:
             gold_stats.insert(0, "You won from")
             await self.bot.say('\n'.join(gold_stats))
         else:
@@ -59,7 +59,14 @@ class GoldStats:
 
     def get_formatted_gold_stats(self, user):
         gold_stats = self.data_manager.get_gold_stats(user)
-        return [self.filter_gold_stat(stat) for other_user_id, stat in gold_stats.items()]
+        formatted_stats = []
+
+        for other_user_id, stat in gold_stats.items():
+            filtered_stat = self.filter_gold_stat(stat)
+            if filtered_stat is not None:
+                formatted_stats.append(filtered_stat)
+
+        return formatted_stats
 
     @staticmethod
     def filter_gold_stat(stat):
