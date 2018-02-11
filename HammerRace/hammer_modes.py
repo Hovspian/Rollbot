@@ -80,10 +80,11 @@ class VersusHammer(HammerRace):
 
     def __init__(self, bot, ctx):
         super().__init__(bot, ctx)
-        self.losers = []  # PlayerAvatar[]
-        self.total_payout = 0  # The final amount owed by all debtors
+        self.winning_players = []  # List[Player], used in resolving gold payouts.
+        # Contrast with parent property "self.winners = List[Participant]." Other modes don't use the Player class.
+        self.losers = []  # List[Player]
         self.invalid_players_error = "A race needs at least two players."
-        self.payouts_to_resolve = []
+        self.payouts = []  # List[dict] data saved at the end of the game.
 
     async def run(self):
         if self.valid_num_players():  # TODO full at 5 people
@@ -94,7 +95,7 @@ class VersusHammer(HammerRace):
             await self.bot.say(self.invalid_players_error)
 
     def _get_outcome_report(self) -> str:
-        if not self.losers:
+        if not self.winning_players:
             return "Tie!"
         else:
             return LINEBREAK.join([self._get_winner_report(), self._report_gold_owed()])
@@ -114,7 +115,7 @@ class VersusHammer(HammerRace):
         return self._init_participant(short_name, name)
 
     def _report_gold_owed(self) -> str:
-        reports = [self._get_gold_owed_report(loser) for loser in self.losers]
+        reports = [self.__get_gold_owed_report(loser) for loser in self.losers]
         return LINEBREAK.join(reports)
 
     def _check_race_end(self) -> None:
@@ -123,41 +124,44 @@ class VersusHammer(HammerRace):
             self._resolve_payouts()
 
     def _resolve_payouts(self) -> None:
-        self._resolve_losses()  # Tally up total earnings from losers
-        self._resolve_wins()  # Then pay them out
-
-    def _resolve_losses(self):
         for player in self.players:
-            participant = player.avatar
-            if participant not in self.winners:
-                self._resolve_loss(player)
+            self.__sort_winner_or_loser(player)
+        for loser in self.losers:
+            self.__dispense_payouts(loser)
 
-    def _resolve_loss(self, player: Player):
+    def __sort_winner_or_loser(self, player):
         participant = player.avatar
-        gold_owed = self._calculate_gold_owed(participant)
-        player.gold_difference -= gold_owed
-        self._add_loser(player)
-        self.total_payout += gold_owed
+        if participant not in self.winners:
+            self.__add_losing_player(player)
+        else:
+            self.__add_winning_player(player)
 
-    def _calculate_gold_owed(self, participant: Participant) -> int:
+    def __dispense_payouts(self, loser: Player):
+        gold_owed = self.__calculate_gold_owed(participant=loser.avatar)
+        loser.gold_difference -= gold_owed
+        for winner in self.winning_players:
+            winner.gold_difference += gold_owed
+            self.__add_payout(winner.user, gold_owed, loser.user)
+
+    def __add_payout(self, to_user, gold_difference, from_user):
+        self.payouts.append({
+            'to_user': to_user,
+            'gold_difference': gold_difference,
+            'from_user': from_user
+        })
+
+    def __calculate_gold_owed(self, participant: Participant) -> int:
+        num_winners = len(self.winners)
         steps_left = self.get_steps_left(participant.progress)
-        return steps_left + 5
+        return (steps_left + 5) // num_winners
 
-    def _add_loser(self, player) -> None:
+    def __add_losing_player(self, player) -> None:
         self.losers.append(player)
 
-    def _get_gold_owed_report(self, loser: Player) -> str:
-        num_winners = len(self.winners)
-        amount = (-loser.gold_difference) // num_winners  # A losing .gold_difference is a negative int
+    def __add_winning_player(self, player) -> None:
+        self.winning_players.append(player)
+
+    @staticmethod
+    def __get_gold_owed_report(loser: Player) -> str:
+        amount = -loser.gold_difference  # Reverse the negative int
         return f'{loser.name} owes {amount} gold to each winner.'
-
-    def _resolve_wins(self):
-        for player in self.players:
-            participant = player.avatar
-            if participant in self.winners:
-                self._resolve_win(player)
-
-    def _resolve_win(self, player: Player):
-        num_winners = len(self.winners)
-        gold_won = self.total_payout // num_winners
-        player.gold_difference += gold_won

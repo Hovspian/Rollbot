@@ -11,7 +11,7 @@ from HammerRace.race_track import RaceTrack
 class HammerRace(GameCore):
 
     def __init__(self, bot, ctx):
-        self.participants = []  # Participant[]. Participant is Versus's avatar object.
+        self.participants = []  # List[Participant] -- Participant is Versus's avatar object.
         super().__init__(ctx)
         self.bot = bot
         self.distance_to_finish = 40
@@ -102,4 +102,3 @@ class HammerRace(GameCore):
         for i, message in enumerate(self.messages_to_cleanup):
             if i != last_message:
                 await self.bot.delete_message(message)
-                await asyncio.sleep(1.0)

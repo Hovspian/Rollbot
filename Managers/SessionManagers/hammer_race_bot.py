@@ -66,6 +66,7 @@ class VersusHammerInitializer(GameInitializer):
         if await self._can_create_game(ctx):
             race = VersusHammer(self.bot, ctx)
             await self._create_session(race)
+            self.data_manager.batch_transfer(race.payouts)
 
     async def _create_session(self, race: HammerRace):
         self._add_game(race.ctx, race)
@@ -81,25 +82,3 @@ class VersusHammerInitializer(GameInitializer):
         host_name = ctx.message.author.display_name
         setup_message = f"{host_name} is starting a race. Type /join in the next 20 seconds to join."
         await self.bot.say(setup_message)
-
-
-class HammerPayoutHandler:
-
-    """
-    TODO actually use this one day, maybe
-    """
-
-    def __init__(self, game: VersusHammer, data_manager: RemoteDataManager):
-        self.game = game
-        self.data_manager = data_manager
-
-    def resolve_payouts(self) -> None:
-        for loser in self.game.losers:
-            gold_amount = loser['gold']
-            divided_amount = loser['divided_gold']
-            self.pay_winners(divided_amount)
-            self.data_manager.update_gold(loser, -gold_amount)
-
-    def pay_winners(self, gold_amount) -> None:
-        for winner in self.game.winners:
-            self.data_manager.update_gold(winner, gold_amount)
