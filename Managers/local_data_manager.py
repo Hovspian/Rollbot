@@ -45,7 +45,7 @@ class LocalDataManager:
         """
         self.__create_profile_if_not_exists(to_user)
         self.__create_profile_if_not_exists(from_user)
-        amount = self.__get_final_gold_difference(to_user, gold_difference, from_user)
+        amount = self.__get_final_gold_difference(gold_difference, from_user)
         self.__update(to_user, amount, from_user)
 
     def __update(self, to_user, amount, from_user):
@@ -58,17 +58,14 @@ class LocalDataManager:
     def __update_gold(self, user, amount) -> None:
         self.players[user.id]['gold'] += amount
 
-    def __get_final_gold_difference(self, to_user, gold_difference, from_user) -> int:
+    def __get_final_gold_difference(self, gold_difference, from_user) -> int:
         """
         When transferring gold, users can't lose more gold than they have.
         """
-        first_user = self.players[to_user.id]
-        second_user = self.players[from_user.id]
+        user = self.players[from_user.id]
 
-        if first_user['gold'] + gold_difference < 0:
-            return first_user['gold']
-        elif second_user['gold'] - gold_difference < 0:
-            return second_user['gold']
+        if user['gold'] - gold_difference < 0:
+            return user['gold']
         else:
             return gold_difference
 
