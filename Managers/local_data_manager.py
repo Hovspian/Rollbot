@@ -79,6 +79,14 @@ class LocalDataManager:
     def __update_gold_stats(self, to_user, amount, from_user) -> None:
         self.__create_gold_stat_if_not_exists(to_user, from_user)
         self.players[to_user.id]['gold_stats'][from_user.id]['gold'] += amount
+        self.__update_gold_gained(to_user, amount, from_user)
+        self.__update_gold_lost(to_user, amount, from_user)
+
+    def __update_gold_gained(self, to_user, amount, from_user):
+        self.players[to_user.id]['gold_stats'][from_user.id]['won'] += amount
+
+    def __update_gold_lost(self, to_user, amount, from_user):
+        self.players[from_user.id]['gold_stats'][to_user.id] -= amount
 
     def __create_profile_if_not_exists(self, user) -> None:
         if user.id in self.players:
