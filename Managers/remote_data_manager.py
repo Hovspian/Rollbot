@@ -17,14 +17,7 @@ class RemoteDataManager:
                 ExpressionAttributeValues={':val': 1000000}
             )
         except ClientError:
-            self.table.put_item(
-                Item={
-                    'id': self.bot.user.id,
-                    'gold': 1000000,
-                    'gold_stats': {},
-                    'butts': {}
-                }
-            )
+            self.create_profile(self.bot.user, 1000000)
 
     def batch_transfer(self, payouts: dict):
         for payout in payouts:
