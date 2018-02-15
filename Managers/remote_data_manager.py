@@ -97,15 +97,10 @@ class RemoteDataManager:
         )
 
     def create_gold_stat(self, to_user, amount, from_user):
-        try:
-            self.create_win_stat(to_user, amount, from_user)
-            self.create_lose_stat(to_user, amount, from_user)
-        except ClientError:
-            print("Still wrong")
-            pass
+        self.create_win_stat(to_user, amount, from_user)
+        self.create_lose_stat(to_user, amount, from_user)
 
     def create_win_stat(self, to_user, amount, from_user):
-
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id = :gs',
