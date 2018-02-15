@@ -3,9 +3,28 @@ from botocore.exceptions import ClientError
 
 
 class RemoteDataManager:
-    def __init__(self):
+    def __init__(self, bot):
         dynamodb = boto3.resource('dynamodb')
-        self.table = dynamodb.Table('Gold')
+        self.table = dynamodb.Table('RollbotGold')
+        self.bot = bot
+        self.refresh_rollbot()
+
+    def refresh_rollbot(self):
+        try:
+            self.table.update_item(
+                Key={'id': self.bot.user.id},
+                UpdateExpression='SET gold = :val',
+                ExpressionAttributeValues={':val': 1000000}
+            )
+        except ClientError:
+            self.table.put_item(
+                Item={
+                    'id': self.bot.user.id,
+                    'gold': 1000000,
+                    'gold_stats': {},
+                    'butts': {}
+                }
+            )
 
     def batch_transfer(self, payouts: dict):
         for payout in payouts:
@@ -38,17 +57,17 @@ class RemoteDataManager:
     def update_gold(self, user, amount):
         try:
             self.table.update_item(
-                Key={'user_id': user.id},
+                Key={'id': user.id},
                 UpdateExpression='SET gold = gold + :val',
                 ExpressionAttributeValues={':val': amount}
             )
         except ClientError:
-            self.create_profile(user.id, amount)
+            self.create_profile(user, amount)
 
     def create_profile(self, user, amount):
         self.table.put_item(
             Item={
-                'user_id': user.id,
+                'id': user.id,
                 'gold': amount,
                 'gold_stats': {},
                 'butts': {}
@@ -64,14 +83,14 @@ class RemoteDataManager:
 
     def update_win(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'user_id': to_user.id},
+            Key={'id': to_user.id},
             UpdateExpression=f'SET gold_stats.{from_user.id}.total = gold_stats.{from_user.id}.total + :val',
             ExpressionAttributeValues={':val': amount}
         )
 
     def update_loss(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'user_id': from_user.id},
+            Key={'id': from_user.id},
             UpdateExpression=f'SET gold_stats.{to_user.id}.total = gold_stats.{to_user.id}.total - :val',
             ExpressionAttributeValues={':val': amount}
         )
@@ -82,7 +101,7 @@ class RemoteDataManager:
 
     def create_win_stat(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'user_id': to_user.id},
+            Key={'id': to_user.id},
             UpdateExpression=f'SET gold_stats.{from_user.id}.total = :val,'
                              f'gold_stats.{from_user.id}.won = :val,'
                              f'gold_stats.{from_user.id}.lost = 0,',
@@ -91,7 +110,7 @@ class RemoteDataManager:
 
     def create_lose_stat(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'user_id': from_user.id},
+            Key={'id': from_user.id},
             UpdateExpression=f'SET gold_stats.{to_user.id}.total = :val,'
                              f'gold_stats.{to_user.id}.won = 0,'
                              f'gold_stats.{to_user.id}.lost = :val,',
@@ -100,7 +119,7 @@ class RemoteDataManager:
 
     def get_gold(self, user):
         try:
-            response = self.table.get_item(Key={'user_id': user.id})
+            response = self.table.get_item(Key={'id': user.id})
             item = response['Item']
             if item is not None:
                 return item['gold']

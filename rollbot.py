@@ -41,7 +41,7 @@ async def on_ready():
 
 def get_data_manager():
     try:
-        return RemoteDataManager()
+        return RemoteDataManager(bot)
     except:
         print("No connection to the database. Falling back to local data.")
         return LocalDataManager(bot)
