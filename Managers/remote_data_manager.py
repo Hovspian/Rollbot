@@ -84,37 +84,59 @@ class RemoteDataManager:
     def update_win(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': to_user.id},
-            UpdateExpression=f'SET gold_stats.{from_user.id}.total = gold_stats.{from_user.id}.total + :val',
+            UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
+                             '#gs.#id.won = #gs.#id.won + :val',
+            ExpressionAttributeNames={'#gs': 'gold_stats',
+                                      '#id': from_user.id,
+                                      '#total': 'total'},
             ExpressionAttributeValues={':val': amount}
         )
 
     def update_loss(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': from_user.id},
-            UpdateExpression=f'SET gold_stats.{to_user.id}.total = gold_stats.{to_user.id}.total - :val',
+            UpdateExpression='SET #gs.#id.#total = #gs.#id.#total - :val,'
+                             '#gs.#id.lost = #gs.#id.lost - :val',
+            ExpressionAttributeNames={'#gs': 'gold_stats',
+                                      '#id': to_user.id,
+                                      '#total': '#total'},
             ExpressionAttributeValues={':val': amount}
         )
 
     def create_gold_stat(self, to_user, amount, from_user):
-        self.create_win_stat(to_user, amount, from_user)
-        self.create_lose_stat(to_user, amount, from_user)
+        try:
+            self.create_win_stat(to_user, amount, from_user)
+            self.create_lose_stat(to_user, amount, from_user)
+        except ClientError:
+            print("Still wrong")
+            pass
 
     def create_win_stat(self, to_user, amount, from_user):
+
         self.table.update_item(
             Key={'id': to_user.id},
-            UpdateExpression=f'SET gold_stats.{from_user.id}.total = :val,'
-                             f'gold_stats.{from_user.id}.won = :val,'
-                             f'gold_stats.{from_user.id}.lost = 0,',
-            ExpressionAttributeValues={':val': amount}
+            UpdateExpression='SET #gs.#id = :gs',
+            ExpressionAttributeNames={'#gs': 'gold_stats',
+                                      '#id': from_user.id},
+            ExpressionAttributeValues={
+                ':gs': {'total': amount,
+                        'won': amount,
+                        'lost': 0},
+            }
         )
 
     def create_lose_stat(self, to_user, amount, from_user):
+
         self.table.update_item(
             Key={'id': from_user.id},
-            UpdateExpression=f'SET gold_stats.{to_user.id}.total = :val,'
-                             f'gold_stats.{to_user.id}.won = 0,'
-                             f'gold_stats.{to_user.id}.lost = :val,',
-            ExpressionAttributeValues={':val': -amount}
+            UpdateExpression=f'SET #gs.#id = :gs',
+            ExpressionAttributeNames={'#gs': 'gold_stats',
+                                      '#id': to_user.id},
+            ExpressionAttributeValues={
+                ':gs': {'total': 0,
+                        'won': 0,
+                        'lost': -amount}
+            }
         )
 
     def get_gold(self, user):
