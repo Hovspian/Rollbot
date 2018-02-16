@@ -1,6 +1,8 @@
 import boto3
 from botocore.exceptions import ClientError
 
+from Managers.user_profile import get_default_profile
+
 
 class RemoteDataManager:
     def __init__(self, bot):
@@ -59,12 +61,7 @@ class RemoteDataManager:
 
     def create_profile(self, user, amount):
         self.table.put_item(
-            Item={
-                'id': user.id,
-                'gold': amount,
-                'gold_stats': {},
-                'butts': {}
-            }
+            Item=get_default_profile(user, amount)
         )
 
     def update_gold_stats(self, to_user, amount, from_user):
