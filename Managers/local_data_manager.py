@@ -15,14 +15,14 @@ class LocalDataManager:
         self.players = self.data_handler.get_data()
         self.__initialize_rollbot()
 
-    def single_transfer(self, to_user, gold_difference, from_user):
-        self.__transfer_gold(to_user, gold_difference, from_user)
+    def single_transfer(self, to_user, amount, from_user):
+        self.__transfer_gold(to_user, amount, from_user)
         self.__save_data()
 
     def batch_transfer(self, payouts: dict):
         for payout in payouts:
             self.__transfer_gold(payout['to_user'],
-                                 payout['gold_difference'],
+                                 payout['amount'],
                                  payout['from_user'])
         self.__save_data()
 
@@ -41,13 +41,13 @@ class LocalDataManager:
         if user_id is not None:
             return self.players[user.id]['gold_stats']
 
-    def __transfer_gold(self, to_user, gold_difference, from_user):
+    def __transfer_gold(self, to_user, amount, from_user):
         """
         How much total gold has been transferred between two users.
         """
         self.__create_profile_if_not_exists(to_user, 0)
         self.__create_profile_if_not_exists(from_user, 0)
-        amount = self.__get_final_gold_difference(gold_difference, from_user)
+        amount = self.__get_final_gold_amount(amount, from_user)
         self.__update(to_user, amount, from_user)
 
     def __update(self, to_user, amount, from_user):
@@ -60,16 +60,16 @@ class LocalDataManager:
     def __update_gold(self, user, amount) -> None:
         self.players[user.id]['gold'] += amount
 
-    def __get_final_gold_difference(self, gold_difference, from_user) -> int:
+    def __get_final_gold_amount(self, amount, from_user) -> int:
         """
         When transferring gold, users can't lose more gold than they have.
         """
         user = self.players[from_user.id]
 
-        if user['gold'] - gold_difference < 0:
+        if user['gold'] - amount < 0:
             return user['gold']
         else:
-            return gold_difference
+            return amount
 
     def __initialize_rollbot(self) -> None:
         """

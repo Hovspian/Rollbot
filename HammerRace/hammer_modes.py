@@ -138,15 +138,15 @@ class VersusHammer(HammerRace):
 
     def __dispense_payouts(self, loser: Player):
         gold_owed = self.__calculate_gold_owed(participant=loser.avatar)
-        loser.gold_difference -= gold_owed
+        loser.gold_won -= gold_owed
         for winner in self.winning_players:
-            winner.gold_difference += gold_owed
+            winner.gold_won += gold_owed
             self.__add_payout(winner.user, gold_owed, loser.user)
 
-    def __add_payout(self, to_user, gold_difference, from_user):
+    def __add_payout(self, to_user, amount, from_user):
         self.payouts.append({
             'to_user': to_user,
-            'gold_difference': gold_difference,
+            'amount': amount,
             'from_user': from_user
         })
 
@@ -163,5 +163,5 @@ class VersusHammer(HammerRace):
 
     @staticmethod
     def __get_gold_owed_report(loser: Player) -> str:
-        amount = -loser.gold_difference  # Reverse the negative int
+        amount = -loser.gold_won  # Reverse the negative int
         return f'{loser.name} owes {amount} gold to each winner.'

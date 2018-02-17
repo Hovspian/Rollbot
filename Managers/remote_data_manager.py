@@ -11,7 +11,7 @@ class RemoteDataManager:
     def batch_transfer(self, payouts: dict):
         for payout in payouts:
             self.gold_manager.transfer_gold(payout['to_user'],
-                                            payout['gold_difference'],
+                                            payout['amount'],
                                             payout['from_user'])
 
     def single_transfer(self, to_user, amount, from_user):
@@ -32,7 +32,7 @@ class GoldManager:
         self.__refresh_rollbot()
 
     def transfer_gold(self, to_user, amount, from_user):
-        final_amount = self.__get_final_gold_difference(amount, from_user)
+        final_amount = self.__get_final_gold_amount(amount, from_user)
         self.__update_gold(to_user, final_amount)
         self.__update_gold(from_user, -final_amount)  # Subtract from the giver
         self.__update_gold_stats(to_user, final_amount, from_user)
@@ -65,7 +65,7 @@ class GoldManager:
         except ClientError:
             self.create_profile(self.bot.user, 1000000)
 
-    def __get_final_gold_difference(self, gold_difference, from_user) -> int:
+    def __get_final_gold_amount(self, amount, from_user) -> int:
         """
         When transferring gold, users can't lose more gold than they have.
         """
@@ -73,10 +73,10 @@ class GoldManager:
 
         if not gold:
             return 0
-        elif gold - gold_difference < 0:
+        elif gold - amount < 0:
             return gold
         else:
-            return gold_difference
+            return amount
 
     def __update_gold(self, user, amount):
         try:

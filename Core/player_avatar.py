@@ -12,7 +12,7 @@ class Player:
         self.name = user.display_name
         self.avatar = avatar
         self.afk = 0
-        self.gold_difference = 0
+        self.gold_won = 0
 
 
 class BlackjackPlayer(Player):
