@@ -38,9 +38,12 @@ class ChannelManager:
         error = self._get_invalid_forcestart_error(ctx)
         if error:
             temp_message = await self.bot.say(error)
-            await self._auto_delete_message(temp_message)
         else:
-            pass  # force start call on the join timer
+            user = ctx.message.author
+            timer = self.join_timers[user]
+            timer.cancel_timer()
+            temp_message = await self.bot.say(':ok_hand:')
+        await self._auto_delete_message(temp_message)
 
     def quit(self):
         # User quits the game (if possible)

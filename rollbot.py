@@ -165,7 +165,7 @@ async def versushammer(ctx):
 
 @bot.command(pass_context=True)
 async def forcestart(ctx):
-    pass
+    await channel_manager.check_valid_forcestart(ctx)
 
 @bot.command(pass_context=True)
 async def butts():

@@ -5,25 +5,28 @@ from Core.core_game_class import GameCore
 
 class JoinTimer:
     def __init__(self, bot, game: GameCore):
-        self.waiting = False
         self.join_time = 15
+        self.counter = self.join_time
         self.bot = bot
         self.game = game
         self.host = game.host
 
-    async def cancel_timer(self):
-        self.waiting = False
+    def cancel_timer(self):
+        self.counter = 0
 
     async def run(self) -> None:
-        self.waiting = True
-        until_five_seconds_left = self.join_time - 5
-        while self.waiting:
+        while self.counter >= 0:
+            await self.check_time_left()
+            self.counter -= 1
+            await asyncio.sleep(1)
+
+    async def check_time_left(self):
+        if self.counter == self.join_time:
             await self._say_setup_message()
-            await asyncio.sleep(until_five_seconds_left)
+        if self.counter == 5:
             await self._say_last_call_message()
-            await asyncio.sleep(5)
+        if self.counter == 0:
             await self._say_start_message()
-            break
 
     async def _say_setup_message(self):
         host = self.game.host_name
