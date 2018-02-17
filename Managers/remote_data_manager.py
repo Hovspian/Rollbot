@@ -20,6 +20,9 @@ class RemoteDataManager:
     def get_gold(self, user):
         return self.gold_manager.get_gold(user)
 
+    def get_gold_stats(self, user):
+        return self.gold_manager.get_gold_stats(user)
+
 
 class GoldManager:
     def __init__(self, bot):
@@ -42,6 +45,15 @@ class GoldManager:
                 return item['gold']
         except KeyError:
             return 0
+
+    def get_gold_stats(self, user):
+        try:
+            response = self.table.get_item(Key={'id': user.id})
+            item = response['Item']
+            if item is not None:
+                return item['gold_stats']
+        except KeyError:
+            return None
 
     def __refresh_rollbot(self):
         try:
@@ -92,7 +104,7 @@ class GoldManager:
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
-                             '#gs.#id.won = #gs.#id.won + :val',
+                             '#gs.#id.won = #gs.#id.won + :val,',
             ExpressionAttributeNames={'#gs': 'gold_stats',
                                       '#id': from_user.id,
                                       '#total': 'total'},

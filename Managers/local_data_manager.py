@@ -79,7 +79,7 @@ class LocalDataManager:
 
     def __update_gold_stats(self, to_user, amount, from_user) -> None:
         self.__create_gold_stat_if_not_exists(to_user, from_user)
-        self.players[to_user.id]['gold_stats'][from_user.id]['gold'] += amount
+        self.players[to_user.id]['gold_stats'][from_user.id]['total'] += amount
         self.__update_gold_gained(to_user, amount, from_user)
         self.__update_gold_lost(to_user, amount, from_user)
 
@@ -87,7 +87,7 @@ class LocalDataManager:
         self.players[to_user.id]['gold_stats'][from_user.id]['won'] += amount
 
     def __update_gold_lost(self, to_user, amount, from_user):
-        self.players[from_user.id]['gold_stats'][to_user.id] -= amount
+        self.players[from_user.id]['gold_stats'][to_user.id]['lost'] -= amount
 
     def __create_profile_if_not_exists(self, user, gold) -> None:
         if user.id in self.players:
@@ -101,8 +101,9 @@ class LocalDataManager:
         user_one_stats = self.players[user_one.id]['gold_stats']
         if user_two.id in user_one_stats:
             return
-        user_one_stats[user_two.id] = {'gold': 0,
-                                       'name': user_two.display_name}
+        user_one_stats[user_two.id] = {'total': 0,
+                                       'won': 0,
+                                       'lost': 0}
 
     def __save_data(self):
         self.players[self.bot.user.id]['gold'] = 0  # Infinity isn't valid JSON, so set Rollbot's gold to 0.
@@ -111,7 +112,6 @@ class LocalDataManager:
 
 
 class PersistentDataHandler:
-
     def __init__(self):
         self.file_path = "Data/player_data.json"
         self.folder_path = "Data"

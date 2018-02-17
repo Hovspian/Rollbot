@@ -50,27 +50,26 @@ class GoldStats:
 
     async def say_gold_stats(self, ctx):
         user = ctx.message.author
-        gold_stats = self.get_formatted_gold_stats(user)
+        gold_stats = await self.get_formatted_gold_stats(user)
         if len(gold_stats) > 0:
             gold_stats.insert(0, "You won from")
             await self.bot.say('\n'.join(gold_stats))
         else:
             await self.bot.say("You don't have any statistics yet.")
 
-    def get_formatted_gold_stats(self, user):
+    async def get_formatted_gold_stats(self, user):
         gold_stats = self.data_manager.get_gold_stats(user)
         formatted_stats = []
 
         for other_user_id, stat in gold_stats.items():
-            filtered_stat = self.filter_gold_stat(stat)
+            filtered_stat = await self.filter_gold_stat(other_user_id, stat)
             if filtered_stat is not None:
                 formatted_stats.append(filtered_stat)
 
         return formatted_stats
 
-    @staticmethod
-    def filter_gold_stat(stat):
-        display_name = stat['name']
-        amount = stat['gold']
+    async def filter_gold_stat(self, user_id, stat):
+        user = await self.bot.get_user_info(user_id)
+        amount = stat['won']
         if amount > 0:
-            return f"{display_name}: {amount} gold"
+            return f"{user.display_name}: {amount} gold"
