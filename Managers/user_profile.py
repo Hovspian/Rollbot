@@ -6,9 +6,8 @@ def get_default_profile(user, gold):
         'butts': {
             'played': 0,
             'total': 0,
-            'ones': 0,
-            'twenties': 0,
-            'history': []  # Last 5 butts
+            'butt_count': {},  # How many of each number of butts
+            'history': []
         },
         'blackjack': {
             'gold_total': 0,
@@ -18,7 +17,8 @@ def get_default_profile(user, gold):
             'wins': 0,
             'losses': 0,
             'dealt': 0,
-            'blackjacks': 0
+            'blackjacks': 0,
+            'busts': 0
         },
         'slots': {
             'gold_total': 0,

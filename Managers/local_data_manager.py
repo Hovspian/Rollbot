@@ -5,6 +5,8 @@ import asyncio
 import math
 from dataIO import js
 
+from Managers.user_profile import get_default_profile
+
 
 class LocalDataManager:
     def __init__(self, bot):
@@ -43,8 +45,8 @@ class LocalDataManager:
         """
         How much total gold has been transferred between two users.
         """
-        self.__create_profile_if_not_exists(to_user)
-        self.__create_profile_if_not_exists(from_user)
+        self.__create_profile_if_not_exists(to_user, 0)
+        self.__create_profile_if_not_exists(from_user, 0)
         amount = self.__get_final_gold_difference(gold_difference, from_user)
         self.__update(to_user, amount, from_user)
 
@@ -73,8 +75,7 @@ class LocalDataManager:
         """
         Rollbot can't run out of gold.
         """
-        self.__create_profile_if_not_exists(self.bot.user)
-        self.players[self.bot.user.id]['gold'] = math.inf
+        self.__create_profile_if_not_exists(self.bot.user, gold=math.inf)
 
     def __update_gold_stats(self, to_user, amount, from_user) -> None:
         self.__create_gold_stat_if_not_exists(to_user, from_user)
@@ -88,10 +89,10 @@ class LocalDataManager:
     def __update_gold_lost(self, to_user, amount, from_user):
         self.players[from_user.id]['gold_stats'][to_user.id] -= amount
 
-    def __create_profile_if_not_exists(self, user) -> None:
+    def __create_profile_if_not_exists(self, user, gold) -> None:
         if user.id in self.players:
             return
-        self.players[user.id] = self.__get_default_profile()
+        self.players[user.id] = get_default_profile(user, gold)
 
     def __create_gold_stat_if_not_exists(self, user_one, user_two) -> None:
         """
@@ -107,13 +108,6 @@ class LocalDataManager:
         self.players[self.bot.user.id]['gold'] = 0  # Infinity isn't valid JSON, so set Rollbot's gold to 0.
         self.data_handler.save_data(self.players)
         self.players[self.bot.user.id]['gold'] = math.inf
-
-    @staticmethod
-    def __get_default_profile() -> dict:
-        return {'gold': 0,
-                'gold_stats': {},  # Key: from_user.id, value: dict
-                'butts': {}  # TODO dunno what goes in here yet
-                }
 
 
 class PersistentDataHandler:
