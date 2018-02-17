@@ -22,6 +22,7 @@ class BlackjackExecutor(GameCore):
         self.dealer_name = self.dealer.name
         self.standing_players = []  # Match against the dealer's hand at the end of the game
         self.max_time_left = 10 * 60  # 10 minutes
+        self.payouts = []
         self.id = GAME_ID['BLACKJACK']
 
     def init_dealer(self) -> BlackjackDealer:
@@ -173,8 +174,8 @@ class BlackjackExecutor(GameCore):
         self.__add_player_loss_payout(hand_to_bust)
         await self.__check_knock_out()
 
-    def __add_player_loss_payout(self, hand_to_bust):
-        wager = hand_to_bust.get_wager()
+    def __add_player_loss_payout(self, hand):
+        wager = hand.get_wager()
         to_dealer = self.dealer.user
         from_player = self.__get_current_player()
         self.__add_payout(to_dealer, wager, from_player)
@@ -196,10 +197,15 @@ class BlackjackExecutor(GameCore):
             await self.announcer.player_hand(player.name, hand)
             hand_checker = BlackjackResultChecker(self, hand)
             await hand_checker.check_outcome()
-            self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
+            if hand.is_standoff():
+                return
+            if hand.is_winner():
+                self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
+            else:
+                self.__add_player_loss_payout(hand)
 
     def __add_payout(self, to_user, amount, from_user):
-        self.winnable_payouts.append({
+        self.payouts.append({
             'to_user': to_user,
             'amount': amount,
             'from_user': from_user

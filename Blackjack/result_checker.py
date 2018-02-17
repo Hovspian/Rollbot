@@ -3,6 +3,10 @@ from Blackjack.hand import PlayerHand
 
 class BlackjackResultChecker:
 
+    """
+    Checks a single hand during end of game comparisons.
+    """
+
     def __init__(self, executor, player_hand: PlayerHand):
         self.blackjack = executor.blackjack
         self.announcer = executor.announcer
@@ -33,11 +37,11 @@ class BlackjackResultChecker:
         await self.announcer.win(winnings)
 
     async def _resolve_standoff(self):
+        self.player_hand.standoff()
         wager = self.player_hand.get_wager()
         await self.announcer.stand_off(wager)
 
     async def _resolve_loss(self):
-        self.player_hand.lose()
         wager = self.player_hand.get_wager()
         await self.announcer.loss(wager)
 

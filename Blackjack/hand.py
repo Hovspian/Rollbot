@@ -47,6 +47,13 @@ class PlayerHand(Hand):
         super().__init__()
         self._wager = wager
         self._winnings = 0
+        self._is_standoff = False
+
+    def is_standoff(self):
+        return self._is_standoff
+
+    def is_winner(self) -> bool:
+        return self._winnings > 0
 
     def get_wager(self) -> int:
         return self._wager
@@ -68,5 +75,5 @@ class PlayerHand(Hand):
     def normal_win(self) -> None:
         self._winnings += self._wager * 3
 
-    def lose(self) -> None:
-        self._winnings -= self._wager
+    def standoff(self) -> None:
+        self._is_standoff = True
