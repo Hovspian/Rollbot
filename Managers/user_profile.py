@@ -3,12 +3,16 @@ def get_default_profile(user, gold):
         'id': user.id,
         'gold': gold,
         'gold_stats': {},
-        'butts': {
-            'played': 0,
-            'total': 0,
-            'butt_count': {},  # How many of each number of butts
-            'history': []
-        },
+    }
+
+
+def get_butts_stats(user):
+    return {
+        'id': user.id,
+        'played': 0,
+        'total': 0,
+        'butt_count': {},  # How many of each number of butts
+        'history': []
     }
 
 
