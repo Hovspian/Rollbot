@@ -19,7 +19,7 @@ from discordtoken import TOKEN
 
 
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='.', description=description)
+bot = commands.Bot(command_prefix='/', description=description)
 client = discord.Client()
 blackjack_bot = None
 channel_manager = None
