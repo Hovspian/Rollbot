@@ -6,12 +6,32 @@ from Managers.user_profile import get_default_profile
 
 class RemoteDataManager:
     def __init__(self, bot):
+        self.gold_manager = GoldManager(bot)
+
+    def batch_transfer(self, payouts: dict):
+        for payout in payouts:
+            self.gold_manager.transfer_gold(payout['to_user'],
+                                            payout['gold_difference'],
+                                            payout['from_user'])
+
+    def single_transfer(self, to_user, amount, from_user):
+        self.gold_manager.transfer_gold(to_user, amount, from_user)
+
+
+class GoldManager:
+    def __init__(self, bot):
         dynamodb = boto3.resource('dynamodb')
         self.table = dynamodb.Table('RollbotGold')
         self.bot = bot
-        self.refresh_rollbot()
+        self.__refresh_rollbot()
 
-    def refresh_rollbot(self):
+    def transfer_gold(self, to_user, amount, from_user):
+        final_amount = self.__get_final_gold_difference(amount, from_user)
+        self.__update_gold(to_user, final_amount)
+        self.__update_gold(from_user, -final_amount)  # Subtract from the giver
+        self.__update_gold_stats(to_user, final_amount, from_user)
+
+    def __refresh_rollbot(self):
         try:
             self.table.update_item(
                 Key={'id': self.bot.user.id},
@@ -21,14 +41,14 @@ class RemoteDataManager:
         except ClientError:
             self.create_profile(self.bot.user, 1000000)
 
-    def batch_transfer(self, payouts: dict):
-        for payout in payouts:
-            self.__transfer_gold(payout['to_user'],
-                                 payout['gold_difference'],
-                                 payout['from_user'])
-
-    def single_transfer(self, to_user, amount, from_user):
-        self.__transfer_gold(to_user, amount, from_user)
+    def get_gold(self, user):
+        try:
+            response = self.table.get_item(Key={'id': user.id})
+            item = response['Item']
+            if item is not None:
+                return item['gold']
+        except KeyError:
+            return 0
 
     def __get_final_gold_difference(self, gold_difference, from_user) -> int:
         """
@@ -43,13 +63,7 @@ class RemoteDataManager:
         else:
             return gold_difference
 
-    def __transfer_gold(self, to_user, amount, from_user):
-        final_amount = self.__get_final_gold_difference(amount, from_user)
-        self.update_gold(to_user, final_amount)
-        self.update_gold(from_user, -final_amount)  # Subtract from the giver
-        self.update_gold_stats(to_user, final_amount, from_user)
-
-    def update_gold(self, user, amount):
+    def __update_gold(self, user, amount):
         try:
             self.table.update_item(
                 Key={'id': user.id},
@@ -64,14 +78,14 @@ class RemoteDataManager:
             Item=get_default_profile(user, amount)
         )
 
-    def update_gold_stats(self, to_user, amount, from_user):
+    def __update_gold_stats(self, to_user, amount, from_user):
         try:
-            self.update_win(to_user, amount, from_user)
-            self.update_loss(to_user, amount, from_user)
+            self.__update_win(to_user, amount, from_user)
+            self.__update_loss(to_user, amount, from_user)
         except ClientError:
-            self.create_gold_stat(to_user, amount, from_user)
+            self.__create_gold_stat(to_user, amount, from_user)
 
-    def update_win(self, to_user, amount, from_user):
+    def __update_win(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
@@ -82,7 +96,7 @@ class RemoteDataManager:
             ExpressionAttributeValues={':val': amount}
         )
 
-    def update_loss(self, to_user, amount, from_user):
+    def __update_loss(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': from_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total - :val,'
@@ -93,11 +107,11 @@ class RemoteDataManager:
             ExpressionAttributeValues={':val': amount}
         )
 
-    def create_gold_stat(self, to_user, amount, from_user):
-        self.create_win_stat(to_user, amount, from_user)
-        self.create_lose_stat(to_user, amount, from_user)
+    def __create_gold_stat(self, to_user, amount, from_user):
+        self.__create_win_stat(to_user, amount, from_user)
+        self.__create_lose_stat(to_user, amount, from_user)
 
-    def create_win_stat(self, to_user, amount, from_user):
+    def __create_win_stat(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id = :gs',
@@ -110,7 +124,7 @@ class RemoteDataManager:
             }
         )
 
-    def create_lose_stat(self, to_user, amount, from_user):
+    def __create_lose_stat(self, to_user, amount, from_user):
 
         self.table.update_item(
             Key={'id': from_user.id},
@@ -123,12 +137,3 @@ class RemoteDataManager:
                         'lost': -amount}
             }
         )
-
-    def get_gold(self, user):
-        try:
-            response = self.table.get_item(Key={'id': user.id})
-            item = response['Item']
-            if item is not None:
-                return item['gold']
-        except KeyError:
-            return 0
