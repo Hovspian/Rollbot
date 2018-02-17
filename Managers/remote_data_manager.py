@@ -17,6 +17,9 @@ class RemoteDataManager:
     def single_transfer(self, to_user, amount, from_user):
         self.gold_manager.transfer_gold(to_user, amount, from_user)
 
+    def get_gold(self, user):
+        return self.gold_manager.get_gold(user)
+
 
 class GoldManager:
     def __init__(self, bot):
@@ -31,6 +34,15 @@ class GoldManager:
         self.__update_gold(from_user, -final_amount)  # Subtract from the giver
         self.__update_gold_stats(to_user, final_amount, from_user)
 
+    def get_gold(self, user):
+        try:
+            response = self.table.get_item(Key={'id': user.id})
+            item = response['Item']
+            if item is not None:
+                return item['gold']
+        except KeyError:
+            return 0
+
     def __refresh_rollbot(self):
         try:
             self.table.update_item(
@@ -40,15 +52,6 @@ class GoldManager:
             )
         except ClientError:
             self.create_profile(self.bot.user, 1000000)
-
-    def get_gold(self, user):
-        try:
-            response = self.table.get_item(Key={'id': user.id})
-            item = response['Item']
-            if item is not None:
-                return item['gold']
-        except KeyError:
-            return 0
 
     def __get_final_gold_difference(self, gold_difference, from_user) -> int:
         """
