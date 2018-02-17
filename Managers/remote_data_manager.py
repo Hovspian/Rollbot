@@ -98,16 +98,19 @@ class GoldManager:
             self.__update_win(to_user, amount, from_user)
             self.__update_loss(to_user, amount, from_user)
         except ClientError:
-            self.__create_gold_stat(to_user, amount, from_user)
+            self.__create_win_stat(to_user, amount, from_user)
+            self.__create_lose_stat(to_user, amount, from_user)
 
     def __update_win(self, to_user, amount, from_user):
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
                              '#gs.#id.won = #gs.#id.won + :val,',
+
             ExpressionAttributeNames={'#gs': 'gold_stats',
                                       '#id': from_user.id,
                                       '#total': 'total'},
+
             ExpressionAttributeValues={':val': amount}
         )
 
@@ -115,16 +118,14 @@ class GoldManager:
         self.table.update_item(
             Key={'id': from_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total - :val,'
-                             '#gs.#id.lost = #gs.#id.lost - :val',
+                             '#gs.#id.lost = #gs.#id.lost + :val',
+
             ExpressionAttributeNames={'#gs': 'gold_stats',
                                       '#id': to_user.id,
-                                      '#total': '#total'},
+                                      '#total': 'total'},
+
             ExpressionAttributeValues={':val': amount}
         )
-
-    def __create_gold_stat(self, to_user, amount, from_user):
-        self.__create_win_stat(to_user, amount, from_user)
-        self.__create_lose_stat(to_user, amount, from_user)
 
     def __create_win_stat(self, to_user, amount, from_user):
         self.table.update_item(
@@ -135,20 +136,19 @@ class GoldManager:
             ExpressionAttributeValues={
                 ':gs': {'total': amount,
                         'won': amount,
-                        'lost': 0},
+                        'lost': 0}
             }
         )
 
     def __create_lose_stat(self, to_user, amount, from_user):
-
         self.table.update_item(
             Key={'id': from_user.id},
-            UpdateExpression=f'SET #gs.#id = :gs',
+            UpdateExpression='SET #gs.#id = :gs',
             ExpressionAttributeNames={'#gs': 'gold_stats',
                                       '#id': to_user.id},
             ExpressionAttributeValues={
-                ':gs': {'total': 0,
+                ':gs': {'total': -amount,
                         'won': 0,
-                        'lost': -amount}
+                        'lost': amount}
             }
         )
