@@ -173,7 +173,7 @@ class BlackjackExecutor(GameCore):
         self.__add_player_loss_payout(hand_to_bust)
         await self.__check_knock_out()
 
-    async def __add_player_loss_payout(self, hand_to_bust):
+    def __add_player_loss_payout(self, hand_to_bust):
         wager = hand_to_bust.get_wager()
         to_dealer = self.dealer.user
         from_player = self.__get_current_player()
