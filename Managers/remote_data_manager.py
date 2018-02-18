@@ -30,6 +30,7 @@ class GoldManager:
         self.table = dynamodb.Table('RollbotGold')
         self.bot = bot
         self.__refresh_rollbot()
+        # MigrateTable(bot, self).migrate() only uncomment this if you need to reset the database
 
     def transfer_gold(self, to_user, amount, from_user):
         final_amount = self.__get_final_gold_amount(amount, from_user)
@@ -97,7 +98,8 @@ class GoldManager:
         try:
             self.__update_win(to_user, amount, from_user)
             self.__update_loss(to_user, amount, from_user)
-        except ClientError:
+        except ClientError as exception:
+            print("Updating gold failed.", exception)
             self.__create_win_stat(to_user, amount, from_user)
             self.__create_lose_stat(to_user, amount, from_user)
 
@@ -105,7 +107,7 @@ class GoldManager:
         self.table.update_item(
             Key={'id': to_user.id},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
-                             '#gs.#id.won = #gs.#id.won + :val,',
+                             '#gs.#id.won = #gs.#id.won + :val',
 
             ExpressionAttributeNames={'#gs': 'gold_stats',
                                       '#id': from_user.id,
@@ -152,3 +154,50 @@ class GoldManager:
                         'lost': amount}
             }
         )
+
+
+class MigrateTable:
+    """
+    Calling migrate() will delete all known users from the RollbotGold table and refill it with gold from the Gold table!
+    """
+    def __init__(self, bot, gold_manager):
+        self.bot = bot
+        self.gold_manager = gold_manager
+        dynamodb = boto3.resource('dynamodb')
+        self.new_table = dynamodb.Table('RollbotGold')
+        self.old_table = dynamodb.Table('Gold')
+
+    def reset_users(self):
+        users = self.bot.get_all_members()
+        for user in users:
+            self.new_table.delete_item(Key={'id': user.id})
+        print("Users deleted.")
+        self.new_table.delete_item(Key={'id': self.bot.user.id})
+        self.gold_manager.create_profile(self.bot.user, 1000000)
+        print("Profile created for Rollbot.")
+
+    def migrate(self):
+        self.reset_users()
+        users = self.bot.get_all_members()
+        for user in users:
+            old_gold = self.get_old_gold(user)
+            if self.can_migrate(user):
+                self.gold_manager.transfer_gold(user, old_gold, self.bot.user)
+                print("Transferring", old_gold, "to", user)
+
+    def can_migrate(self, user):
+        old_gold = self.get_old_gold(user)
+        new_gold = self.gold_manager.get_gold(user)
+        return user != self.bot.user and \
+               old_gold > 0 and \
+               new_gold == 0
+
+    def get_old_gold(self, user):
+        name = str(user)
+        try:
+            response = self.old_table.get_item(Key={'username': name})
+            item = response['Item']
+            if item is not None:
+                return item['gold']
+        except KeyError:
+            return 0
