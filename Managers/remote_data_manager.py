@@ -63,7 +63,7 @@ class GoldManager:
                 UpdateExpression='SET gold = :val',
                 ExpressionAttributeValues={':val': 1000000}
             )
-        except ClientError:
+        except KeyError:
             self.create_profile(self.bot.user, 1000000)
 
     def __get_final_gold_amount(self, amount, from_user) -> int:
@@ -86,7 +86,7 @@ class GoldManager:
                 UpdateExpression='SET gold = gold + :val',
                 ExpressionAttributeValues={':val': amount}
             )
-        except ClientError:
+        except KeyError:
             self.create_profile(user, amount)
 
     def create_profile(self, user, amount):
@@ -98,7 +98,7 @@ class GoldManager:
         try:
             self.__update_win(to_user, amount, from_user)
             self.__update_loss(to_user, amount, from_user)
-        except ClientError as exception:
+        except KeyError as exception:
             print("Updating gold failed.", exception)
             self.__create_win_stat(to_user, amount, from_user)
             self.__create_lose_stat(to_user, amount, from_user)
