@@ -52,7 +52,8 @@ class Blackjack(GameCore):
 
     async def hit(self) -> None:
         hand = self.__get_current_player().get_active_hand()
-        new_card = self.deck.hit(hand)
+        new_card = self.deck.draw_card()
+        hand.hit(new_card)
         await self.announcer.report_hit(hand, new_card)
         self.__check_hit_bust(hand)
 
@@ -64,12 +65,21 @@ class Blackjack(GameCore):
 
     async def attempt_double_down(self) -> None:
         hand = self.__get_current_player().get_active_hand()
-        if self.deck.double_down(hand):
+        if self._double_down(hand):
             wager = hand.get_wager()
             await self.announcer.double_down_success(wager)
             await self.stand_current_hand()
         else:
             await self.announcer.double_down_fail()
+
+    def _double_down(self, hand: PlayerHand) -> bool:
+        """
+        Double wager, then draw and finish.
+        """
+        if hand.plays_made == 0:
+            card = self.deck.draw_card()
+            hand.double_down(card)
+            return True
 
     async def attempt_split(self) -> None:
         player = self.__get_current_player()
@@ -107,7 +117,8 @@ class Blackjack(GameCore):
         starting_hand = participant.get_active_hand()
         num_cards = 2
         for i in range(num_cards):
-            self.deck.deal_card(starting_hand)
+            card = self.deck.draw_card()
+            starting_hand.add_card(card)
 
     async def __show_player_cards(self) -> None:
         for player in self.players:
