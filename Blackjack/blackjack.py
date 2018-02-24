@@ -9,9 +9,6 @@ from Core.constants import GAME_ID
 
 
 class Blackjack(GameCore):
-    """
-    'When' Blackjack rules are applied.
-    """
 
     def __init__(self, bot, ctx):
         super().__init__(ctx)
@@ -19,7 +16,7 @@ class Blackjack(GameCore):
         self.bot = bot
         self.announcer = BlackjackPlayerAnnouncer(bot)
         self.dealer = self.init_dealer()
-        self.standing_players = []  # Match against the dealer's hand at the end of the game
+        self.standing_players = []  # Players to compare with the dealer's hand at the end of the game.
         self.max_time_left = 10 * 60  # 10 minutes
         self.payouts = []
         self.id = GAME_ID['BLACKJACK']
@@ -71,6 +68,14 @@ class Blackjack(GameCore):
         else:
             await self.announcer.double_down_fail()
 
+    async def attempt_split(self) -> None:
+        player = self.__get_current_player()
+        hand = player.get_active_hand()
+        if self.__split_hand(player, hand):
+            await self.announcer.split_successful(hand)
+        else:
+            await self.announcer.split_fail()
+
     def _double_down(self, hand: PlayerHand) -> bool:
         """
         Double wager, then draw and finish.
@@ -80,16 +85,13 @@ class Blackjack(GameCore):
             hand.double_down(card)
             return True
 
-    async def attempt_split(self) -> None:
-        player = self.__get_current_player()
-        hand = player.get_active_hand()
-        if self._split_hand(player, hand):
-            await self.announcer.split_successful(hand)
-        else:
-            await self.announcer.split_fail()
+    async def end_game(self) -> None:
+        await self.payout_handler.resolve_outcomes()
+        self.payouts = self.payout_handler.get_payouts()
+        super().end_game()
 
     @staticmethod
-    def _split_hand(player: BlackjackPlayer, hand) -> bool:
+    def __split_hand(player: BlackjackPlayer, hand) -> bool:
         """
         If two cards are the same value, split them into two hands
         """
@@ -101,11 +103,6 @@ class Blackjack(GameCore):
             new_hand.add_card(split_card)
             hands.append(new_hand)
             return True
-
-    async def end_game(self) -> None:
-        await self.payout_handler.resolve_outcomes()
-        self.payouts = self.payout_handler.get_payouts()
-        super().end_game()
 
     def __dispense_cards(self) -> None:
         for player in self.players:
@@ -160,6 +157,9 @@ class Blackjack(GameCore):
             await self.__next_turn()
 
     def __current_player_stand(self) -> None:
+        """
+        When a player stands, their turn ends. Hands are compared at the end of the game.
+        """
         player = self.players.pop(0)
         self.standing_players.append(player)
 
@@ -173,7 +173,7 @@ class Blackjack(GameCore):
     async def __bust_current_hand(self) -> None:
         player = self.__get_current_player()
         hand_to_bust = player.bust_current_hand()
-        self.payout_handler.bust(player, hand_to_bust)
+        self.payout_handler.add_bust(player, hand_to_bust)
         await self.__check_knock_out()
 
     async def __check_knock_out(self) -> None:

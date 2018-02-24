@@ -20,7 +20,7 @@ class PayoutHandler:
         for player in self.game.players:
             await self.__resolve(player)
 
-    def bust(self, player: BlackjackPlayer, hand: PlayerHand):
+    def add_bust(self, player: BlackjackPlayer, hand: PlayerHand):
         wager = hand.get_wager()
         self.__add_player_loss_payout(player, wager)
 
