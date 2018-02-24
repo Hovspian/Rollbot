@@ -22,9 +22,6 @@ class BlackjackHand:
         self.is_active = False
         self.plays_made += 1
 
-    def set_value(self, value) -> None:
-        self._value = value
-
     def get_value(self) -> int:
         return self._value
 
@@ -57,7 +54,7 @@ class BlackjackHand:
     def _update_value(self) -> None:
         sum_values = sum([self.__calculate_value(card) for card in self._cards])
         value = self.__resolve_aces(sum_values)
-        self.set_value(value)
+        self._value = value
 
     def __resolve_aces(self, sum_values: int) -> int:
         # Aces always add 1. Then, check if they can add 10 to make the full 11.

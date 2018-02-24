@@ -73,5 +73,5 @@ class BlackjackResultChecker:
 
     def _get_dealer_hand_value(self):
         if self.dealer_hand.is_bust():
-            self.dealer_hand.set_value(0)
+            return 0
         return self.dealer_hand.get_value()
