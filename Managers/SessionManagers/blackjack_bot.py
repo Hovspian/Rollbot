@@ -1,6 +1,6 @@
 import asyncio
 
-from Blackjack.blackjack_executor import Blackjack
+from Blackjack.blackjack import Blackjack
 from Blackjack.join_timer import BlackjackJoinTimer
 from Core.core_game_class import GameCore
 from Core.time_limit import TimeLimit

@@ -1,6 +1,5 @@
 from Blackjack.announcer import BlackjackDealerAnnouncer
 from Blackjack.hand import BlackjackHand
-from Core.player_avatar import BlackjackPlayer
 
 
 class BlackjackDealer:
