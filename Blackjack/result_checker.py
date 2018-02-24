@@ -1,4 +1,3 @@
-from Blackjack.blackjack_executor import Blackjack
 from Blackjack.hand import PlayerHand
 
 
