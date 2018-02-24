@@ -7,8 +7,8 @@ class PayoutHandler:
     def __init__(self, game):
         self.game = game
         self.announcer = game.announcer
-        self._payouts = []
         self.dealer = game.dealer
+        self._payouts = []
 
     def get_payouts(self):
         return self._payouts

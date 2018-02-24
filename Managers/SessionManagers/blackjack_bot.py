@@ -36,7 +36,7 @@ class BlackjackBot:
         if game and self._is_in_game(game, user):
             return game
 
-    async def _game_is_blackjack(self, game: GameCore):
+    async def _game_is_blackjack(self, game):
         if game and self.id == game.id:
             return True
         else:
