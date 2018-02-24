@@ -162,6 +162,7 @@ class BlackjackExecutor(GameCore):
     async def __check_hit_bust(self) -> None:
         hand = self.__get_current_player_hand()
         if hand.is_bust():
+            self.__bust_payout()
             await self.announcer.declare_player_bust()
             await self.__bust_current_hand()
         else:
@@ -171,14 +172,17 @@ class BlackjackExecutor(GameCore):
         player_hands = self.__get_current_player_hands()
         hand_to_bust = self.__get_current_player_hand()
         player_hands.remove(hand_to_bust)
-        self.__add_player_loss_payout(hand_to_bust)
         await self.__check_knock_out()
 
-    def __add_player_loss_payout(self, hand):
-        wager = hand.get_wager()
+    def __bust_payout(self):
+        player = self.__get_current_player()
+        wager = self.__get_current_player_hand().get_wager()
+        self.__add_player_loss_payout(player, wager)
+
+    def __add_player_loss_payout(self, player: BlackjackPlayer, wager: int):
         to_dealer = self.dealer.user
-        from_player = self.__get_current_player().user
-        self.__add_payout(to_dealer, wager, from_player)
+        from_user = player.user
+        self.__add_payout(to_dealer, wager, from_user)
 
     async def __check_knock_out(self) -> None:
         """
@@ -202,7 +206,8 @@ class BlackjackExecutor(GameCore):
             if hand.is_winner():
                 self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
             else:
-                self.__add_player_loss_payout(hand)
+                wager = hand.get_wager()
+                self.__add_player_loss_payout(player, wager)
 
     def __add_payout(self, to_user, amount, from_user):
         self.payouts.append({
