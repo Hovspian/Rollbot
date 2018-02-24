@@ -122,10 +122,10 @@ class BlackjackDealerAnnouncer:
 
     async def ace_or_ten_message(self, hand):
         await asyncio.sleep(1)
+        await self.bot.say(f"{self.dealer} is revealing their other card in case of a blackjack...")
         dealer_hand = self.__get_dealer_hand_reveal(hand)
-        message = LINEBREAK.join([f"{self.dealer} is revealing their other card in case of a blackjack...",
-                                  dealer_hand])
-        await self.bot.say(message)
+        await asyncio.sleep(0.5)
+        await self.bot.say(dealer_hand)
 
     async def dealer_stand(self):
         await self.bot.say("The dealer is now standing. Comparing hands...")
