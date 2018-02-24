@@ -9,7 +9,7 @@ class BlackjackResultChecker:
 
     def __init__(self, game, player_hand: PlayerHand):
         self.announcer = game.announcer
-        self.dealer_hand = game.get_dealer_hand()
+        self.dealer_hand = game.dealer.get_active_hand()
         self.player_hand = player_hand
         self.is_winner = False
         self.is_loser = False

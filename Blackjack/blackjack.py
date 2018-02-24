@@ -24,8 +24,8 @@ class Blackjack(GameCore):
 
     def init_dealer(self) -> BlackjackDealer:
         # TODO let players host blackjack games
-        dealer = self.bot.user
-        return BlackjackDealer(dealer, self)
+        user = self.bot.user
+        return BlackjackDealer(user, self)
 
     async def start_game(self):
         super().start_game()
@@ -104,7 +104,7 @@ class Blackjack(GameCore):
 
     async def __show_player_cards(self) -> None:
         for player in self.players:
-            hand = player.get_first_hand()
+            hand = player.get_active_hand()
             await self.announcer.player_cards(player.name, hand)
 
     async def __check_initial_dealer_cards(self) -> None:
@@ -158,7 +158,7 @@ class Blackjack(GameCore):
 
     async def __bust_current_hand(self) -> None:
         player = self.__get_current_player()
-        hand_to_bust = player.bust_current_hand()
+        hand_to_bust = player.bust_active_hand()
         self.payout_handler.add_bust(player, hand_to_bust)
         await self.__check_knock_out()
 

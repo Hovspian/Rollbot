@@ -10,6 +10,7 @@ class BlackjackDealer:
 
     def __init__(self, user, game):
         self.user = user
+        self.name = user.display_name
         self.deck = game.deck
         self._hand = BlackjackHand()
         self.announcer = BlackjackDealerAnnouncer(game.bot, user.display_name)
@@ -39,7 +40,8 @@ class BlackjackDealer:
         Continue drawing cards until the hand has a value of 17+.
         """
         while self._hand.get_value() < 17:
-            card = self.deck.hit(self._hand)
+            card = self.deck.draw_card()
+            self._hand.hit(card)
             await self.announcer.dealer_hit(card)
 
     async def __is_ace_or_ten(self) -> bool:

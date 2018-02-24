@@ -11,6 +11,9 @@ class BlackjackHand:
         self.add_card(card)
         self.plays_made += 1
 
+    def get_cards(self):
+        return self._cards
+
     def add_card(self, card) -> None:
         """
         Cards can be added without it necessarily being a player action.
@@ -52,7 +55,7 @@ class BlackjackHand:
         return is_ten
 
     def _update_value(self) -> None:
-        sum_values = sum([self.__calculate_value(card) for card in self._cards])
+        sum_values = sum([self._calculate_value(card) for card in self._cards])
         value = self.__resolve_aces(sum_values)
         self._value = value
 
@@ -70,7 +73,7 @@ class BlackjackHand:
 
         return sum_values
 
-    def __calculate_value(self, card) -> int:
+    def _calculate_value(self, card) -> int:
         """
         Aces return a value of 0 and are handled elsewhere.
         """
@@ -102,7 +105,7 @@ class PlayerHand(BlackjackHand):
         first_card = self._cards[0]
         second_card = self._cards[1]
         matching_rank = first_card['rank'] is second_card['rank']
-        matching_values = self.__calculate_value(first_card) == self.__calculate_value(second_card)
+        matching_values = self._calculate_value(first_card) == self._calculate_value(second_card)
         return (matching_rank or matching_values) and two_cards
 
     def get_wager(self) -> int:

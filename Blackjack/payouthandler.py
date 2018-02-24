@@ -28,7 +28,7 @@ class PayoutHandler:
         hands = player.get_hands()
         for hand in hands:
             await self.announcer.player_hand(player.name, hand)
-            hand_checker = BlackjackResultChecker(self, hand)
+            hand_checker = BlackjackResultChecker(self.game, hand)
             await hand_checker.check_outcome()
             if hand_checker.is_winner:
                 self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)

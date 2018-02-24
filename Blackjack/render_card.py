@@ -14,7 +14,7 @@ class RenderCard:
 
     def render_hand(self, hand: BlackjackHand) -> str:
         cards = []
-        for card in hand._cards:
+        for card in hand.get_cards():
             rendered_card = self.render_card(card)
             cards.append(rendered_card)
         return DOUBLE_SPACE.join(cards)

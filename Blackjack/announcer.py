@@ -16,16 +16,16 @@ class BlackjackPlayerAnnouncer:
         self.bot = bot
         self.renderer = RenderCard()
 
-    async def player_cards(self, player_name, hand):
+    async def player_cards(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
         await self.bot.say(f"Dealt to {player_name}: {rendered_hand}")
         await asyncio.sleep(1)
 
-    async def player_hand(self, player_name, hand):
+    async def player_hand(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
         messages = [f"{player_name}'s hand: {rendered_hand}"]
 
-    async def next_turn(self, player_name, hand):
+    async def next_turn(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
         message = LINEBREAK.join([f"{player_name}'s turn. Your hand is:",
                                   f"{rendered_hand}",

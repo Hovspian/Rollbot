@@ -28,9 +28,10 @@ class BlackjackPlayer:
             if hand.is_active:
                 return hand
 
-    def bust_current_hand(self):
+    def bust_active_hand(self):
         hand = self.get_active_hand()
         self._remove_hand(hand)
+        return hand
 
     def _can_split(self) -> bool:
         hand = self.get_active_hand()

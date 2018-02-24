@@ -25,6 +25,6 @@ class BlackjackJoinTimer(JoinTimer):
         await self.bot.say(last_call)
 
     async def _say_start_message(self):
-        dealer = self.game.dealer_name
+        dealer = self.game.dealer.name
         await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, "
                            "and plays are made against their hand.")
