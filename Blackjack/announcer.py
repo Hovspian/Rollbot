@@ -113,6 +113,7 @@ class BlackjackDealerAnnouncer:
         await self.bot.say(message)
 
     async def dealer_hit(self, new_card: dict):
+        await asyncio.sleep(1)
         rendered_card = self.renderer.render_card(new_card)
         await self.bot.say(f"{self.dealer} drew {rendered_card}")
 
@@ -120,6 +121,7 @@ class BlackjackDealerAnnouncer:
         await self.bot.say(f"{self.dealer}'s hand has busted!")
 
     async def ace_or_ten_message(self, hand):
+        await asyncio.sleep(1)
         dealer_hand = self.__get_dealer_hand_reveal(hand)
         message = LINEBREAK.join([f"{self.dealer} is revealing their other card in case of a blackjack...",
                                   dealer_hand])
