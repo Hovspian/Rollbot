@@ -13,8 +13,12 @@ class BlackjackPlayer:
         self.name = user.display_name
         self.afk = 0
 
-    def add_hand(self):
-        self._hands.append(PlayerHand())
+    def split_hand(self):
+        if self._can_split():
+            split_card = self.get_active_hand().split()
+            new_hand = self._add_hand()
+            new_hand.add_card(split_card)
+            return True
 
     def get_hands(self):
         return self._hands
@@ -27,6 +31,15 @@ class BlackjackPlayer:
     def bust_current_hand(self):
         hand = self.get_active_hand()
         self._remove_hand(hand)
+
+    def _can_split(self) -> bool:
+        hand = self.get_active_hand()
+        return len(self._hands) == 1 and hand.can_split()
+
+    def _add_hand(self):
+        hand = PlayerHand()
+        self._hands.append(hand)
+        return hand
 
     def _remove_hand(self, hand):
         self._hands.remove(hand)

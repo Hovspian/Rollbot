@@ -71,7 +71,7 @@ class Blackjack(GameCore):
     async def attempt_split(self) -> None:
         player = self.__get_current_player()
         hand = player.get_active_hand()
-        if self.__split_hand(player, hand):
+        if player.split_hand():
             await self.announcer.split_successful(hand)
         else:
             await self.announcer.split_fail()
@@ -89,20 +89,6 @@ class Blackjack(GameCore):
         await self.payout_handler.resolve_outcomes()
         self.payouts = self.payout_handler.get_payouts()
         super().end_game()
-
-    @staticmethod
-    def __split_hand(player: BlackjackPlayer, hand) -> bool:
-        """
-        If two cards are the same value, split them into two hands
-        """
-        hands = player.get_hands()
-        within_max_num_hands = len(hands) == 1
-        if within_max_num_hands and hand.can_split():
-            split_card = hand.split()
-            new_hand = PlayerHand()
-            new_hand.add_card(split_card)
-            hands.append(new_hand)
-            return True
 
     def __dispense_cards(self) -> None:
         for player in self.players:
