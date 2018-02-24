@@ -1,6 +1,6 @@
 import asyncio
 
-from Blackjack.blackjack_executor import BlackjackExecutor
+from Blackjack.blackjack_executor import Blackjack
 from Blackjack.join_timer import BlackjackJoinTimer
 from Core.core_game_class import GameCore
 from Core.time_limit import TimeLimit
@@ -64,10 +64,10 @@ class BlackjackInitializer(GameInitializer):
 
     async def initialize_game(self, ctx):
         if await self._can_create_game(ctx):
-            blackjack = BlackjackExecutor(self.bot, ctx)
+            blackjack = Blackjack(self.bot, ctx)
             await self._create_session(blackjack)
 
-    async def _create_session(self, blackjack: BlackjackExecutor):
+    async def _create_session(self, blackjack: Blackjack):
         self._add_game(blackjack.ctx, blackjack)
         await self._run_join_timer(blackjack)
         await blackjack.start_game()

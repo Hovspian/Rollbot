@@ -1,4 +1,4 @@
-from Blackjack.hand import Hand
+from Blackjack.hand import BlackjackHand
 from Core.constants import DOUBLE_SPACE, SPACE
 
 
@@ -12,7 +12,7 @@ class RenderCard:
     def __init__(self):
         pass
 
-    def render_hand(self, hand: Hand) -> str:
+    def render_hand(self, hand: BlackjackHand) -> str:
         cards = []
         for card in hand._cards:
             rendered_card = self.render_card(card)
