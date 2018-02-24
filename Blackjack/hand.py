@@ -39,8 +39,10 @@ class BlackjackHand:
         has_ten = False
         two_cards_in_hand = len(self._cards) == 2
         for card in self._cards:
-            has_ace = self.is_ace(card)
-            has_ten = self.is_ten_value(card)
+            if self.is_ace(card):
+                has_ace = True
+            elif self.is_ten_value(card):
+                has_ten = True
         return two_cards_in_hand and has_ace and has_ten
 
     def is_ten_value(self, card) -> bool:
