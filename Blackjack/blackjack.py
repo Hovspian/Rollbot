@@ -1,10 +1,9 @@
+from Blackjack.payouthandler import PayoutHandler
 from Blackjack.player import BlackjackPlayer
-from Core.player_avatar import *
 from Blackjack.announcer import BlackjackPlayerAnnouncer
 from Blackjack.deck import Deck
 from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import BlackjackHand, PlayerHand
-from Blackjack.result_checker import BlackjackResultChecker
 from Core.core_game_class import GameCore
 from Core.constants import GAME_ID
 
@@ -55,7 +54,7 @@ class Blackjack(GameCore):
         new_card = self.deck.draw_card()
         hand.hit(new_card)
         await self.announcer.report_hit(hand, new_card)
-        self.__check_hit_bust(hand)
+        await self.__check_hit_bust(hand)
 
     async def stand_current_hand(self) -> None:
         hand = self.__get_current_player().get_active_hand()
@@ -84,13 +83,13 @@ class Blackjack(GameCore):
     async def attempt_split(self) -> None:
         player = self.__get_current_player()
         hand = player.get_active_hand()
-        if self.split(player, hand):
+        if self._split_hand(player, hand):
             await self.announcer.split_successful(hand)
         else:
             await self.announcer.split_fail()
 
     @staticmethod
-    def split(player: BlackjackPlayer, hand) -> bool:
+    def _split_hand(player: BlackjackPlayer, hand) -> bool:
         """
         If two cards are the same value, split them into two hands
         """
@@ -188,53 +187,11 @@ class Blackjack(GameCore):
             await self.__next_turn()
 
     def __get_current_player(self) -> BlackjackPlayer:
+        """
+        The player whose turn it is.
+        """
         return self.players[0]
 
     def __knock_out_current_player(self) -> None:
         del self.players[0]
 
-
-class PayoutHandler:
-    def __init__(self, game):
-        self.game = game
-        self.announcer = game.announcer
-        self._payouts = []
-        self.dealer = game.dealer
-
-    def get_payouts(self):
-        return self._payouts
-
-    async def resolve_outcomes(self):
-        for player in self.game.standing_players:
-            await self.__resolve(player)
-        # Check self.players in case the dealer has gotten a blackjack.
-        for player in self.game.players:
-            await self.__resolve(player)
-
-    def bust(self, player: BlackjackPlayer, hand: PlayerHand):
-        wager = hand.get_wager()
-        self.__add_player_loss_payout(player, wager)
-
-    async def __resolve(self, player: BlackjackPlayer) -> None:
-        hands = player.get_hands()
-        for hand in hands:
-            await self.announcer.player_hand(player.name, hand)
-            hand_checker = BlackjackResultChecker(self, hand)
-            await hand_checker.check_outcome()
-            if hand_checker.is_winner:
-                self.__add_payout(player.user, hand.get_winnings(), self.dealer.user)
-            elif hand_checker.is_loser:
-                wager = hand.get_wager()
-                self.__add_player_loss_payout(player, wager)
-
-    def __add_payout(self, to_user, amount, from_user):
-        self._payouts.append({
-            'to_user': to_user,
-            'amount': amount,
-            'from_user': from_user
-        })
-
-    def __add_player_loss_payout(self, player: BlackjackPlayer, wager: int):
-        to_dealer = self.dealer.user
-        from_user = player.user
-        self.__add_payout(to_dealer, wager, from_user)
