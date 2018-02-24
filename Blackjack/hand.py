@@ -48,11 +48,11 @@ class BlackjackHand:
         Jack, Queen, King have values of 10.
         """
         rank = card['rank']
-        if rank in self._values:
-            is_ten = self._values[rank] == 10
-        else:
-            is_ten = False
-        return is_ten
+
+        if rank not in self._values:
+            return False
+
+        return self._values[rank] == 10
 
     def _update_value(self) -> None:
         sum_values = sum([self._calculate_value(card) for card in self._cards])

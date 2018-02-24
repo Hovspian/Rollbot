@@ -26,9 +26,8 @@ class BlackjackDealer:
         """
         At game start, the dealer reveals a card which may need to be checked for a blackjack.
         """
-        ace_or_ten = await self.__is_ace_or_ten()
-        dealer_blackjack = await self.__check_blackjack()
-        return ace_or_ten and dealer_blackjack
+        await self.__check_ace_or_ten()
+        return await self.__check_blackjack()
 
     async def make_move(self) -> None:
         await self.announcer.dealer_turn(self._hand)
@@ -44,7 +43,7 @@ class BlackjackDealer:
             self._hand.hit(card)
             await self.announcer.dealer_hit(card)
 
-    async def __is_ace_or_ten(self) -> bool:
+    async def __check_ace_or_ten(self) -> bool:
         first_card = self._hand.get_first_card()
         is_ace = self._hand.is_ace(first_card)
         is_ten = self._hand.is_ten_value(first_card)
