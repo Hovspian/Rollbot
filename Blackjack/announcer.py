@@ -23,7 +23,9 @@ class BlackjackPlayerAnnouncer:
 
     async def player_hand(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
-        messages = [f"{player_name}'s hand: {rendered_hand}"]
+        message = f"{player_name}'s hand: {rendered_hand}"
+        await self.bot.say(message)
+        await asyncio.sleep(1)
 
     async def next_turn(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
