@@ -28,9 +28,9 @@ class GoldManager:
     def __init__(self, bot):
         dynamodb = boto3.resource('dynamodb')
         self.table = dynamodb.Table('RollbotGold')
+        self.old_table = dynamodb.Table('Gold')
         self.bot = bot
         self.__refresh_rollbot()
-        # MigrateTable(bot, self).migrate() only uncomment this if you need to reset the database
 
     def transfer_gold(self, to_user, amount, from_user):
         final_amount = self.__get_final_gold_amount(amount, from_user)
