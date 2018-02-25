@@ -17,15 +17,15 @@ class BlackjackPlayerAnnouncer:
         self.renderer = RenderCard()
 
     async def player_cards(self, player_name, hand: PlayerHand):
+        await asyncio.sleep(1)
         rendered_hand = self.renderer.render_hand(hand)
         await self.bot.say(f"Dealt to {player_name}: {rendered_hand}")
-        await asyncio.sleep(1)
 
     async def player_hand(self, player_name, hand: PlayerHand):
+        await asyncio.sleep(1)
         rendered_hand = self.renderer.render_hand(hand)
         message = f"{player_name}'s hand: {rendered_hand}"
         await self.bot.say(message)
-        await asyncio.sleep(1)
 
     async def next_turn(self, player_name, hand: PlayerHand):
         rendered_hand = self.renderer.render_hand(hand)
@@ -113,21 +113,23 @@ class BlackjackDealerAnnouncer:
         await self.bot.say(message)
 
     async def dealer_hit(self, new_card: dict):
-        await asyncio.sleep(1)
         rendered_card = self.renderer.render_card(new_card)
+        await asyncio.sleep(1)
         await self.bot.say(f"{self.dealer} drew {rendered_card}")
 
     async def declare_dealer_bust(self):
+        await asyncio.sleep(1)
         await self.bot.say(f"{self.dealer}'s hand has busted!")
 
     async def ace_or_ten_message(self, hand):
         await asyncio.sleep(1)
         await self.bot.say(f"{self.dealer} is revealing their other card in case of a blackjack...")
         dealer_hand = self.__get_dealer_hand_reveal(hand)
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
         await self.bot.say(dealer_hand)
 
     async def dealer_stand(self):
+        await asyncio.sleep(1)
         await self.bot.say("The dealer is now standing. Comparing hands...")
 
     def __get_dealer_hand_reveal(self, hand) -> str:
