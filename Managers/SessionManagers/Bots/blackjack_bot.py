@@ -2,10 +2,10 @@ import asyncio
 
 from Blackjack.blackjack import Blackjack
 from Blackjack.join_timer import BlackjackJoinTimer
-from Core.core_game_class import GameCore
-from Core.time_limit import TimeLimit
 from Core.constants import GAME_ID
+from Core.time_limit import TimeLimit
 from Managers.SessionManagers.game_initializer import GameInitializer, SessionOptions
+from Managers.SessionManagers.move_checker import MoveChecker
 
 
 class BlackjackBot:
@@ -93,10 +93,11 @@ class BlackjackMoveChecker:
     def __init__(self, bot, game):
         self.bot = bot
         self.game = game
+        self.move_checker = MoveChecker(bot, game)
 
     async def perform_action(self, ctx, action_to_perform: str):
         user = ctx.message.author
-        can_make_move = await self._can_make_move(user)
+        can_make_move = await self.move_checker.can_make_move(user)
         if can_make_move:
             action_list = self.get_actions()
             await action_list[action_to_perform]()
@@ -108,22 +109,3 @@ class BlackjackMoveChecker:
                 "split": self.game.attempt_split,
                 "doubledown": self.game.attempt_double_down
                 }
-
-    async def _can_make_move(self, user) -> bool:
-        move_error = self._check_move_error(user)
-        if move_error is None:
-            return True
-        temp_message = await self.bot.say(move_error)
-        await self._auto_delete_message(temp_message)
-
-    def _check_move_error(self, user) -> any:
-        error = None
-        if not self.game.is_turn(user):
-            error = "It's not your turn. Please wait."
-        elif not self.game.in_progress:
-            error = "The game is not underway yet."
-        return error
-
-    async def _auto_delete_message(self, message):
-        await asyncio.sleep(5.0)
-        await self.bot.delete_message(message)
