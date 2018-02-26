@@ -3,15 +3,16 @@ from typing import List
 
 
 class CardRenderer:
-    # Box drawing methods for scratchcard
+    # Box drawing methods for grid
 
-    def __init__(self, card):
-        self.num_columns = card.num_columns
-        self.card_grid = card.card_grid
+    def __init__(self, game):
+        self.num_columns = game.num_columns
+        self.num_rows = game.num_rows
+        self.card_grid = game.card_grid
 
-    def render_card(self):
-        card_rows = self.get_card_rows()
-        return LINEBREAK.join(card_rows)
+    def render_card(self) -> str:
+        card = [CODE_TAG, self.get_card_rows(), CODE_TAG]
+        return LINEBREAK.join(card)
 
     def get_card_rows(self):
         column_header = self.get_column_header()
@@ -36,7 +37,7 @@ class CardRenderer:
             return self.draw_column_divider()
 
         def is_last_row(i):
-            return i == self.num_columns - 1
+            return i == self.num_rows - 1
 
         [construct_grid(i, row) for i, row in enumerate(self.card_grid)]
         return card_rows

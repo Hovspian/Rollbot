@@ -4,7 +4,7 @@ from GridGames.ScratchCard.Classic.feedback import ScratchCardFeedback
 from GridGames.ScratchCard.constants import *
 from GridGames.ScratchCard.scratch_card import ScratchCard
 from GridGames.grid import GridHandler
-from GridGames.render_card import CardRenderer
+from GridGames.grid_renderer import CardRenderer
 import math
 
 
@@ -12,6 +12,7 @@ class ClassicScratchCard(ScratchCard):
     def __init__(self, ctx):
         super().__init__(ctx)
         self.num_winnable_combos = self._roll_num_winnable_combos()
+        self.attempts_remaining = self.num_columns * 2
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
         self.results = []
@@ -26,7 +27,7 @@ class ClassicScratchCard(ScratchCard):
                                FIFTY,
                                FIFTY,
                                HUNDRED]
-        self.grid_handler = GridHandler(self.num_columns)
+        self.grid_handler = GridHandler(num_columns=self.num_columns, num_rows=self.num_columns)
         self.id = GAME_ID["SCRATCHCARD"]
         self.initialize_card()
 
@@ -36,14 +37,14 @@ class ClassicScratchCard(ScratchCard):
         return roll(combos)
 
     def initialize_card(self):
+        self.start_game()
         self._add_winnable_combo()
         self._add_random_values()
         super().initialize_card()
-        self.card_renderer = CardRenderer(self)
 
     def _add_winnable_combo(self) -> None:
         for i in range(self.num_winnable_combos):
-            self.underlying_symbols += self._roll_winnable_value()
+            self.grid_values += self._roll_winnable_value()
 
     def _roll_winnable_value(self) -> List[dict]:
         winnable_symbols = filter_value(container=self.default_values, value_to_filter=EMPTY_TILE)
@@ -52,10 +53,10 @@ class ClassicScratchCard(ScratchCard):
 
     def _add_random_values(self) -> None:
         grid_size = self.num_columns * self.num_columns
-        symbols_remaining = grid_size - len(self.underlying_symbols)
+        symbols_remaining = grid_size - len(self.grid_values)
         for i in range(symbols_remaining):
             symbol = roll(self.default_values)
-            self.underlying_symbols.append(symbol)
+            self.grid_values.append(symbol)
 
     def scratch_tiles(self, list_coordinates):
         super().scratch_tiles(list_coordinates)
@@ -69,7 +70,7 @@ class ClassicScratchCard(ScratchCard):
 
     def _scratch(self, y, x):
         super()._scratch(y, x)
-        chosen_symbol = self.underlying_symbols[y][x]
+        chosen_symbol = self.grid_values[y][x]
         self._check_winnable_symbol(chosen_symbol)
 
     def _check_winnable_symbol(self, symbol) -> None:

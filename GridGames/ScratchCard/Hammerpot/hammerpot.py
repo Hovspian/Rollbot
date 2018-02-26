@@ -1,6 +1,6 @@
 from Core.constants import GAME_ID
 from Core.helper_functions import *
-from GridGames.grid import GridHandler, GridOptions
+from GridGames.grid import GridHandler
 from GridGames.ScratchCard.Hammerpot.feedback import HammerpotFeedback
 from GridGames.ScratchCard.Hammerpot.render_hammerpot import RenderHammerpot
 from GridGames.ScratchCard.constants import *
@@ -12,20 +12,19 @@ class Hammerpot(ScratchCard):
         super().__init__(ctx)
         self.title = "HAMMERPOT"
         self.max_time_left = 180
-        self.underlying_symbols = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
-        self.attempts_remaining = 3
+        self.grid_values = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
         self.possible_payouts = [1, 3, 5, 10, 15, 25, 50, 75, 100]
         self.winnable_payouts = {}
         self.winnable_sums = []
         self.chosen_sum = 0
-        self.grid_handler = GridHandler(self.num_columns)
+        self.grid_handler = GridHandler(num_columns=self.num_columns, num_rows=self.num_columns)
         self.id = GAME_ID["HAMMERPOT"]
         self.initialize_card()
-        self.card_renderer = RenderHammerpot(self)
         self.feedback = HammerpotFeedback(self)
 
     def initialize_card(self):
         super().initialize_card()
+        self.start_game()
         self._initialize_sums()
         self._initialize_payouts()
         self._reveal_random_tile()
@@ -56,7 +55,7 @@ class Hammerpot(ScratchCard):
             return random.randint(0, self.num_columns - 1)
 
     def _get_tiles(self, list_coordinates: List[list]):
-        grid = self.underlying_symbols
+        grid = self.grid_values
 
         def get_tile(coordinates):
             y = coordinates[0]
@@ -85,9 +84,9 @@ class Hammerpot(ScratchCard):
 
     def _initialize_sums(self) -> None:
         # Records the unique sums of the numbers across each column, row and diagonal
-        for column in self.underlying_symbols:
+        for column in self.grid_values:
             self._add_sum(column)
-        for row in self.underlying_symbols:
+        for row in self.grid_values:
             self._add_sum(row)
         self._initialize_diagonal_sums()
 
@@ -103,10 +102,10 @@ class Hammerpot(ScratchCard):
             self.winnable_sums.append(value_sum)
 
     def _get_top_left_diagonal_tiles(self) -> List[dict]:
-        return self.grid_handler.get_top_left_diagonal(self.underlying_symbols)
+        return self.grid_handler.get_top_left_diagonal(self.grid_values)
 
     def _get_top_right_diagonal_tiles(self) -> List[dict]:
-        return self.grid_handler.get_top_right_diagonal(self.underlying_symbols)
+        return self.grid_handler.get_top_right_diagonal(self.grid_values)
 
     def _get_sum(self, tiles) -> int:
         return sum([self.grid_handler.get_value(tile) for tile in tiles])

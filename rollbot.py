@@ -1,22 +1,20 @@
 import discord
-from botocore.exceptions import NoRegionError
+from Managers.SessionManagers.blackjack_bot import BlackjackBot
+from Managers.SessionManagers.hammer_race_bot import HammerRaceBot
+from Managers.SessionManagers.roll_game_bot import RollGameBot
+from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from discord.ext import commands
 
 from Core.constants import *
-from Managers.SessionManagers.blackjack_bot import BlackjackBot
+from Managers.SessionManagers.Bots.scratch_card_bot import ScratchCardBot
 from Managers.SessionManagers.game_initializer import SessionOptions
-from Managers.SessionManagers.hammer_race_bot import HammerRaceBot
-from Managers.SessionManagers.roll_game_bot import RollGameBot
-from Managers.SessionManagers.scratch_card_bot import ScratchCardBot
-from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from Managers.channel_manager import ChannelManager
-from Managers.remote_data_manager import RemoteDataManager
 from Managers.local_data_manager import LocalDataManager
+from Managers.remote_data_manager import RemoteDataManager
 from Managers.statistics import StatisticsBot
 from RollGames.roll import Roll
 from Slots.modes import *
 from discordtoken import TOKEN
-
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)

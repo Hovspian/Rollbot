@@ -1,19 +1,23 @@
+from GridGames.grid_renderer import CardRenderer
+
+
 class ScratchCardFeedback:
     # String builders
     def __init__(self, scratch_card):
         self.scratch_card = scratch_card
+        self.renderer = CardRenderer(scratch_card)
 
     def get_card(self):
         host = self.scratch_card.host_name
         return '\n'.join([f"{host}'s scratch card",
-                          self.scratch_card.render_card()])
+                          self.renderer.render_card()])
 
     def get_starting_message(self) -> str:
         host = self.scratch_card.host_name
         num_symbols = self.scratch_card.matches_to_win
         num_attempts = self.scratch_card.attempts_remaining
         return '\n'.join([f'New scratch card for {host}.',
-                          self.scratch_card.render_card(),
+                          self.renderer.render_card(),
                           f'Match {num_symbols} symbols to win!',
                           f'You have {num_attempts} attempts remaining.'])
 

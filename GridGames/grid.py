@@ -1,14 +1,9 @@
 from typing import List
 
 
-class GridOptions:
-    def __init__(self):
-        self.num_columns = None
-        self.renderer = None
-
-
 class GridHandler:
-    def __init__(self, num_columns=3):
+    def __init__(self, num_columns=3, num_rows=3):
+        self.num_rows = num_rows
         self.num_columns = num_columns
         self.columns = []
 
@@ -16,14 +11,14 @@ class GridHandler:
         return self.columns
 
     def generate_grid(self, values: List) -> List[list]:
-        # Creates a 2D array from a list (of length which should be a radical number)
+        # Creates a 2D array from a list
 
         def get_next_value(i, j):
             next_index = i * self.num_columns + j
             return values[next_index]
 
         def create_row(i):
-            return [get_next_value(i, j) for j in range(self.num_columns)]
+            return [get_next_value(i, j) for j in range(self.num_rows)]
 
         return [create_row(i) for i in range(self.num_columns)]
 

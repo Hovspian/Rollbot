@@ -1,4 +1,4 @@
-from GridGames.render_card import CardRenderer
+from GridGames.grid_renderer import CardRenderer
 from GridGames.ScratchCard.constants import *
 from typing import List
 
@@ -7,9 +7,9 @@ class RenderHammerpot(CardRenderer):
 
     # Renders the payout table next to the card
 
-    def __init__(self, card):
-        super().__init__(card)
-        self.card = card
+    def __init__(self, game):
+        super().__init__(game)
+        self.card = game
         self.payout_table = self._get_payout_table()
 
     def render_card(self) -> str:

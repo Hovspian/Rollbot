@@ -77,8 +77,3 @@ class VersusHammerInitializer(GameInitializer):
     async def _run_join_timer(self, race: HammerRace):
         timer = JoinTimer(self.bot, race)
         await self.channel_manager.add_join_timer(race.host, timer)
-
-    async def _say_setup_message(self, ctx) -> None:
-        host_name = ctx.message.author.display_name
-        setup_message = f"{host_name} is starting a race. Type /join in the next 20 seconds to join."
-        await self.bot.say(setup_message)

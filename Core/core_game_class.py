@@ -8,6 +8,7 @@ class GameCore:
         self.in_progress = False  # Flag for game started/ended. Determines whether /join and /forcestart are possible.
         self.max_time_left = 180
         self.add_user(self.host)
+        self.id = None
 
     def add_user(self, user) -> None:
         self.users.append(user)
