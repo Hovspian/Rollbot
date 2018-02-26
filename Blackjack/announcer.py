@@ -1,5 +1,4 @@
 import asyncio
-from typing import List
 
 from Blackjack.hand import PlayerHand
 from Blackjack.render_card import RenderCard

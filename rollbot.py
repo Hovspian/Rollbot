@@ -1,12 +1,12 @@
 import discord
-from Managers.SessionManagers.blackjack_bot import BlackjackBot
-from Managers.SessionManagers.hammer_race_bot import HammerRaceBot
-from Managers.SessionManagers.roll_game_bot import RollGameBot
-from Managers.SessionManagers.slot_machine_bot import SlotMachineBot
 from discord.ext import commands
 
 from Core.constants import *
+from Managers.SessionManagers.Bots.blackjack_bot import BlackjackBot
+from Managers.SessionManagers.Bots.hammer_race_bot import HammerRaceBot
+from Managers.SessionManagers.Bots.roll_game_bot import RollGameBot
 from Managers.SessionManagers.Bots.scratch_card_bot import ScratchCardBot
+from Managers.SessionManagers.Bots.slot_machine_bot import SlotMachineBot
 from Managers.SessionManagers.game_initializer import SessionOptions
 from Managers.channel_manager import ChannelManager
 from Managers.local_data_manager import LocalDataManager
