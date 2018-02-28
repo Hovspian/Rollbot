@@ -8,7 +8,7 @@ class CardRenderer:
     def __init__(self, game):
         self.num_columns = game.num_columns
         self.num_rows = game.num_rows
-        self.card_grid = game.card_grid
+        self.grid = game.visible_grid
 
     def render_card(self) -> str:
         rows = LINEBREAK.join(self.get_card_rows())
@@ -40,7 +40,7 @@ class CardRenderer:
         def is_last_row(i):
             return i == self.num_rows - 1
 
-        [construct_grid(i, row) for i, row in enumerate(self.card_grid)]
+        [construct_grid(i, row) for i, row in enumerate(self.grid)]
         return card_rows
 
     def get_emote_list(self, symbols) -> List[str]:

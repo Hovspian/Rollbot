@@ -24,8 +24,9 @@ class BombtileFeedback:
     def get_payout_report(self, winner, amount: int):
         multiplier = winner.get_multiplier()
         if multiplier > 1:
-            return f"{winner.name} has a x{multiplier} multiplier! {winner.name} won {amount} gold."
-        return f"{winner.name} won {amount} gold."
+            return f":dollar: :dollar: {winner.name} has a x{multiplier} multiplier!" \
+                   f" {winner.name} won {amount} gold. :dollar: :dollar:"
+        return f":dollar: {winner.name} won {amount} gold. :dollar:"
 
     def get_turn(self, player):
         return f"It's {player.name}'s turn to `/flip` a tile."
@@ -33,5 +34,5 @@ class BombtileFeedback:
     def get_bomb_report(self, loser):
         multiplier = loser.get_multiplier()
         if multiplier > 1:
-            return f":bomb: :bomb: {loser.name} hit the bomb `<!>` with a x{multiplier} multiplier!"
-        return f":bomb: {loser.name} hit the bomb `<!>`!"
+            return f":bomb: :bomb: {loser.name} hit the bomb `<!>` with a x{multiplier} multiplier! :bomb: :bomb: "
+        return f":bomb: {loser.name} hit the bomb `<!>`! :bomb:"

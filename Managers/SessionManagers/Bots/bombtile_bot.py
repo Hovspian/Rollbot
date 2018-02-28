@@ -40,7 +40,7 @@ class BombtileMoveHandler:
 
     async def _flip(self, ctx) -> None:
         game = self._get_game(ctx)
-        input_handler = BombtileInputHandler(self.bot, game.get_grid_handler())
+        input_handler = BombtileInputHandler(self.bot, game)
         valid_tile = await input_handler.validate_input(ctx)
         if valid_tile:
             await game.flip(valid_tile)
@@ -48,7 +48,7 @@ class BombtileMoveHandler:
     def _is_permitted_move(self, ctx) -> bool:
         game = self._get_game(ctx)
         user = ctx.message.author
-        return game and game.is_turn(user)
+        return game and game.in_progress and game.is_turn(user)
 
     def _get_game(self, ctx) -> Bombtile or None:
         user = ctx.message.author
@@ -89,11 +89,11 @@ class BombtileInitializer(GameInitializer):
 
 
 class BombtileInputHandler:
-    def __init__(self, bot, grid_handler: GridHandler):
+    def __init__(self, bot, game: Bombtile):
         self.bot = bot
-        self.grid_handler = grid_handler
-        self.num_columns = grid_handler.num_columns
-        self.num_rows = grid_handler.num_rows
+        self.game = game
+        self.num_columns = game.num_columns
+        self.num_rows = game.num_rows
         self.parser = CoordinateParser()
 
     async def validate_input(self, ctx):
@@ -105,19 +105,13 @@ class BombtileInputHandler:
 
     async def _get_parsed_coordinates(self, formatted_input):
         coordinates = self.parser.get_single_parse(formatted_input)
-        if await self._check_empty_tile(coordinates):
+        if await self._check_unflipped_tile(coordinates):
             return coordinates
 
-    async def _check_empty_tile(self, list_coordinates: List[int]) -> bool:
-        if self._is_empty_tile(list_coordinates):
+    async def _check_unflipped_tile(self, list_coordinates: List[int]) -> bool:
+        if self.game.is_flippable_tile(list_coordinates):
             return True
         await self.bot.say("That tile has already been flipped.")
-
-    def _is_empty_tile(self, coordinates: List[int]) -> bool:
-        y = coordinates[0]
-        x = coordinates[1]
-        grid = self.grid_handler.get_grid()
-        return grid[y][x] is EMPTY_TILE
 
     async def _check_in_bounds(self, coordinates: str):
         if self._valid_num_axes(coordinates) and self._is_in_bounds(coordinates):

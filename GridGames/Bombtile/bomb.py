@@ -1,5 +1,7 @@
 import asyncio
 import random
+from typing import List
+
 from Core.constants import GAME_ID
 from Core.core_game_class import GameCore
 from Core.helper_functions import roll
@@ -30,7 +32,7 @@ class Bombtile(GameCore):
         self.num_rows = None  # TBD
         self.grid_values = []  # The hidden tile values.
         self.grid_handler = None  # TBD
-        self.card_grid = []  # The tiles visible to users.
+        self.visible_grid = []  # The tiles that users see.
         self._payouts = []
         self.feedback = None  # TBD -- Relies on grid dimensions.
         self.id = GAME_ID["BOMBTILE"]
@@ -45,6 +47,7 @@ class Bombtile(GameCore):
             self.__initialize_grid()
             await self.initialize_feedback()
             super().start_game()
+            await self.report_next_turn()
         else:
             await self.bot.say("Bombtile needs at least two players to start.")
 
@@ -78,6 +81,11 @@ class Bombtile(GameCore):
         player = self.players.pop(0)
         self.players.append(player)
 
+    def is_flippable_tile(self, coordinates: List[int]) -> bool:
+        y = coordinates[0]
+        x = coordinates[1]
+        return self.visible_grid[y][x] is NEUTRAL_TILE
+
     async def __render_grid(self):
         await self.bot.say(self.feedback.get_card())
 
@@ -101,7 +109,7 @@ class Bombtile(GameCore):
         values = []
         for i in range(self.num_cells):
             values.append(NEUTRAL_TILE)
-        self.card_grid = self.grid_handler.generate_grid(values)
+        self.visible_grid = self.grid_handler.generate_grid(values)
 
     def __initialize_num_columns(self):
         """
@@ -165,10 +173,7 @@ class Bombtile(GameCore):
             self.__add_payout(to_user, amount, from_user)
 
     async def report_win(self, winner: BombtilePlayer, amount: int) -> None:
-        report = f":dollar: {winner} won {amount} gold."
-        multiplier = winner.get_multiplier()
-        if multiplier > 1:
-            report += f" (x{multiplier} multiplier)"
+        report = self.feedback.get_payout_report(winner, amount)
         await self.bot.say(report)
 
     def __add_payout(self, to_user, amount, from_user) -> None:
@@ -179,7 +184,7 @@ class Bombtile(GameCore):
         })
 
     def __reveal_tile(self, y, x):
-        self.card_grid[y][x] = self.grid_values[y][x]
+        self.visible_grid[y][x] = self.grid_values[y][x]
         return self.grid_values[y][x]
 
     def __initialize_multipliers(self):
