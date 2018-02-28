@@ -18,9 +18,9 @@ class GridHandler:
             return values[next_index]
 
         def create_row(i):
-            return [get_next_value(i, j) for j in range(self.num_rows)]
+            return [get_next_value(i, j) for j in range(self.num_columns)]
 
-        return [create_row(i) for i in range(self.num_columns)]
+        return [create_row(i) for i in range(self.num_rows)]
 
     def get_rows(self) -> List[list]:
         num_columns = len(self.columns)

@@ -9,6 +9,9 @@ ROW_INPUTS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 NEUTRAL_TILE = {'emote': '   ', 'value': 0}
 EMPTY_TILE = {'emote': ' - ', 'value': 0}
 
+# Bomb tile for... Bombtile #
+BOMB = {'emote': '<!>', 'value': -1}
+
 # Tiles #
 ONE = {'emote': ' 1 ', 'value': 1}
 TWO = {'emote': ' 2 ', 'value': 2}

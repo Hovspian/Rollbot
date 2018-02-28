@@ -77,5 +77,6 @@ GAME_ID = {
     "RACE": 2,
     "SCRATCHCARD": 3,
     "HAMMERPOT": 4,
-    "BLACKJACK": 5
+    "BLACKJACK": 5,
+    "BOMBTILE": 6
 }

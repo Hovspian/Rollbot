@@ -18,7 +18,7 @@ class CoordinateParser:
         input_coordinates = self.split_input(raw_input)
         return [self._format(coordinates) for coordinates in input_coordinates]
 
-    def get_single_parse(self, formatted_input):
+    def get_single_parse(self, formatted_input: List[str]):
         # Ignore all entries except the first one.
         coordinates = formatted_input[0]
         validated = self._parse_coordinates(coordinates)

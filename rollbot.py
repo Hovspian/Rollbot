@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from Core.constants import *
 from Managers.SessionManagers.Bots.blackjack_bot import BlackjackBot
+from Managers.SessionManagers.Bots.bombtile_bot import BombtileBot
 from Managers.SessionManagers.Bots.hammer_race_bot import HammerRaceBot
 from Managers.SessionManagers.Bots.roll_game_bot import RollGameBot
 from Managers.SessionManagers.Bots.scratch_card_bot import ScratchCardBot
@@ -25,6 +26,7 @@ hammer_race_bot = None
 slot_machine_bot = None
 scratchcard_bot = None
 rollgame_bot = None
+bombtile_bot = None
 stats_bot = None
 
 
@@ -52,6 +54,7 @@ def initialize_modules():
     global slot_machine_bot
     global scratchcard_bot
     global rollgame_bot
+    global bombtile_bot
     global stats_bot
 
     data_manager = get_data_manager()
@@ -63,6 +66,7 @@ def initialize_modules():
     slot_machine_bot = SlotMachineBot(session_options)
     scratchcard_bot = ScratchCardBot(session_options)
     rollgame_bot = RollGameBot(session_options)
+    bombtile_bot = BombtileBot(session_options)
     stats_bot = StatisticsBot(bot, data_manager)
 
 
@@ -239,6 +243,17 @@ async def winnings(ctx):
 @bot.command(pass_context=True)
 async def losses(ctx, query=None):
     await stats_bot.query_losses(ctx, query)
+
+
+@bot.command(pass_context=True)
+async def flip(ctx):
+    await bombtile_bot.flip(ctx)
+
+
+@bot.command(pass_context=True)
+async def bombtile(ctx):
+    await bombtile_bot.create_bombtile(ctx)
+
 
 bot.remove_command('help')
 

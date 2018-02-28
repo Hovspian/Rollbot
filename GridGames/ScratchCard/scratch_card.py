@@ -20,7 +20,7 @@ class ScratchCard(GameCore):
 
     def initialize_card(self) -> None:
         random.shuffle(self.grid_values)
-        self._initialize_grids()
+        self._initialize_grid()
 
     def scratch_tiles(self, list_coordinates) -> None:
         for coordinates in list_coordinates:
@@ -31,7 +31,7 @@ class ScratchCard(GameCore):
     def get_payout(self):
         return self.payout
 
-    def _initialize_grids(self) -> None:
+    def _initialize_grid(self) -> None:
         self.grid_values = self.grid_handler.generate_grid(self.grid_values)
         self.grid_size = self.num_columns * self.num_columns
         neutral_tiles = [NEUTRAL_TILE] * self.grid_size

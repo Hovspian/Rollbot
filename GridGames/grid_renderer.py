@@ -11,10 +11,11 @@ class CardRenderer:
         self.card_grid = game.card_grid
 
     def render_card(self) -> str:
-        card = [CODE_TAG, self.get_card_rows(), CODE_TAG]
+        rows = LINEBREAK.join(self.get_card_rows())
+        card = [CODE_TAG, rows, CODE_TAG]
         return LINEBREAK.join(card)
 
-    def get_card_rows(self):
+    def get_card_rows(self) -> List[str]:
         column_header = self.get_column_header()
         top_row_border = self.draw_top_border()
         row_placeholders = self.get_row_placeholders()
