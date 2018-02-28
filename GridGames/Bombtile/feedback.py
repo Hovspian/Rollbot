@@ -28,7 +28,7 @@ class BombtileFeedback:
         return f"{winner.name} won {amount} gold."
 
     def get_turn(self, player):
-        return f"It's {player}'s turn to `/flip` a tile."
+        return f"It's {player.name}'s turn to `/flip` a tile."
 
     def get_bomb_report(self, loser):
         multiplier = loser.get_multiplier()

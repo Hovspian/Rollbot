@@ -139,10 +139,16 @@ class Bombtile(GameCore):
     async def __check_game_end(self, tile):
         if tile is BOMB:
             await self.report_loss()
-            await self.__resolve_payouts()
             super().end_game()
+            await self.__resolve_payouts()
         else:
             self.requeue_player()
+            await self.report_next_turn()
+
+    async def report_next_turn(self):
+        player = self.__get_current_player()
+        message = self.feedback.get_turn(player)
+        await self.bot.say(message)
 
     async def report_loss(self):
         loser = self.__get_current_player()
