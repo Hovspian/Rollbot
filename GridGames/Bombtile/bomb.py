@@ -45,16 +45,11 @@ class Bombtile(GameCore):
     async def start_game(self):
         if self.__can_start_game():
             self.__initialize_grid()
-            await self.initialize_feedback()
+            await self.__initialize_feedback()
             super().start_game()
-            await self.report_next_turn()
+            await self.__report_next_turn()
         else:
             await self.bot.say("Bombtile needs at least two players to start.")
-
-    async def initialize_feedback(self):
-        self.feedback = BombtileFeedback(self)
-        welcome = self.feedback.get_starting_message()
-        await self.bot.say(welcome)
 
     async def flip(self, coordinates):
         """
@@ -86,6 +81,11 @@ class Bombtile(GameCore):
         x = coordinates[1]
         return self.visible_grid[y][x] is NEUTRAL_TILE
 
+    async def __initialize_feedback(self):
+        self.feedback = BombtileFeedback(self)
+        welcome = self.feedback.get_starting_message()
+        await self.bot.say(welcome)
+
     async def __render_grid(self):
         await self.bot.say(self.feedback.get_card())
 
@@ -99,7 +99,7 @@ class Bombtile(GameCore):
     def __initialize_grid(self):
         # Number of cells in the grid are dependent on the number of players.
         self.num_cells = 3 * len(self.players)
-        self.__initialize_num_columns()
+        self.__initialize_grid_dimensions()
         self.grid_handler = GridHandler(self.num_columns, self.num_rows)
         self.__initialize_values()
         self.__initialize_visible_tiles()
@@ -111,9 +111,9 @@ class Bombtile(GameCore):
             values.append(NEUTRAL_TILE)
         self.visible_grid = self.grid_handler.generate_grid(values)
 
-    def __initialize_num_columns(self):
+    def __initialize_grid_dimensions(self):
         """
-        The grid is always wider than it is tall.
+        The grid tends to be wider than it is tall.
         """
         if len(self.players) > 3:
             self.num_columns = len(self.players)
@@ -124,7 +124,7 @@ class Bombtile(GameCore):
 
     def __initialize_values(self):
         self.grid_values.append(BOMB)
-        self.__initialize_multipliers()
+        self.__add_multipliers()
         self.__add_empty_tiles()
         random.shuffle(self.grid_values)
         self.grid_values = self.grid_handler.generate_grid(self.grid_values)
@@ -146,19 +146,19 @@ class Bombtile(GameCore):
 
     async def __check_game_end(self, tile):
         if tile is BOMB:
-            await self.report_loss()
+            await self.__report_loss()
             super().end_game()
             await self.__resolve_payouts()
         else:
             self.requeue_player()
-            await self.report_next_turn()
+            await self.__report_next_turn()
 
-    async def report_next_turn(self):
+    async def __report_next_turn(self):
         player = self.__get_current_player()
         message = self.feedback.get_turn(player)
         await self.bot.say(message)
 
-    async def report_loss(self):
+    async def __report_loss(self):
         loser = self.__get_current_player()
         await self.bot.say(self.feedback.get_bomb_report(loser))
         await asyncio.sleep(1.0)
@@ -187,7 +187,7 @@ class Bombtile(GameCore):
         self.visible_grid[y][x] = self.grid_values[y][x]
         return self.grid_values[y][x]
 
-    def __initialize_multipliers(self):
+    def __add_multipliers(self):
         """
         Multiplier tiles multiply your wager by the shown amount.
         Eg. if you reveal a TWO tile, you could lose x2 more gold, or win x2 more gold.
