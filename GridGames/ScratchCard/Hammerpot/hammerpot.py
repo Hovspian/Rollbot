@@ -19,11 +19,11 @@ class Hammerpot(ScratchCard):
         self.chosen_sum = 0
         self.grid_handler = GridHandler(num_columns=self.num_columns, num_rows=self.num_columns)
         self.id = GAME_ID["HAMMERPOT"]
-        self.initialize_card()
+        self._initialize_card()
         self.feedback = HammerpotFeedback(self)
 
-    def initialize_card(self):
-        super().initialize_card()
+    def _initialize_card(self):
+        super()._initialize_card()
         self.start_game()
         self._initialize_sums()
         self._initialize_payouts()

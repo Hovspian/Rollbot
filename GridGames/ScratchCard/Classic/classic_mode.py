@@ -16,7 +16,6 @@ class ClassicScratchCard(ScratchCard):
         self.matches_to_win = self.attempts_remaining // 2
         self.winning_symbols = []
         self.results = []
-        self.feedback = ScratchCardFeedback(self)
         self.default_values = [EMPTY_TILE,
                                FIVE,
                                FIVE,
@@ -29,18 +28,19 @@ class ClassicScratchCard(ScratchCard):
                                HUNDRED]
         self.grid_handler = GridHandler(num_columns=self.num_columns, num_rows=self.num_columns)
         self.id = GAME_ID["SCRATCHCARD"]
-        self.initialize_card()
+        self._initialize_card()
+        self.feedback = ScratchCardFeedback(self)
 
     @staticmethod
     def _roll_num_winnable_combos() -> int:
         combos = [1, 2]
         return roll(combos)
 
-    def initialize_card(self):
+    def _initialize_card(self):
         self.start_game()
         self._add_winnable_combo()
         self._add_random_values()
-        super().initialize_card()
+        super()._initialize_card()
 
     def _add_winnable_combo(self) -> None:
         for i in range(self.num_winnable_combos):

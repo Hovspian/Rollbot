@@ -18,7 +18,7 @@ class ScratchCard(GameCore):
         self.grid_values = []  # TBD
         self.attempts_remaining = 3
 
-    def initialize_card(self) -> None:
+    def _initialize_card(self) -> None:
         random.shuffle(self.grid_values)
         self._initialize_grid()
 
