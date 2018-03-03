@@ -161,8 +161,8 @@ class SecondaryFilter:
         def check_vacant_tile(coordinates):
             y = coordinates[0]
             x = coordinates[1]
-            tile = self.grid_game.card_grid[y][x]
-            if self._is_vacant_tile(tile):
+            tile = self.grid_game.visible_grid[y][x]
+            if tile is NEUTRAL_TILE:
                 return coordinates
             else:
                 self.ignored_entries.append(coordinates)
@@ -170,7 +170,3 @@ class SecondaryFilter:
         self.valid_entries = list(filter(check_vacant_tile, self.valid_entries))
         if not self.valid_entries:
             self.error = (ERROR["TILE_REVEALED"])
-
-    @staticmethod
-    def _is_vacant_tile(tile) -> bool:
-        return tile is NEUTRAL_TILE

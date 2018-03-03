@@ -24,7 +24,7 @@ class LineParser(CoordinateParser):
             return diagonal
 
     def check_diagonal(self, formatted_input, num_columns) -> List[List[int]]:
-        parse = self._get_valid_coordinates(formatted_input)
+        parse = self._parse_coordinates(formatted_input)
         if parse:
             return self.get_diagonal(parse, num_columns)
 

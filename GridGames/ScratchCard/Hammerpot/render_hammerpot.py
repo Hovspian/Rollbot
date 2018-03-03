@@ -14,12 +14,12 @@ class RenderHammerpot(CardRenderer):
 
     def render_card(self) -> str:
         card = self.get_card_rows()
-        combined_rows = []
+        combined_rows = [CODE_TAG]
         for i in range(len(card)):
             row = SPACER.join([card[i], self.payout_table[i]])
             combined_rows.append(row)
-        combined_rows = LINEBREAK.join(combined_rows)
-        return combined_rows
+        combined_rows.append(CODE_TAG)
+        return LINEBREAK.join(combined_rows)
 
     def _get_payout_table(self) -> List[str]:
         # Number of rows should be equal to the scratch card

@@ -14,7 +14,7 @@ class ScratchCard(GameCore):
         self.payout = 0
         self.feedback = None  # TBD
         self.grid_handler = None  # TBD
-        self.card_grid = None  # TBD
+        self.visible_grid = None  # TBD
         self.grid_values = []  # TBD
         self.attempts_remaining = 3
 
@@ -35,11 +35,11 @@ class ScratchCard(GameCore):
         self.grid_values = self.grid_handler.generate_grid(self.grid_values)
         self.grid_size = self.num_columns * self.num_columns
         neutral_tiles = [NEUTRAL_TILE] * self.grid_size
-        self.card_grid = self.grid_handler.generate_grid(neutral_tiles)
+        self.visible_grid = self.grid_handler.generate_grid(neutral_tiles)
 
     def _scratch(self, y, x) -> None:
         self._reveal_tile(y, x)
         self.attempts_remaining -= 1
 
     def _reveal_tile(self, y, x):
-        self.card_grid[y][x] = self.grid_values[y][x]
+        self.visible_grid[y][x] = self.grid_values[y][x]
