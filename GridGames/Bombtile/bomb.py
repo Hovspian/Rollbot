@@ -177,8 +177,9 @@ class Bombtile(GameCore):
         Get a list of all indices for flippable tiles.
         """
         neutral_tiles = []
-        for y in range(self.num_columns - 1):
-            for x in range(self.num_rows - 1):
+        for x in range(self.num_columns):
+            for y in range(self.num_rows):
+                print("Checking", y, x)
                 if self.is_flippable_tile([y, x]):
                     neutral_tiles.append([y, x])
         return neutral_tiles
@@ -195,6 +196,7 @@ class Bombtile(GameCore):
         tiles = self.__get_neutral_tiles()
         if len(tiles) == 1:
             await self.flip(tiles[0])
+            await self.__render_grid()
             return True
 
     async def __report_multiplier(self, multiplier: int) -> None:
