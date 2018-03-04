@@ -12,7 +12,7 @@ class SlotMachine(GameCore):
         super().__init__(ctx)
         self.default_outcomes = []
         self.num_columns = 3
-        self.grid_handler = GridHandler(self.num_columns)
+        self.grid_handler = GridHandler(self.num_columns, self.num_columns)
         self.first_reel_size = int(math.ceil(self.num_columns * 1.5))
         self.reels = []
         self.winning_combos = []
