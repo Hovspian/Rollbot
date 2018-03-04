@@ -23,7 +23,7 @@ class Bombtile(GameCore):
 
     def __init__(self, ctx, bot):
         super().__init__(ctx)
-        self.title = "round of Bombtile"
+        self.title = "game of Bombtile"
         self.bot = bot
         self.min_players = 2
         self.max_players = 5
@@ -136,6 +136,7 @@ class Bombtile(GameCore):
 
     async def __check_multiplier(self, tile):
         if tile is not BOMB and tile is not EMPTY_TILE:
+            #  Then the tile must be a multiplier
             multiplier = tile['value']
             self.__get_current_player().update_multiplier(multiplier)
             await self.__report_multiplier(multiplier)
