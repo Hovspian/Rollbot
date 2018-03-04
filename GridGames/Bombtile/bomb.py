@@ -179,7 +179,6 @@ class Bombtile(GameCore):
         neutral_tiles = []
         for x in range(self.num_columns):
             for y in range(self.num_rows):
-                print("Checking", y, x)
                 if self.is_flippable_tile([y, x]):
                     neutral_tiles.append([y, x])
         return neutral_tiles
@@ -215,9 +214,9 @@ class Bombtile(GameCore):
 
     async def __resolve_payouts(self) -> None:
         loser = self.players.pop(0)
-        from_user = loser.user.id
+        from_user = loser.user
         for winner in self.players:
-            to_user = winner.user.id
+            to_user = winner.user
             amount = winner.wager * winner.get_multiplier() * loser.get_multiplier()
             await self.__report_win(winner, amount)
             self.__add_payout(to_user, amount, from_user)
