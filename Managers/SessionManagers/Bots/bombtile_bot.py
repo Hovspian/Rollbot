@@ -27,6 +27,27 @@ class BombtileBot:
         await self.move_handler.attempt_flip(ctx)
 
 
+class BombtileInitializer(GameInitializer):
+    def __init__(self, options):
+        super().__init__(options)
+
+    async def initialize_game(self, ctx):
+        if await super()._can_create_game(ctx):
+            bombtile = Bombtile(ctx, self.bot)
+            await self._create_session(bombtile)
+
+    async def _create_session(self, bombtile: Bombtile):
+        self._add_game(bombtile.ctx, bombtile)
+        await self._run_join_timer(bombtile)
+        await bombtile.start_game()
+        self._remove_game(bombtile.ctx)
+        self.data_manager.batch_transfer(bombtile.get_payouts())
+
+    async def _run_join_timer(self, game):
+        join_timer = JoinTimer(self.bot, game)
+        await self.channel_manager.add_join_timer(game.host, join_timer)
+
+
 class BombtileMoveHandler:
     def __init__(self, bot, channel_manager):
         self.bot = bot
@@ -64,28 +85,6 @@ class BombtileMoveHandler:
     @staticmethod
     async def _is_matching_game(game: GameCore) -> bool:
         return game.id == GAME_ID["BOMBTILE"]
-
-
-class BombtileInitializer(GameInitializer):
-    def __init__(self, options):
-        super().__init__(options)
-
-    async def initialize_game(self, ctx):
-        if await super()._can_create_game(ctx):
-            bombtile = Bombtile(ctx, self.bot)
-            await self._create_session(bombtile)
-
-    async def _create_session(self, bombtile: Bombtile):
-        self._add_game(bombtile.ctx, bombtile)
-        await self._run_join_timer(bombtile)
-        await bombtile.start_game()
-        await TimeLimit(self.bot, bombtile).run()
-        self._remove_game(bombtile.ctx)
-        self.data_manager.batch_transfer(bombtile.get_payouts())
-
-    async def _run_join_timer(self, game):
-        join_timer = JoinTimer(self.bot, game)
-        await self.channel_manager.add_join_timer(game.host, join_timer)
 
 
 class BombtileInputHandler:
