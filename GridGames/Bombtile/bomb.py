@@ -160,9 +160,8 @@ class Bombtile(GameCore):
         self.__requeue_player()
         self._turn_timer.refresh_turn_timer()
         if await self.__check_final_tile():
-            await self.end_game()
-        else:
-            await self.__report_next_turn()
+            return
+        await self.__report_next_turn()
 
     async def __auto_flip_tile(self) -> None:
         """
@@ -194,8 +193,10 @@ class Bombtile(GameCore):
         """
         tiles = self.__get_neutral_tiles()
         if len(tiles) == 1:
+            player = self.__get_current_player()
+            await self.bot.say(self.feedback.get_auto_reveal(player))
+            await asyncio.sleep(1.0)
             await self.flip(tiles[0])
-            await self.__render_grid()
             return True
 
     async def __report_multiplier(self, multiplier: int) -> None:

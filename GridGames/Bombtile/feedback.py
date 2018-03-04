@@ -40,3 +40,6 @@ class BombtileFeedback:
         if multiplier > 1:
             return f":bomb: :bomb: {loser.name} hit the bomb `<!>` with a x{multiplier} multiplier! :bomb: :bomb: "
         return f":bomb: {loser.name} hit the bomb `<!>`! :bomb:"
+
+    def get_auto_reveal(self, player):
+        return f"Automatically revealing the last tile for {player.name}..."
