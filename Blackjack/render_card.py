@@ -9,9 +9,6 @@ class RenderCard:
     Eg: [ A :spade: ]
     """
 
-    def __init__(self):
-        pass
-
     def render_hand(self, hand: BlackjackHand) -> str:
         cards = []
         for card in hand.get_cards():

@@ -1,4 +1,4 @@
-from Blackjack.payouthandler import PayoutHandler
+from Blackjack.payout_handler import PayoutHandler
 from Blackjack.player import BlackjackPlayer
 from Blackjack.announcer import BlackjackPlayerAnnouncer
 from Blackjack.deck import Deck
@@ -75,6 +75,9 @@ class Blackjack(GameCore):
             await self.announcer.split_successful(hand)
         else:
             await self.announcer.split_fail()
+
+    def get_payouts(self):
+        return self.payouts
 
     def _double_down(self, hand: PlayerHand) -> bool:
         """
