@@ -148,8 +148,8 @@ class Bombtile(GameCore):
     async def __check_game_end(self, tile):
         if tile is BOMB:
             await self.__report_loss()
-            super().end_game()
             await self.__resolve_payouts()
+            super().end_game()
         else:
             self.requeue_player()
             await self.__report_next_turn()
@@ -167,10 +167,10 @@ class Bombtile(GameCore):
     async def __resolve_payouts(self):
         loser = self.players.pop(0)
         from_user = loser.user.id
-        for player in self.players:
-            to_user = player.user.id
-            amount = player.wager * player.get_multiplier() * loser.get_multiplier()
-            await self.report_win(player, amount)
+        for winner in self.players:
+            to_user = winner.user.id
+            amount = winner.wager * winner.get_multiplier() * loser.get_multiplier()
+            await self.report_win(winner, amount)
             self.__add_payout(to_user, amount, from_user)
 
     async def report_win(self, winner: BombtilePlayer, amount: int) -> None:

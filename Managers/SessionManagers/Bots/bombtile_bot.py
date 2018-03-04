@@ -81,7 +81,7 @@ class BombtileInitializer(GameInitializer):
         await bombtile.start_game()
         await TimeLimit(self.bot, bombtile).run()
         self._remove_game(bombtile.ctx)
-        # TODO payout
+        self.data_manager.batch_transfer(bombtile.get_payouts())
 
     async def _run_join_timer(self, game):
         join_timer = JoinTimer(self.bot, game)
