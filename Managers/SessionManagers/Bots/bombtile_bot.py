@@ -39,7 +39,7 @@ class BombtileInitializer(GameInitializer):
     async def _create_session(self, bombtile: Bombtile):
         self._add_game(bombtile.ctx, bombtile)
         await self._run_join_timer(bombtile)
-        await bombtile.start_game()
+        await bombtile.run()
         self._remove_game(bombtile.ctx)
         self.data_manager.batch_transfer(bombtile.get_payouts())
 

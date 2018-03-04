@@ -3,12 +3,17 @@ from typing import List
 
 
 class CardRenderer:
-    # Box drawing methods for grid
+
+    """
+    Box drawing methods for grids.
+    The game must implement properties: num_columns, num_rows and visible_grid.
+    visible_grid can be filled using GridHandler.generate_grid().
+    """
 
     def __init__(self, game):
-        self.num_columns = game.num_columns
-        self.num_rows = game.num_rows
-        self.grid = game.visible_grid
+        self.num_columns = game.num_columns  # int
+        self.num_rows = game.num_rows  # int
+        self.grid = game.visible_grid  # list[list[dict]]
 
     def render_card(self) -> str:
         rows = LINEBREAK.join(self.get_card_rows())

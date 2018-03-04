@@ -4,7 +4,8 @@ import asyncio
 class TurnTimer:
     """
     Puts a timer on player turns for multiplayer games.
-    Multiplayer games must implement methods to resolve AFKs.
+    Multiplayer games must implement resolve_afk method to resolve AFKs.
+    Runs while game is in_progress. When it ends, the channel will be vacated.
     """
     def __init__(self, bot, game):
         self.bot = bot

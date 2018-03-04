@@ -43,9 +43,11 @@ class Bombtile(GameCore):
         super().add_player(player)
         super().add_user(user)
 
-    async def start_game(self) -> None:
+    async def run(self) -> None:
         if self.__can_start_game():
             self.__initialize_grid()
+            # Grid dimensions are a dependency of Feedback because it uses the string representation of the grid.
+            # Hence the ordering.
             await self.__initialize_feedback()
             super().start_game()
             await self.__report_next_turn()

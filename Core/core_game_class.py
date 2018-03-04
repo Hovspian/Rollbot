@@ -5,7 +5,11 @@ class GameCore:
         self.host_name = self.host.display_name
         self.users = []  # All Discord users joining a game
         self.players = []  # PlayerAvatar[] if applicable
-        self.in_progress = False  # Flag for game started/ended. Determines whether /join and /forcestart are possible.
+
+        # Flag for game started/ended. Determines whether /join and /forcestart are possible.
+        # Also determines whether the game instance stays in scope.
+        self.in_progress = False
+
         self.max_time_left = 180
         self.add_user(self.host)
         self.id = None

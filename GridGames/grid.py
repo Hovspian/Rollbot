@@ -2,16 +2,25 @@ from typing import List
 
 
 class GridHandler:
-    def __init__(self, num_columns=3, num_rows=3):
+
+    """
+    Turns a list of dictionaries and grid dimensions into a 2D array.
+    The number of items in the list and the dimensions (num_columns, num_rows) must line up.
+    Assumed structure of the dictionary:
+    {'emote': str,  (the visible symbol)
+     'value': int}  (the internal value)
+    """
+
+    def __init__(self, num_columns, num_rows):
         self.num_rows = num_rows
         self.num_columns = num_columns
-        self.columns = []
+        self.columns = []  # TODO why do some games use this but some don't?
 
-    def get_grid(self) -> List[list]:
+    def get_grid(self) -> List[List[dict]]:
         return self.columns
 
-    def generate_grid(self, values: List) -> List[list]:
-        # Creates a 2D array from a list
+    def generate_grid(self, values: List) -> List[List[dict]]:
+        # Creates a 2D array of items.
 
         def get_next_value(i, j):
             next_index = i * self.num_columns + j
