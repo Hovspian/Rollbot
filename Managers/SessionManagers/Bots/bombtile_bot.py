@@ -14,6 +14,11 @@ from Managers.SessionManagers.game_initializer import GameInitializer, SessionOp
 
 
 class BombtileBot:
+
+    """
+    A session manager for Bombtile. Connects user commands with the respective functionality.
+    """
+
     def __init__(self, options: SessionOptions):
         self.initializer = BombtileInitializer(options)
         self.channel_manager = options.channel_manager
@@ -28,6 +33,11 @@ class BombtileBot:
 
 
 class BombtileInitializer(GameInitializer):
+
+    """
+    Create instances of Bombtile.
+    """
+
     def __init__(self, options):
         super().__init__(options)
 
@@ -49,6 +59,11 @@ class BombtileInitializer(GameInitializer):
 
 
 class BombtileMoveHandler:
+
+    """
+    Makes sure the player move is legal within the rules of the game.
+    """
+
     def __init__(self, bot, channel_manager):
         self.bot = bot
         self.channel_manager = channel_manager
@@ -61,7 +76,7 @@ class BombtileMoveHandler:
 
     async def _flip(self, ctx) -> None:
         game = self._get_game(ctx)
-        input_handler = BombtileInputHandler(self.bot, game)
+        input_handler = BombtileInputValidator(self.bot, game)
         valid_tile = await input_handler.validate_input(ctx)
         if valid_tile:
             await game.flip(valid_tile)
@@ -87,7 +102,12 @@ class BombtileMoveHandler:
         return game.id == GAME_ID["BOMBTILE"]
 
 
-class BombtileInputHandler:
+class BombtileInputValidator:
+
+    """
+    Makes sure the user's input creates valid coordinates.
+    """
+
     def __init__(self, bot, game: Bombtile):
         self.bot = bot
         self.game = game
