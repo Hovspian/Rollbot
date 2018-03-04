@@ -165,12 +165,23 @@ class Bombtile(GameCore):
             await self.__report_next_turn()
 
     async def __auto_flip_tile(self) -> None:
+        """
+        Flips a random neutral tile.
+        """
+        valid_tiles = self.__get_neutral_tiles()
+        random_tile = roll(valid_tiles)
+        await self.flip(random_tile)
+
+    def __get_neutral_tiles(self) -> List[List[int]]:
+        """
+        Get a list of all indices for flippable tiles.
+        """
+        neutral_tiles = []
         for y in range(self.num_columns - 1):
-            row = self.visible_grid[y]
-            if NEUTRAL_TILE in row:
-                x = row.index(NEUTRAL_TILE)
-                await self.flip([y, x])
-                return
+            for x in range(self.num_rows - 1):
+                if self.is_flippable_tile([y, x]):
+                    neutral_tiles.append([y, x])
+        return neutral_tiles
 
     def __requeue_player(self) -> None:
         # If the game is not over, put the player at the end of the queue after their turn.
@@ -181,15 +192,9 @@ class Bombtile(GameCore):
         """
         If a player is stuck with the last remaining tile, it gets auto flipped on their turn.
         """
-        num_neutral_tiles = 0
-        tile = None
-        for y in range(self.num_columns - 1):
-            for x in range(self.num_rows - 1):
-                if self.is_flippable_tile([y, x]):
-                    num_neutral_tiles += 1
-                    tile = [y, x]
-        if num_neutral_tiles == 1:
-            await self.flip(tile)
+        tiles = self.__get_neutral_tiles()
+        if len(tiles) == 1:
+            await self.flip(tiles[0])
             return True
 
     async def __report_multiplier(self, multiplier: int) -> None:
