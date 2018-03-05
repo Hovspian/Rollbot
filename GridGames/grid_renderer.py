@@ -15,7 +15,7 @@ class CardRenderer:
         self.num_rows = game.num_rows  # int
         self.grid = game.visible_grid  # list[list[dict]]
 
-    def render_card(self) -> str:
+    def render_grid(self) -> str:
         rows = LINEBREAK.join(self.get_card_rows())
         card = [CODE_TAG, rows, CODE_TAG]
         return LINEBREAK.join(card)

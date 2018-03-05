@@ -5,7 +5,7 @@ from Core.core_game_class import GameCore
 from Core.helper_functions import message_without_command
 from Core.join_timer import JoinTimer
 from Core.time_limit import TimeLimit
-from GridGames.Bombtile.bomb import Bombtile
+from GridGames.Bombtile.bombtile import Bombtile
 from GridGames.Parsers.coordinate_parser import CoordinateParser
 from GridGames.Parsers.input_error_handler import InputErrorHandler
 from GridGames.ScratchCard.constants import COLUMN_INPUTS, ROW_INPUTS, EMPTY_TILE

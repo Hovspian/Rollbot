@@ -12,7 +12,7 @@ class RenderHammerpot(CardRenderer):
         self.card = game
         self.payout_table = self._get_payout_table()
 
-    def render_card(self) -> str:
+    def render_grid(self) -> str:
         card = self.get_card_rows()
         combined_rows = [CODE_TAG]
         for i in range(len(card)):

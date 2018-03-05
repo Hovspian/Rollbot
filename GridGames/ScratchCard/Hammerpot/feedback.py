@@ -10,13 +10,13 @@ class HammerpotFeedback:
     def get_card(self):
         host = self.hammerpot.host_name
         return LINEBREAK.join([f":hammer: {host}'s Hammerpot :hammer:",
-                               self.renderer.render_card()])
+                               self.renderer.render_grid()])
 
     def get_starting_message(self):
         num_attempts = self.hammerpot.attempts_remaining
         numbers = self.hammerpot.num_columns * self.hammerpot.num_columns
         return LINEBREAK.join([f":hammer: Welcome to Hammerpot! :hammer:",
-                               self.renderer.render_card(),
+                               self.renderer.render_grid(),
                                f"This card contains unique numbers from 1 to {numbers}.",
                                f"1. Reveal {num_attempts} tiles with `/scratch`",
                                "2. Then `/pick` a line (row, column, or diagonal)",

@@ -10,14 +10,14 @@ class ScratchCardFeedback:
     def get_card(self):
         host = self.scratch_card.host_name
         return '\n'.join([f"{host}'s scratch card",
-                          self.renderer.render_card()])
+                          self.renderer.render_grid()])
 
     def get_starting_message(self) -> str:
         host = self.scratch_card.host_name
         num_symbols = self.scratch_card.matches_to_win
         num_attempts = self.scratch_card.attempts_remaining
         return '\n'.join([f'New scratch card for {host}.',
-                          self.renderer.render_card(),
+                          self.renderer.render_grid(),
                           f'Match {num_symbols} symbols to win!',
                           f'You have {num_attempts} attempts remaining.'])
 

@@ -51,7 +51,7 @@ class ScratchCardInitializer(GameInitializer):
         await time_limit.run()
 
     async def say_starting_message(self, game):
-        message = game.feedback.get_starting_message()
+        message = game.feedback.announce_start()
         await self.bot.say(message)
 
     def _save_payout(self, game):
@@ -158,7 +158,7 @@ class ScratchCardMoveAnnouncer:
         self.messages = []  # TODO array to hold messages for cleanup
 
     async def report_turn(self, game):
-        current_card = game.feedback.get_card()
+        current_card = game.feedback.render_grid()
         report = game.feedback.get_report()
         await self.bot.say(current_card)
         await self.bot.say(report)

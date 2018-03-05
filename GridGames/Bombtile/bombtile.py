@@ -1,4 +1,3 @@
-import asyncio
 import random
 from typing import List
 
@@ -6,7 +5,7 @@ from Core.constants import GAME_ID
 from Core.core_game_class import GameCore
 from Core.helper_functions import roll
 from Core.turn_timer import TurnTimer
-from GridGames.Bombtile.feedback import BombtileFeedback
+from GridGames.Bombtile.announcer import BombtileAnnouncer
 from GridGames.Bombtile.player import BombtilePlayer
 from GridGames.ScratchCard.constants import *
 from GridGames.grid import GridHandler
@@ -36,7 +35,7 @@ class Bombtile(GameCore):
         self.num_columns = None  # TBD
         self.num_rows = None  # TBD
         self.grid_handler = None  # TBD
-        self.feedback = None  # TBD -- Relies on grid dimensions.
+        self.announcer = None  # TBD -- Relies on grid dimensions.
 
     def add_user(self, user) -> None:
         player = BombtilePlayer(user)
@@ -50,7 +49,7 @@ class Bombtile(GameCore):
             # Hence the ordering.
             await self.__initialize_feedback()
             super().start_game()
-            await self.__report_next_turn()
+            await self.announcer.announce_current_turn()
             await self._turn_timer.run()
         else:
             await self.bot.say("Bombtile needs at least two players to start.")
@@ -62,7 +61,7 @@ class Bombtile(GameCore):
         y = coordinates[0]
         x = coordinates[1]
         tile = self.__reveal_tile(y, x)
-        await self.__render_grid()
+        await self.announcer.render_grid()
         await self.__check_multiplier(tile)
         await self.__check_game_end(tile)
 
@@ -73,11 +72,10 @@ class Bombtile(GameCore):
         return self._payouts
 
     def is_turn(self, user) -> bool:
-        return user == self.__get_current_player().user
+        return user == self.get_current_player().user
 
     async def resolve_afk(self) -> None:
-        current_player = self.__get_current_player()
-        await self.bot.say(f"{current_player.name} seems to be away.")
+        await self.announcer.announce_afk()
         await self.__auto_flip_tile()
 
     def is_flippable_tile(self, coordinates: List[int]) -> bool:
@@ -85,16 +83,12 @@ class Bombtile(GameCore):
         x = coordinates[1]
         return self.visible_grid[y][x] is NEUTRAL_TILE
 
-    async def __initialize_feedback(self) -> None:
-        self.feedback = BombtileFeedback(self)
-        welcome = self.feedback.get_starting_message()
-        await self.bot.say(welcome)
-
-    async def __render_grid(self) -> None:
-        await self.bot.say(self.feedback.get_card())
-
-    def __get_current_player(self) -> BombtilePlayer:
+    def get_current_player(self) -> BombtilePlayer:
         return self.players[0]
+
+    async def __initialize_feedback(self) -> None:
+        self.announcer = BombtileAnnouncer(self)
+        await self.announcer.announce_start()
 
     def __can_start_game(self) -> bool:
         num_players = len(self.players)
@@ -104,8 +98,7 @@ class Bombtile(GameCore):
         # Number of cells in the grid are dependent on the number of players.
         self.num_cells = 3 * len(self.players)
         self.__initialize_grid_dimensions()
-        self.grid_handler = GridHandler(self.num_columns, self.num_rows)
-        self.__initialize_values()
+        self.__initialize_tile_values()
         self.__initialize_visible_tiles()
 
     def __initialize_visible_tiles(self) -> None:
@@ -125,8 +118,9 @@ class Bombtile(GameCore):
         else:
             self.num_columns = self.num_cells // len(self.players)
             self.num_rows = len(self.players)
+        self.grid_handler = GridHandler(self.num_columns, self.num_rows)
 
-    def __initialize_values(self) -> None:
+    def __initialize_tile_values(self) -> None:
         self.grid_values.append(BOMB)
         self.__add_multipliers()
         self.__add_empty_tiles()
@@ -142,26 +136,26 @@ class Bombtile(GameCore):
         if tile is not BOMB and tile is not EMPTY_TILE:
             #  Then the tile must be a multiplier
             multiplier = tile['value']
-            self.__get_current_player().update_multiplier(multiplier)
-            await self.__report_multiplier(multiplier)
+            self.get_current_player().update_multiplier(multiplier)
+            await self.announcer.announce_multiplier()
 
     async def __check_game_end(self, tile) -> None:
         if tile is BOMB:
             await self.end_game()
         else:
-            await self.next_turn()
+            await self.__next_turn()
 
     async def end_game(self) -> None:
-        await self.__report_loss()
+        await self.announcer.report_loss()
         await self.__resolve_payouts()
         super().end_game()
 
-    async def next_turn(self) -> None:
+    async def __next_turn(self) -> None:
         self.__requeue_player()
         self._turn_timer.refresh_turn_timer()
-        if await self.__check_final_tile():
+        if await self.__is_final_tile():
             return
-        await self.__report_next_turn()
+        await self.announcer.announce_current_turn()
 
     async def __auto_flip_tile(self) -> None:
         """
@@ -187,44 +181,28 @@ class Bombtile(GameCore):
         player = self.players.pop(0)
         self.players.append(player)
 
-    async def __check_final_tile(self) -> bool:
+    async def __is_final_tile(self) -> bool:
         """
         If a player is stuck with the last remaining tile, it gets auto flipped on their turn.
         """
         tiles = self.__get_neutral_tiles()
         if len(tiles) == 1:
-            player = self.__get_current_player()
-            await self.bot.say(self.feedback.get_auto_reveal(player))
-            await asyncio.sleep(1.0)
+            player = self.get_current_player()
+            await self.announcer.auto_reveal(player)
             await self.flip(tiles[0])
             return True
 
-    async def __report_multiplier(self, multiplier: int) -> None:
-        player = self.__get_current_player()
-        await self.bot.say(self.feedback.get_multiplier_message(player, multiplier))
-
-    async def __report_next_turn(self) -> None:
-        player = self.__get_current_player()
-        message = self.feedback.get_turn(player)
-        await self.bot.say(message)
-
-    async def __report_loss(self) -> None:
-        loser = self.__get_current_player()
-        await self.bot.say(self.feedback.get_bomb_report(loser))
-        await asyncio.sleep(1.0)
-
     async def __resolve_payouts(self) -> None:
         loser = self.players.pop(0)
-        from_user = loser.user
         for winner in self.players:
-            to_user = winner.user
-            amount = winner.wager * winner.get_multiplier() * loser.get_multiplier()
-            await self.__report_win(winner, amount)
-            self.__add_payout(to_user, amount, from_user)
+            self.__resolve_payout(winner, loser)
 
-    async def __report_win(self, winner: BombtilePlayer, amount: int) -> None:
-        report = self.feedback.get_payout_report(winner, amount)
-        await self.bot.say(report)
+    async def __resolve_payout(self, winner, loser) -> None:
+        to_user = winner.user
+        amount = winner.wager * winner.get_multiplier() * loser.get_multiplier()
+        from_user = loser.user
+        await self.announcer.report_payout(winner, amount)
+        self.__add_payout(to_user, amount, from_user)
 
     def __add_payout(self, to_user, amount: int, from_user) -> None:
         self._payouts.append({
