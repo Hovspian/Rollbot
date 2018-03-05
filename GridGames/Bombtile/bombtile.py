@@ -28,10 +28,10 @@ class Bombtile(GameCore):
         self._turn_timer = TurnTimer(bot, self)
         self.min_players = 2
         self.max_players = 5
-        self.grid_values = []  # The hidden tile values.
+        self.grid_values = []  # The hidden tile symbols.
         self.visible_grid = []  # The tiles that users see.
         self._payouts = []
-        self.num_cells = None  # TBD
+        self.num_cells = None  # TBD -- Depends on number of players.
         self.num_columns = None  # TBD
         self.num_rows = None  # TBD
         self.grid_handler = None  # TBD
@@ -42,10 +42,13 @@ class Bombtile(GameCore):
         super().add_player(player)
         super().add_user(user)
 
+    def is_max_num_players(self) -> bool:
+        return len(self.players) == self.max_players
+
     async def run(self) -> None:
         if self.__can_start_game():
             self.__initialize_grid()
-            # Grid dimensions are a dependency of Feedback because it uses the string representation of the grid.
+            # Grid dimensions are a dependency of feedback, because feedback uses a string representation of the grid.
             # Hence the ordering.
             await self.__initialize_feedback()
             super().start_game()
@@ -64,9 +67,6 @@ class Bombtile(GameCore):
         await self.announcer.get_grid()
         await self.__check_multiplier(tile)
         await self.__check_game_end(tile)
-
-    def get_grid_handler(self) -> GridHandler:
-        return self.grid_handler
 
     def get_payouts(self) -> List[dict]:
         return self._payouts
