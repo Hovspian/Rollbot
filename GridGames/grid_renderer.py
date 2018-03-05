@@ -15,12 +15,18 @@ class CardRenderer:
         self.num_rows = game.num_rows  # int
         self.grid = game.visible_grid  # list[list[dict]]
 
-    def render_grid(self) -> str:
+    def get_grid(self) -> str:
+        """
+        Get the grid as a string formatted with code tags (```) for consistent character spacing in Discord.
+        """
         rows = LINEBREAK.join(self.get_card_rows())
         card = [CODE_TAG, rows, CODE_TAG]
         return LINEBREAK.join(card)
 
     def get_card_rows(self) -> List[str]:
+        """
+        Get the rows as a list of strings, eg. for combining with rows from another grid.
+        """
         column_header = self.__get_column_header()
         top_row_border = self.__draw_top_border()
         row_placeholders = self.__get_row_placeholders()

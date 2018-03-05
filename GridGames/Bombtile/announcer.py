@@ -15,12 +15,12 @@ class BombtileAnnouncer:
         self.bot = bombtile.bot
 
     async def render_grid(self) -> None:
-        grid = self.renderer.render_grid()
+        grid = self.renderer.get_grid()
         await self.bot.say(grid)
 
     async def announce_start(self) -> None:
         starting_message = LINEBREAK.join([':bomb: Welcome to Bombtile! :bomb:',
-                                           self.renderer.render_grid(),
+                                           self.renderer.get_grid(),
                                            'Players take turns flipping tiles. Whoever gets the bomb `<!>` loses!'])
         await self.bot.say(starting_message)
 
