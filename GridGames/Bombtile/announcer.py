@@ -28,7 +28,7 @@ class BombtileAnnouncer:
         player = self.bombtile.get_current_player()
         multiplier = player.get_multiplier()
         wager = player.get_wager()
-        message = f"{player.name} revealed a x{multiplier} multiplier! " \
+        message = f"{player.name} revealed a {multiplier}x multiplier! " \
                   f"Their {wager} gold wager is multiplied."
         await self.bot.say(message)
 
