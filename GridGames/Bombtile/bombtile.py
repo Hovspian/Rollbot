@@ -195,7 +195,7 @@ class Bombtile(GameCore):
     async def __resolve_payouts(self) -> None:
         loser = self.players.pop(0)
         for winner in self.players:
-            self.__resolve_payout(winner, loser)
+            await self.__resolve_payout(winner, loser)
 
     async def __resolve_payout(self, winner, loser) -> None:
         to_user = winner.user
