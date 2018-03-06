@@ -64,7 +64,7 @@ class Bombtile(GameCore):
         y = coordinates[0]
         x = coordinates[1]
         tile = self.__reveal_tile(y, x)
-        await self.announcer.get_grid()
+        await self.announcer.render_grid()
         await self.__check_multiplier(tile)
         await self.__check_game_end(tile)
 
