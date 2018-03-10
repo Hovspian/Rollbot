@@ -148,12 +148,10 @@ class BombtileInputValidator:
     @staticmethod
     def _valid_num_axes(coordinates: str) -> bool:
         # x, y only
-        print("Coordinates", coordinates)
         return len(coordinates) == 2
 
     def _is_in_bounds(self, coordinates: str) -> bool:
         # Eg. accepts ['a', '2']
-        print("Coordinates", coordinates)
         x = False
         y = False
         for coordinate in coordinates:

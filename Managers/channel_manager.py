@@ -103,7 +103,7 @@ class ChannelManager:
         elif self._is_game_in_progress(channel):
             error = "Sign ups are closed for this game."
         elif self._is_user_in_game(channel, user):
-            error = "{} is already in the game.".format(user.display_name)
+            error = f"{user.display_name} is already in the game."
         return error
 
     def _is_game_in_channel(self, channel) -> bool:
