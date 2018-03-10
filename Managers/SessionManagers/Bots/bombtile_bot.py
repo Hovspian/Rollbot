@@ -85,14 +85,13 @@ class BombtileMoveHandler:
     def _get_move_error(self, ctx) -> str or None:
         game = self._get_game(ctx)
         user = ctx.message.author
-        error = None
         if not game:
-            error = "No game in this channel."
-        elif not game.in_progress:
-            error = "The game hasn't started yet."
-        elif not game.is_turn(user):
-            error = "It's not your turn. Please wait."
-        return error
+            return "No game in this channel."
+        if not game.in_progress:
+            return "The game hasn't started yet."
+        if not game.is_turn(user):
+            return "It's not your turn. Please wait."
+        return None
 
     def _get_game(self, ctx) -> Bombtile or None:
         user = ctx.message.author
