@@ -14,6 +14,13 @@ class GameCore:
         self.add_user(self.host)
         self.id = None
 
+    def is_max_num_players(self) -> bool:
+        """
+        Set a maximum number of players in your multiplayer game, if applicable.
+        No override == no max player limit.
+        """
+        return False
+
     def add_user(self, user) -> None:
         self.users.append(user)
 

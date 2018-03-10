@@ -68,8 +68,19 @@ class ChannelManager:
     async def _add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
         user = ctx.message.author
-        self.active_games[channel].add_user(user)
+        game = self.active_games[channel]
+        game.add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
+        await self._check_player_capacity(game)
+
+    async def _check_player_capacity(self, game):
+        """
+        The game auto starts when the max number of players has been reached.
+        """
+        if game.is_max_num_players():
+            timer = self.join_timers[game.host]
+            timer.cancel_timer()
+            await self.bot.say("The game room is now full.")
 
     def _get_invalid_forcestart_error(self, ctx) -> str:
         channel = ctx.message.channel
