@@ -69,10 +69,11 @@ class BombtileMoveHandler:
         self.channel_manager = channel_manager
 
     async def attempt_flip(self, ctx) -> None:
-        if self._is_permitted_move(ctx):
-            await self._flip(ctx)
-        else:
-            await self.bot.say("It's not your turn. Please wait.")
+        error = self._get_move_error(ctx)
+        if error:
+            await self.bot.say(error)
+            return
+        await self._flip(ctx)
 
     async def _flip(self, ctx) -> None:
         game = self._get_game(ctx)
@@ -81,10 +82,17 @@ class BombtileMoveHandler:
         if valid_tile:
             await game.flip(valid_tile)
 
-    def _is_permitted_move(self, ctx) -> bool:
+    def _get_move_error(self, ctx) -> str or None:
         game = self._get_game(ctx)
         user = ctx.message.author
-        return game and game.in_progress and game.is_turn(user)
+        error = None
+        if not game:
+            error = "No game in this channel."
+        elif not game.in_progress:
+            error = "The game hasn't started yet."
+        elif not game.is_turn(user):
+            error = "It's not your turn. Please wait."
+        return error
 
     def _get_game(self, ctx) -> Bombtile or None:
         user = ctx.message.author
