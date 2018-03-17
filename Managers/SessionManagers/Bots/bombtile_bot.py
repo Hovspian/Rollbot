@@ -142,7 +142,7 @@ class BombtileInputValidator:
     async def _check_in_bounds(self, coordinates: str):
         if self._valid_num_axes(coordinates) and self._is_in_bounds(coordinates):
             return True
-        await self.bot.say("Please flip a valid tile within the board size. Eg. `/flip A2`")
+        await self.bot.say("Please flip a valid tile within the board size. Eg. `/flip A0`")
 
     @staticmethod
     def _valid_num_axes(coordinates: str) -> bool:
