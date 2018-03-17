@@ -1,5 +1,9 @@
+from operator import itemgetter
+from typing import List
+
 import discord
 
+from Core.constants import LINEBREAK, CODE_TAG
 from Core.helper_functions import message_without_command
 from Managers.remote_data_manager import RemoteDataManager
 
@@ -7,19 +11,50 @@ from Managers.remote_data_manager import RemoteDataManager
 class StatisticsBot:
     def __init__(self, bot, data_manager: RemoteDataManager):
         self.gold_stats = GoldStats(bot, data_manager)
+        self.bot = bot
 
-    async def query_gold(self, ctx, query):
+    async def query_gold(self, ctx, query) -> None:
         if query:
-            await self.gold_stats.query_user_gold(ctx, query)
+            message = self.gold_stats.get_user_gold_report(ctx, query)
         else:
-            await self.gold_stats.say_gold(ctx)
+            message = self.gold_stats.get_personal_gold_report(ctx)
+        await self.bot.say(message)
 
-    async def query_winnings(self, ctx):
-        await self.gold_stats.say_winnings(ctx)
-
-    async def query_losses(self, ctx, query):
+    async def query_stats(self, ctx, query) -> None:
         if query:
-            await self.gold_stats.query_user_losses(ctx, query)
+            stats_list = self.gold_stats.query_user_totals(ctx, query)
+        else:
+            user = ctx.message.author
+            stats_list = self.gold_stats.get_totals(user)
+
+        message = self.wrap_statistics(stats_list)
+        await self.bot.say(message)
+
+    async def query_winnings(self, ctx, query) -> None:
+        if query:
+            stats_list = self.gold_stats.query_user_winnings(ctx, query)
+        else:
+            user = ctx.message.author
+            stats_list = self.gold_stats.get_winnings(user)
+
+        message = self.wrap_statistics(stats_list)
+        await self.bot.say(message)
+
+    async def query_losses(self, ctx, query) -> None:
+        if query:
+            stats_list = self.gold_stats.query_user_losses(ctx, query)
+        else:
+            user = ctx.message.author
+            stats_list = self.gold_stats.get_losses(user)
+
+        message = self.wrap_statistics(stats_list)
+        await self.bot.say(message)
+
+    @staticmethod
+    def wrap_statistics(stats_list: str) -> str:
+        return LINEBREAK.join([CODE_TAG,
+                               stats_list,
+                               CODE_TAG])
 
     async def butt_counter(self):
         pass
@@ -27,69 +62,102 @@ class StatisticsBot:
 
 class GoldStats:
     def __init__(self, bot, data_manager):
-        self.bot = bot
         self.data_manager = data_manager
+        self.bot = bot
 
-    async def say_gold(self, ctx):
+    def get_personal_gold_report(self, ctx) -> str:
         user = ctx.message.author
         gold = self.data_manager.get_gold(user)
         if gold:
-            await self.bot.say(f"You have {gold} gold.")
-        else:
-            await self.bot.say("You don't have any gold. Play a game?")
+            return f"You have {gold} gold."
+        return "You don't have any gold. Play a game?"
 
-    async def query_user_gold(self, ctx, query):
+    def get_user_gold_report(self, ctx, query) -> str:
+        user = ctx.message.server.get_member_named(query)
+        if user is None:
+            return f"{query} is not a user on the server."
+        return self.__get_user_gold(user)
+
+    def query_user_totals(self, ctx, query) -> str:
+        user = ctx.message.server.get_member_named(query)
+        if user is None:
+            return f"{query} is not a user on the server."
+        return self.get_totals(user)
+
+    def get_totals(self, user) -> str or None:
+        gold_stats = self.__get_formatted_totals(user)
+        if len(gold_stats) > 0:
+            gold_stats.insert(0, f"{user.display_name}'s stats")
+            return LINEBREAK.join(gold_stats)
+
+    def query_user_winnings(self, ctx, query) -> str:
+        user = ctx.message.server.get_member_named(query)
+        if user is None:
+            return f"{query} is not a user on the server."
+        return self.get_winnings(user)
+
+    def get_winnings(self, user) -> str or None:
+        gold_stats = self.__get_formatted_winnings(user)
+        if len(gold_stats) > 0:
+            gold_stats.insert(0, f"{user.display_name} won from")
+            return LINEBREAK.join(gold_stats)
+
+    def query_user_losses(self, ctx, query) -> str:
         member = ctx.message.server.get_member_named(query)
         if member is None:
-            await self.bot.say(f"{query} is not a user on the server.")
-            return
-        await self._say_user_gold(member)
+            return f"{query} is not a user on the server."
+        return self.get_losses(member)
 
-    async def _say_user_gold(self, query_user):
+    def get_losses(self, user) -> str or None:
+        losses = self.__get_formatted_losses(user)
+        if len(losses) > 0:
+            losses.insert(0, f"{user.display_name} lost to")
+            return LINEBREAK.join(losses)
+
+    def __get_formatted_totals(self, user) -> List[str]:
+        return self.__get_formatted_gold_stats('total', user)
+
+    def __get_formatted_winnings(self, user) -> List[str]:
+        return self.__get_formatted_gold_stats('won', user)
+
+    def __get_formatted_losses(self, user) -> List[str]:
+        return self.__get_formatted_gold_stats('lost', user)
+
+    def __get_formatted_gold_stats(self, stat_type: str, user) -> List[str]:
+        stats = self.__get_sorted_stats(stat_type, user)
+        return [self.__get_details(i, stat) for i, stat in enumerate(stats)]
+
+    def __get_sorted_stats(self, stat_type: str, user) -> List[dict]:
+        """
+        Arrange gold stats by most to least.
+        """
+        gold_stats = self.data_manager.get_gold_stats(user)  # dict of dict
+        list_stats = []
+        for other_user_id, stats in gold_stats.items():
+            gold = stats[stat_type]
+            if gold == 0:  # Ignore 0 value entries
+                continue
+            other_user = self.get_known_user(other_user_id)
+            if other_user:
+                list_stats.append({'user': other_user.display_name,
+                                   'gold': gold})
+
+        return sorted(list_stats, key=itemgetter('gold'), reverse=True)
+
+    def get_known_user(self, id_to_match):
+        for member in self.bot.get_all_members():
+            if member.id == id_to_match:
+                return member
+
+    def __get_user_gold(self, query_user) -> str:
         gold = self.data_manager.get_gold(query_user)
         if gold:
-            await self.bot.say(f"{query_user.display_name} has {gold} gold.")
-        else:
-            await self.bot.say(f"{query_user.display_name} doesn't have any gold.")
+            return f"{query_user.display_name} has {gold} gold."
+        return f"{query_user.display_name} doesn't have any gold."
 
-    async def say_winnings(self, ctx):
-        user = ctx.message.author
-        gold_stats = await self.get_formatted_gold_stats(user, stat_type='won')
-        if len(gold_stats) > 0:
-            gold_stats.insert(0, "You won from")
-            await self.bot.say('\n'.join(gold_stats))
-        else:
-            await self.bot.say("You don't have any statistics yet.")
-
-    async def query_user_losses(self, ctx, query):
-        member = ctx.message.server.get_member_named(query)
-        if member is None:
-            await self.bot.say(f"{query} is not a user on the server.")
-            return
-        await self.say_losses(member)
-
-    async def say_losses(self, member):
-        losses = await self.get_formatted_gold_stats(member, stat_type='lost')
-        if len(losses) > 0:
-            losses.insert(0, f"{member.display_name} lost to")
-            statistics = '\n'.join(losses)
-            await self.bot.say(statistics)
-        else:
-            await self.bot.say(f"{member.display_name} doesn't have any statistics yet.")
-
-    async def get_formatted_gold_stats(self, user, stat_type):
-        gold_stats = self.data_manager.get_gold_stats(user)
-        formatted_stats = []
-
-        for other_user_id, gold in gold_stats.items():
-            filtered_stat = await self.filter_stat(other_user_id, gold, stat_type)
-            if filtered_stat is not None:
-                formatted_stats.append(filtered_stat)
-
-        return formatted_stats
-
-    async def filter_stat(self, user_id, gold, stat_type):
-        user = await self.bot.get_user_info(user_id)
-        amount = gold[stat_type]
-        if amount > 0:
-            return f"{user.display_name}: {amount} gold"
+    @staticmethod
+    def __get_details(position: int, stat: dict) -> str:
+        user = stat['user']
+        gold = stat['gold']
+        position += 1  # Start from 1
+        return f'{position}) {user}: {gold} gold'

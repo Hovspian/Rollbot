@@ -47,7 +47,7 @@ class GoldManager:
         except KeyError:
             return 0
 
-    def get_gold_stats(self, user):
+    def get_gold_stats(self, user) -> dict or None:
         try:
             response = self.table.get_item(Key={'id': user.id})
             item = response['Item']

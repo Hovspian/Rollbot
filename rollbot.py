@@ -237,8 +237,13 @@ async def gold(ctx, query=None):
 
 
 @bot.command(pass_context=True)
-async def winnings(ctx):
-    await stats_bot.query_winnings(ctx)
+async def stats(ctx, query=None):
+    await stats_bot.query_stats(ctx, query)
+
+
+@bot.command(pass_context=True)
+async def winnings(ctx, query=None):
+    await stats_bot.query_winnings(ctx, query)
 
 
 @bot.command(pass_context=True)
