@@ -25,7 +25,7 @@ class BigSlotsBias(SlotsBias):
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index, random_index, first_row, last_row, no_bias, no_bias]
+        return [random_index, random_index, random_index, random_index, first_row, last_row, no_bias, no_bias]
 
 
 class GiantSlots(SlotMachine):
@@ -45,7 +45,7 @@ class GiantSlotsBias(SlotsBias):
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index, first_row, last_row, no_bias, no_bias]
+        return [random_index, random_index, first_row, last_row, no_bias]
 
 
 class ClassicSlots(SlotMachine):
@@ -55,14 +55,22 @@ class ClassicSlots(SlotMachine):
                                  STRAWBERRY, STRAWBERRY,
                                  PEAR, PEAR,
                                  PINEAPPLE,
+                                 CHICKEN,
                                  GRAPES,
-                                 BUTT,
                                  MEAT,
+                                 FLYING_MONEY,
                                  LEMON,
-                                 BAR, BAR,
                                  HAMMER,
+                                 SPAGHETTI,
                                  CAKE,
-                                 SEVEN]
+                                 DOUGHNUT,
+                                 MELON,
+                                 BAR,
+                                 WATERMELON,
+                                 EGGPLANT,
+                                 SEVEN,
+                                 BUTT
+                                 ]
 
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:
@@ -92,10 +100,18 @@ class MapleSlots(SlotMachine):
                                  KUMBI, KUMBI,
                                  PINKY,
                                  OCTOPUS,
+                                 PIGGY,
                                  PEPE,
                                  MESOCOIN,
+                                 PICO,
                                  STEELY,
+                                 MAPLE_CAKE,
+                                 MAPLE_STAR,
                                  MESOBAG,
+                                 LOLLY,
+                                 GIFT,
+                                 MAPLE_CANDY,
+                                 PINK_DRAGON,
                                  PANLID]
 
     @staticmethod
