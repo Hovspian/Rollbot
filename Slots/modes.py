@@ -54,11 +54,12 @@ class ClassicSlots(SlotMachine):
         self.default_outcomes = [CHERRY, CHERRY,
                                  STRAWBERRY, STRAWBERRY,
                                  PEAR, PEAR,
-                                 PINEAPPLE,
+                                 PINEAPPLE, PINEAPPLE,
                                  CHICKEN,
                                  GRAPES,
                                  MEAT,
                                  FLYING_MONEY,
+                                 PANCAKE,
                                  LEMON,
                                  HAMMER,
                                  SPAGHETTI,
@@ -97,7 +98,7 @@ class MapleSlots(SlotMachine):
                                  WARBOW, WARBOW,
                                  MUSHROOM, MUSHROOM,
                                  SLIME, SLIME,
-                                 KUMBI, KUMBI,
+                                 KUMBI,
                                  PINKY,
                                  OCTOPUS,
                                  PIGGY,
@@ -129,5 +130,48 @@ class BigMapleSlots(BigSlots, MapleSlots):
 
 
 class GiantMapleSlots(GiantSlots, MapleSlots):
+    def __init__(self, ctx):
+        super().__init__(ctx)
+
+
+class PokeSlots(SlotMachine):
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.default_outcomes = [MAGIKARP, MAGIKARP,
+                                 PIDGEY, PIDGEY,
+                                 WEEPINBELL, WEEPINBELL,
+                                 PSYDUCK, PSYDUCK,
+                                 KOFFING,
+                                 JIGGLYPUFF,
+                                 ROWLET,
+                                 NATU,
+                                 MAREEP,
+                                 EEVEE,
+                                 MARILL,
+                                 SLOWBRO,
+                                 MUDKIP,
+                                 FARFETCHD,
+                                 WHIMSICOTT,
+                                 WAILORD,
+                                 SNORLAX,
+                                 KANGASKHAN,
+                                 HONCHKROW,
+                                 PIKACHU,
+                                 GOLD_MAGIKARP]
+    @staticmethod
+    def get_win_message(matches, winning_stats, payout) -> str:
+        linebreak = '\n'
+        yen = '<:yencoin:425874186138026005>'
+        return linebreak.join([f'Rolled {matches}!',
+                               f'{winning_stats}',
+                               f'{yen} Payout is {payout} ¥. {yen}'])
+
+
+class BigPokeSlots(BigSlots, PokeSlots):
+    def __init__(self, ctx):
+        super().__init__(ctx)
+
+
+class GiantPokeSlots(GiantSlots, PokeSlots):
     def __init__(self, ctx):
         super().__init__(ctx)

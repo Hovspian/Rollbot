@@ -210,6 +210,20 @@ async def bigmapleslots(ctx):
 async def giantmapleslots(ctx):
     await slot_machine_bot.initialize_giantmapleslots(ctx)
 
+@bot.command(pass_context=True)
+async def pokeslots(ctx):
+    await slot_machine_bot.initialize_pokeslots(ctx)
+
+
+@bot.command(pass_context=True)
+async def bigpokeslots(ctx):
+    await slot_machine_bot.initialize_bigpokeslots(ctx)
+
+
+@bot.command(pass_context=True)
+async def giantpokeslots(ctx):
+    await slot_machine_bot.initialize_giantpokeslots(ctx)
+
 
 @bot.command(pass_context=True)
 async def hammerpot(ctx):
