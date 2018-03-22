@@ -28,17 +28,30 @@ class SlotsBias:
         return index
 
     def get_match_index(self, reel) -> int:
-        first_column = self.results[0]
-        symbol_to_match = first_column[self.bias_index]
         bias_direction = self.bias_direction()
         align_to_bias = loop_list_value(index=bias_direction, container=reel)
-        return reel.index(symbol_to_match) - align_to_bias
+        return self.get_random_matching_index(reel) - align_to_bias
+
+    def get_random_matching_index(self, reel: List[dict]) -> int:
+        """
+        A reel may have multiples of the symbol to match. We will get all of them and pick the index randomly.
+        """
+        bias_symbol = self.get_symbol_to_match()
+        indices = []
+        for i, symbol in enumerate(reel):
+            if symbol is bias_symbol:
+                indices.append(i)
+        return roll(indices)
+
+    def get_symbol_to_match(self) -> dict:
+        first_column = self.results[0]
+        return first_column[self.bias_index]
 
     def _get_bias_options(self) -> List[int]:
         # Reels may align themselves to match a chosen symbol in the first column
         random_index = random.randint(self.first_row, self.last_row)
         no_bias = -1
-        return [random_index, random_index, no_bias]
+        return [random_index, random_index, random_index, no_bias, no_bias]
 
     def _roll_bias_index(self) -> None:
         bias_options = self._get_bias_options()
@@ -50,7 +63,7 @@ class SlotsBias:
         if diagonal_bias is not None:
             self._roll_bias_direction(diagonal_bias)
 
-    def get_diagonal_bias(self) -> classmethod:
+    def get_diagonal_bias(self) -> classmethod or None:
         if self.bias_index == self.first_row:
             return self._top_left_diagonal_bias
         elif self.bias_index == self.last_row:

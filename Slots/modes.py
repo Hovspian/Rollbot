@@ -10,10 +10,10 @@ from Slots.slot_machine import SlotMachine
 class BigSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.num_columns = 5
-        self.payout_multiplier = 1.5
-        self.init_reel_size = self.num_columns * 2
         self.bias_mechanic = BigSlotsBias(self)
+
+    def init_num_columns(self) -> int:
+        return 5
 
 
 class BigSlotsBias(SlotsBias):
@@ -25,15 +25,18 @@ class BigSlotsBias(SlotsBias):
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index, random_index, random_index, first_row, last_row, no_bias, no_bias]
+        return [random_index, random_index, random_index, random_index,
+                first_row, last_row,
+                no_bias, no_bias]
 
 
 class GiantSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.num_columns = 7
-        self.payout_multiplier = 2
         self.bias_mechanic = GiantSlotsBias(self)
+
+    def init_num_columns(self) -> int:
+        return 7
 
 
 class GiantSlotsBias(SlotsBias):
@@ -45,7 +48,9 @@ class GiantSlotsBias(SlotsBias):
         last_row = self.num_columns - 1
         random_index = random.randint(first_row, last_row)
         no_bias = -1
-        return [random_index, random_index, first_row, last_row, no_bias]
+        return [random_index, random_index, random_index, random_index, random_index,
+                first_row, last_row,
+                no_bias, no_bias]
 
 
 class ClassicSlots(SlotMachine):
