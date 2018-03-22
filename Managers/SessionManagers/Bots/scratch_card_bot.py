@@ -158,7 +158,7 @@ class ScratchCardMoveAnnouncer:
         self.messages = []  # TODO array to hold messages for cleanup
 
     async def report_turn(self, game):
-        current_card = game.feedback.get_grid()
+        current_card = game.feedback.get_card()
         report = game.feedback.get_report()
         await self.bot.say(current_card)
         await self.bot.say(report)

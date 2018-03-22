@@ -14,10 +14,6 @@ class GridHandler:
     def __init__(self, num_columns, num_rows):
         self.num_rows = num_rows
         self.num_columns = num_columns
-        self.columns = []  # TODO why do some games use this but some don't?
-
-    def get_grid(self) -> List[List[dict]]:
-        return self.columns
 
     def generate_grid(self, values: List) -> List[List[dict]]:
         # Creates a 2D array of items.
@@ -31,15 +27,12 @@ class GridHandler:
 
         return [create_row(i) for i in range(self.num_rows)]
 
-    def get_rows(self) -> List[list]:
-        num_columns = len(self.columns)
+    def get_rows(self, columns: List[list]) -> List[list]:
+        num_columns = len(columns)
 
         def _get_row(i):
-            return [self.columns[column][i] for column in range(num_columns)]
+            return [columns[column][i] for column in range(num_columns)]
         return [_get_row(i) for i in range(num_columns)]
-
-    def add_column(self, column):
-        self.columns.append(column)
 
     def get_emotes(self, symbols) -> str:
         return ''.join(self.get_emote_list(symbols))

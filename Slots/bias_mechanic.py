@@ -16,7 +16,7 @@ class SlotsBias:
         self._roll_bias_index()
         self._check_bias_directions()
 
-    def get_index(self, reel) -> int:
+    def get_index(self, reel: List[dict]) -> int:
         """
         Which row/diagonal to bias toward
         """
@@ -27,7 +27,7 @@ class SlotsBias:
             index = random_index
         return index
 
-    def get_match_index(self, reel) -> int:
+    def get_match_index(self, reel: List[dict]) -> int:
         bias_direction = self.bias_direction()
         align_to_bias = loop_list_value(index=bias_direction, container=reel)
         return self.get_random_matching_index(reel) - align_to_bias
