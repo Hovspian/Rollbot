@@ -14,7 +14,6 @@ class SlotMachine(GameCore):
         self.default_outcomes = []
         self.num_columns = self._init_num_columns()
         self.grid_handler = GridHandler(self.num_columns, self.num_columns)
-        self.reels = []
         self.winning_combos = []
         self.winning_symbols = []
         self.payout = 0
@@ -26,17 +25,17 @@ class SlotMachine(GameCore):
         return 3
 
     def run(self) -> None:
-
-        def _roll_columns() -> None:
-            reel = self._get_reel()
-            column = self._generate_column(reel)
-            self.results.append(column)
-
-        for i in range(self.num_columns):
-            _roll_columns()
-
+        self._generate_columns()
         self._check_results()
         self._resolve_payout()
+
+    def _generate_columns(self):
+        first_column = self._get_initial_column()
+        self.results.append(first_column)
+        for i in range(self.num_columns - 1):
+            reel = self._reconstruct_reel()
+            column = self._generate_column(reel)
+            self.results.append(column)
 
     def render_slots(self) -> str:
         rows = self.grid_handler.get_rows(self.results)
@@ -64,21 +63,20 @@ class SlotMachine(GameCore):
             return int(math.floor(total_payout))
         return 0
 
-    def _get_reel(self) -> List[dict]:
-        # If no reel, create one from default values. Otherwise, reconstruct the first reel.
-        if len(self.reels) == 0:
-            reel = self._get_initial_reel()
-        else:
-            reel = self._create_new_reel()
-        self.reels.append(reel)
-        return reel
+    def _reconstruct_reel(self) -> List[dict]:
+        new_reel = list(self.results[0])
+        symbols_left = self.num_columns + 1
+        for i in range(symbols_left):
+            symbol = self._get_symbol(new_reel)
+            new_reel.append(symbol)
+        return new_reel
 
-    def _get_initial_reel(self) -> List[dict]:
-        reel = []
+    def _get_initial_column(self) -> List[dict]:
+        column = []
         for i in range(self.num_columns):
-            symbol = self.get_initial_reel_symbol(reel)
-            reel.append(symbol)
-        return reel
+            symbol = self.get_initial_reel_symbol(column)
+            column.append(symbol)
+        return column
 
     def get_initial_reel_symbol(self, reel: List[dict]) -> dict:
         if len(reel) > 0:
@@ -87,14 +85,6 @@ class SlotMachine(GameCore):
             return roll(filtered_container)
         else:
             return roll(self.default_outcomes)
-
-    def _create_new_reel(self) -> List[dict]:
-        new_reel = list(self.results[0])
-        symbols_left = self.num_columns + 1
-        for i in range(symbols_left):
-            symbol = self._get_symbol(new_reel)
-            new_reel.append(symbol)
-        return new_reel
 
     def _get_symbol(self, reel: List[dict]) -> dict:
         biased_symbol = self.bias_mechanic.get_symbol_to_match()
@@ -108,9 +98,9 @@ class SlotMachine(GameCore):
         """
         Returns a symbol that is either biased or random from the default symbol pool.
         """
-        first_reel = self.reels[0]
+        first_column = self.results[0]
         previous_symbol = reel[len(reel) - 1]
-        containers = [first_reel, first_reel, first_reel, self.default_outcomes]
+        containers = [first_column, first_column, first_column, self.default_outcomes]
         # Pick a random container and filter the previous symbol from it:
         symbols = filter_value(roll(containers), previous_symbol)
         return roll(symbols)
