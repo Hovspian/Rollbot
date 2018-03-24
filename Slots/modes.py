@@ -145,6 +145,7 @@ class PokeSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
         self.default_outcomes = [MAGIKARP, MAGIKARP,
+                                 DITTO, DITTO,
                                  PIDGEY, PIDGEY,
                                  WEEPINBELL, WEEPINBELL,
                                  PSYDUCK, PSYDUCK,

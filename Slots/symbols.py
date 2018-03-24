@@ -34,13 +34,14 @@ PICO = {'emote': '<:picopico:425506390795354112>', 'value': 10}
 STEELY = {'emote': '<:steely:247981619519029248>', 'value': 10}
 MAPLE_CAKE = {'emote': '<:maplecake:425506226671976448>', 'value': 12}
 MAPLE_STAR = {'emote': '<:maplestar:425506226680365066>', 'value': 12}
-GIFT = {'emote': '<:maplegift:425506390732177408>', 'value': 15}
+GIFT = {'emote': '<:gift2:427156498926272513>', 'value': 15}
 MAPLE_CANDY = {'emote': '<:maplecandy:425506226210865154>', 'value': 15}
 PINK_DRAGON = {'emote': '<:pdragon:425506226613387264>', 'value': 20}
 MESOBAG = {'emote': '<:mesobag:246852286658248704>', 'value': 25}
 PANLID = {'emote': '<:panlid:336281521893933057>', 'value': 50}
 
 MAGIKARP = {'emote': '<:magikarp:425868255614205952>', 'value': 1}
+DITTO = {'emote': '<a:ditto:426991919378333716>', 'value': 1}
 PIDGEY = {'emote': '<:pidgey:425868861032890368>', 'value': 2}
 WEEPINBELL = {'emote': '<:weepinbell:425870197656780801>', 'value': 3}
 PSYDUCK = {'emote': '<:psyduck:425868255501090818>', 'value': 3}

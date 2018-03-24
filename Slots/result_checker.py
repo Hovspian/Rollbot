@@ -1,5 +1,7 @@
 from typing import List
 
+from Slots.symbols import DITTO
+
 
 class ResultChecker:
     def __init__(self, slot_machine):
@@ -47,11 +49,8 @@ class ResultChecker:
             return True
 
     @staticmethod
-    def _is_all_matching(symbols) -> bool:
-        for symbol in symbols:
-            if symbol != symbols[0]:
-                return False
-        return True
+    def _is_all_matching(symbols: List[dict]) -> bool:
+        return all(symbol == symbols[0] or symbol == DITTO for symbol in symbols)
 
     def _add_winning_combo(self, combo_name: str) -> None:
         self.winning_combos.append(combo_name)
