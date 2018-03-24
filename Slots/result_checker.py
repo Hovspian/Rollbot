@@ -1,5 +1,6 @@
 from typing import List
 
+from Core.helper_functions import filter_value
 from Slots.symbols import DITTO
 
 
@@ -44,13 +45,21 @@ class ResultChecker:
             self._add_winning_combo(combo_name)
 
     def _check_winning_match(self, symbols: List[dict]) -> bool:
-        if self._is_all_matching(symbols):
+        """
+        Ditto counts as a match in any case, so we will remove him from the list and look at the remaining symbols.
+        """
+        filtered = filter_value(symbols, DITTO)
+        is_all_dittos = len(filtered) == 0
+        if is_all_dittos:
+            self._add_winning_match(DITTO)
+            return True
+        elif self._is_all_matching(filtered):
             self._add_winning_match(symbols[0])
             return True
 
     @staticmethod
     def _is_all_matching(symbols: List[dict]) -> bool:
-        return all(symbol == symbols[0] or symbol == DITTO for symbol in symbols)
+        return all(symbol == symbols[0] for symbol in symbols)
 
     def _add_winning_combo(self, combo_name: str) -> None:
         self.winning_combos.append(combo_name)
