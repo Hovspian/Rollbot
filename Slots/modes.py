@@ -144,12 +144,11 @@ class GiantMapleSlots(GiantSlots, MapleSlots):
 class PokeSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.default_outcomes = [MAGIKARP, MAGIKARP,
-                                 DITTO, DITTO,
+        self.default_outcomes = [MAGIKARP, MAGIKARP, MAGIKARP,
                                  PIDGEY, PIDGEY,
                                  WEEPINBELL, WEEPINBELL,
                                  PSYDUCK, PSYDUCK,
-                                 KOFFING,
+                                 KOFFING, KOFFING,
                                  JIGGLYPUFF,
                                  ROWLET,
                                  NATU,
@@ -165,7 +164,8 @@ class PokeSlots(SlotMachine):
                                  KANGASKHAN,
                                  HONCHKROW,
                                  PIKACHU,
-                                 GOLD_MAGIKARP]
+                                 GOLD_MAGIKARP,
+                                 DITTO]
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:
         linebreak = '\n'
