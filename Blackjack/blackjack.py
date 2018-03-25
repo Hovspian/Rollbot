@@ -6,6 +6,7 @@ from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import BlackjackHand, PlayerHand
 from Core.core_game_class import GameCore
 from Core.constants import GAME_ID
+from Core.turn_timer import TurnTimer
 
 
 class Blackjack(GameCore):
@@ -16,8 +17,8 @@ class Blackjack(GameCore):
         self.bot = bot
         self.announcer = BlackjackPlayerAnnouncer(bot)
         self.dealer = self.init_dealer()
+        self._turn_timer = TurnTimer(bot, self)
         self.standing_players = []  # Players to compare with the dealer's hand at the end of the game.
-        self.max_time_left = 10 * 60  # 10 minutes
         self.payouts = []
         self.id = GAME_ID['BLACKJACK']
         self.payout_handler = PayoutHandler(self)
@@ -29,11 +30,12 @@ class Blackjack(GameCore):
         return BlackjackDealer(user, self)
 
     async def start_game(self):
-        super().start_game()
         self.__dispense_cards()
         await self.__show_player_cards()
         await self.dealer.show_face_up()
         await self.__check_initial_dealer_cards()
+        super().start_game()
+        await self._turn_timer.run()
 
     def add_user(self, user):
         super().add_user(user)
@@ -46,6 +48,30 @@ class Blackjack(GameCore):
     def is_turn(self, user):
         first_in_queue = self.__get_current_player().user
         return user is first_in_queue
+
+    async def resolve_afk(self) -> None:
+        player = self.__get_current_player()
+        is_last_player = len(self.players) == 1
+        if player.afk > 0 or is_last_player:
+            await self.bot.say(f"{player.name} is away. {player.name} has forfeited the match.")
+            self.forfeit()
+        else:
+            await self.__requeue_afk_player()
+        await self.__next_turn()
+
+    async def __requeue_afk_player(self):
+        player = self.players.pop(0)
+        self.players.append(player)
+        await self.bot.say(f"{player.name} seems to be away. Skipping their turn...")
+
+    def forfeit(self):
+        """
+        A player who forfeits or quits loses their hands' wagers.
+        """
+        player = self.__get_current_player()
+        for hand in player.get_hands():
+            self.payout_handler.add_bust(player, hand)
+        self.__knock_out_current_player()
 
     async def hit(self) -> None:
         hand = self.__get_current_player().get_active_hand()
@@ -145,6 +171,7 @@ class Blackjack(GameCore):
         else:
             self.__current_player_stand()
             await self.__next_turn()
+        self._turn_timer.refresh_turn_timer()
 
     def __current_player_stand(self) -> None:
         """

@@ -10,7 +10,7 @@ class TurnTimer:
     def __init__(self, bot, game):
         self.bot = bot
         self.game = game
-        self.max_turn_time = 90  # Seconds
+        self.max_turn_time = 60  # Seconds
         self.low_time = 20
         self.time_left = self.max_turn_time
 

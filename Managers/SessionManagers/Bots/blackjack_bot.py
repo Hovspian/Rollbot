@@ -71,7 +71,6 @@ class BlackjackInitializer(GameInitializer):
         self._add_game(blackjack.ctx, blackjack)
         await self._run_join_timer(blackjack)
         await blackjack.start_game()
-        await self._run_time_limit(blackjack)
         self._remove_game(blackjack.ctx)
         self.data_manager.batch_transfer(blackjack.get_payouts())
 
