@@ -53,7 +53,7 @@ class Blackjack(GameCore):
         player = self.__get_current_player()
         is_last_player = len(self.players) == 1
         if player.afk > 0 or is_last_player:
-            await self.bot.say(f"{player.name} is away. {player.name} has forfeited the match.")
+            await self.bot.say(f"{player.name} is away. They have forfeited the match.")
             self.forfeit()
         else:
             await self.__requeue_afk_player()
@@ -159,9 +159,9 @@ class Blackjack(GameCore):
             await self.announcer.no_players_left()
 
     async def __next_player_turn(self) -> None:
-        current_player = self.players[0]
+        current_player = self.__get_current_player()
         player_name = current_player.name
-        hand = self.__get_current_player().get_active_hand()
+        hand = current_player.get_active_hand()
         await self.announcer.next_turn(player_name, hand)
 
     async def __check_next_hand(self) -> None:
