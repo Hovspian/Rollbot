@@ -59,11 +59,11 @@ class Bombtile(GameCore):
     async def run(self) -> None:
         if self.__can_start_game():
             self.__initialize_grid()
-            random.shuffle(self.players)
             # Grid dimensions are a dependency of feedback, because feedback uses a string representation of the grid.
             # Hence the ordering.
             await self.__initialize_feedback()
             super().start_game()
+            random.shuffle(self.players)
             await self.announcer.announce_current_turn()
             await self._turn_timer.run()
         else:
