@@ -123,11 +123,14 @@ class ChannelManager:
 
     def _get_invalid_add_ai_error(self, ctx) -> str or None:
         channel = ctx.message.channel
+        user = ctx.message.user
         error = None
         if not self._is_game_in_channel(channel):
             error = "No game in this channel."
         elif self._is_game_in_progress(channel):
             error = "Adding players is closed for this game."
+        elif not self._is_user_in_game(channel, user):
+            error = "Please join the game before trying to add AI players."
         return error
 
     def _is_game_in_channel(self, channel) -> bool:
