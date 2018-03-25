@@ -84,7 +84,7 @@ class Blackjack(GameCore):
         """
         Double wager, then draw and finish.
         """
-        if hand.plays_made == 0:
+        if hand.can_double_down():
             card = self.deck.draw_card()
             hand.double_down(card)
             return True

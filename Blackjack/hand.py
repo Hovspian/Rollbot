@@ -110,6 +110,9 @@ class PlayerHand(BlackjackHand):
         matching_values = self._calculate_value(first_card) == self._calculate_value(second_card)
         return (matching_rank or matching_values) and two_cards
 
+    def can_double_down(self) -> bool:
+        return self.plays_made == 0
+
     def get_wager(self) -> int:
         return self._wager
 
