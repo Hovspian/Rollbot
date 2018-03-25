@@ -15,15 +15,18 @@ class RemoteDataManager:
                                             payout['from_user'])
 
     def single_transfer(self, to_user, amount, from_user):
-        if to_user == from_user:
-            return
-        self.gold_manager.transfer_gold(to_user, amount, from_user)
+        if self.is_valid_transfer(to_user, from_user):
+            self.gold_manager.transfer_gold(to_user, amount, from_user)
 
     def get_gold(self, user):
         return self.gold_manager.get_gold(user)
 
     def get_gold_stats(self, user):
         return self.gold_manager.get_gold_stats(user)
+
+    @staticmethod
+    def is_valid_transfer(to_user, from_user) -> bool:
+        return to_user.id != from_user.id
 
 
 class GoldManager:
