@@ -147,6 +147,6 @@ class ChannelManager:
         return user == game.host
 
     async def _say_temp_message(self, message: str):
-        await self.bot.say(message)
+        temp = await self.bot.say(message)
         await asyncio.sleep(5.0)
-        await self.bot.delete_message(message)
+        await self.bot.delete_message(temp)
