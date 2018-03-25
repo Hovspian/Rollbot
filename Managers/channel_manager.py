@@ -38,7 +38,7 @@ class ChannelManager:
         error = self._get_invalid_forcestart_error(ctx)
         if error:
             temp_message = await self.bot.say(error)
-            await self._auto_delete_message(temp_message)
+            await self._say_temp_message(temp_message)
             return
         user = ctx.message.author
         timer = self.join_timers[user]
@@ -51,25 +51,22 @@ class ChannelManager:
 
     async def is_valid_channel(self, ctx) -> bool:
         channel = ctx.message.channel
-        if self._is_game_in_channel(channel):
-            temp_message = await self.bot.say("Another game is already underway in this channel.")
-            await self._auto_delete_message(temp_message)
-        else:
+        if not self._is_game_in_channel(channel):
             return True
+        await self._say_temp_message("Another game is already underway in this channel.")
+        return False
 
     async def check_valid_join(self, ctx) -> None:
         error = self._get_invalid_join_error(ctx)
         if error:
-            temp_message = await self.bot.say(error)
-            await self._auto_delete_message(temp_message)
+            await self._say_temp_message(error)
         else:
             await self._add_user_to_game(ctx)
 
     async def check_valid_add_ai(self, ctx) -> None:
         error = self._get_invalid_add_ai_error(ctx)
         if error:
-            temp_message = await self.bot.say(error)
-            await self._auto_delete_message(temp_message)
+            await self._say_temp_message(error)
         else:
             await self.add_ai_to_game(ctx)
 
@@ -88,16 +85,17 @@ class ChannelManager:
             await game.add_ai()
             await self._check_player_capacity(game)
         except AttributeError:
-            await self.bot.say("This game currently doesn't support AI players.")
 
-    async def _check_player_capacity(self, game):
+            await self._say_temp_message("This game currently doesn't support AI players.")
+
+    async def _check_player_capacity(self, game) -> None:
         """
         The game auto starts when the max number of players has been reached.
         """
         if game.is_max_num_players():
             timer = self.join_timers[game.host]
             timer.cancel_timer()
-            await self.bot.say("The game room is now full.")
+            await self._say_temp_message("The game room is now full.")
 
     def _get_invalid_forcestart_error(self, ctx) -> str or None:
         channel = ctx.message.channel
@@ -148,6 +146,7 @@ class ChannelManager:
         game = self.active_games[channel]
         return user == game.host
 
-    async def _auto_delete_message(self, message):
+    async def _say_temp_message(self, message: str):
+        await self.bot.say(message)
         await asyncio.sleep(5.0)
         await self.bot.delete_message(message)
