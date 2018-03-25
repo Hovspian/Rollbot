@@ -21,6 +21,7 @@ class Blackjack(GameCore):
         self.payouts = []
         self.id = GAME_ID['BLACKJACK']
         self.payout_handler = PayoutHandler(self)
+        self.max_num_players = 5
 
     def init_dealer(self) -> BlackjackDealer:
         # TODO let players host blackjack games
