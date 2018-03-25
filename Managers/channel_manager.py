@@ -57,7 +57,7 @@ class ChannelManager:
         else:
             return True
 
-    async def check_valid_join(self, ctx):
+    async def check_valid_join(self, ctx) -> None:
         error = self._get_invalid_join_error(ctx)
         if error:
             temp_message = await self.bot.say(error)
@@ -65,13 +65,30 @@ class ChannelManager:
         else:
             await self._add_user_to_game(ctx)
 
+    async def check_valid_add_ai(self, ctx) -> None:
+        error = self._get_invalid_add_ai_error(ctx)
+        if error:
+            temp_message = await self.bot.say(error)
+            await self._auto_delete_message(temp_message)
+        else:
+            await self.add_ai_to_game(ctx)
+
     async def _add_user_to_game(self, ctx) -> None:
         channel = ctx.message.channel
         user = ctx.message.author
-        game = self.active_games[channel]
+        game = self.get_game(channel)
         game.add_user(user)
         await self.bot.say(f"{user.display_name} joined the game.")
         await self._check_player_capacity(game)
+
+    async def add_ai_to_game(self, ctx) -> None:
+        channel = ctx.message.channel
+        game = self.get_game(channel)
+        try:
+            await game.add_ai()
+            await self._check_player_capacity(game)
+        except AttributeError:
+            await self.bot.say("This game currently doesn't support AI players.")
 
     async def _check_player_capacity(self, game):
         """
@@ -82,7 +99,7 @@ class ChannelManager:
             timer.cancel_timer()
             await self.bot.say("The game room is now full.")
 
-    def _get_invalid_forcestart_error(self, ctx) -> str:
+    def _get_invalid_forcestart_error(self, ctx) -> str or None:
         channel = ctx.message.channel
         user = ctx.message.author
         error = None
@@ -94,7 +111,7 @@ class ChannelManager:
             error = "Only the game host can forcestart the game."
         return error
 
-    def _get_invalid_join_error(self, ctx) -> str:
+    def _get_invalid_join_error(self, ctx) -> str or None:
         channel = ctx.message.channel
         user = ctx.message.author
         error = None
@@ -104,6 +121,15 @@ class ChannelManager:
             error = "Sign ups are closed for this game."
         elif self._is_user_in_game(channel, user):
             error = f"{user.display_name} is already in the game."
+        return error
+
+    def _get_invalid_add_ai_error(self, ctx) -> str or None:
+        channel = ctx.message.channel
+        error = None
+        if not self._is_game_in_channel(channel):
+            error = "No game in this channel."
+        elif self._is_game_in_progress(channel):
+            error = "Adding players is closed for this game."
         return error
 
     def _is_game_in_channel(self, channel) -> bool:

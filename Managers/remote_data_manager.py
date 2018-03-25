@@ -15,6 +15,8 @@ class RemoteDataManager:
                                             payout['from_user'])
 
     def single_transfer(self, to_user, amount, from_user):
+        if to_user == from_user:
+            return
         self.gold_manager.transfer_gold(to_user, amount, from_user)
 
     def get_gold(self, user):

@@ -171,6 +171,18 @@ async def forcestart(ctx):
 
 
 @bot.command(pass_context=True)
+async def ai(ctx):
+    # Add an AI to the game. The game must implement add_ai() for this to work.
+    await channel_manager.check_valid_add_ai(ctx)
+
+
+@bot.command(pass_context=True)
+async def fill(ctx):
+    # TODO Fill the remaining player slots with AI players.
+    await channel_manager.check_valid_add_ai(ctx)
+
+
+@bot.command(pass_context=True)
 async def butts():
     num_butts = random.randint(1, 20)
     butts_message = [':peach:' * num_butts]

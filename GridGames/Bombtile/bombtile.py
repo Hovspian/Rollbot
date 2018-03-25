@@ -1,6 +1,9 @@
 import random
 from typing import List
 
+import asyncio
+
+from Core.ai_users import AiUserGenerator
 from Core.constants import GAME_ID
 from Core.core_game_class import GameCore
 from Core.helper_functions import roll
@@ -36,11 +39,19 @@ class Bombtile(GameCore):
         self.num_rows = None  # TBD
         self.grid_handler = None  # TBD
         self.announcer = None  # TBD -- Relies on grid dimensions.
+        self.ai_generator = AiUserGenerator(bot)
 
     def add_user(self, user) -> None:
         player = BombtilePlayer(user)
         super().add_player(player)
         super().add_user(user)
+
+    async def add_ai(self) -> None:
+        # Get from a random pool of AI "users"
+        ai_user = self.ai_generator.get_ai_user()
+        ai_player = BombtilePlayer.create_ai(ai_user)
+        super().add_player(ai_player)
+        await self.bot.say(f"{ai_player.name} has joined the game.")
 
     def is_max_num_players(self) -> bool:
         return len(self.players) == self.max_players
@@ -156,6 +167,15 @@ class Bombtile(GameCore):
         if await self.__is_final_tile():
             return
         await self.announcer.announce_current_turn()
+        await self.__check_ai_turn()
+
+    async def __check_ai_turn(self) -> None:
+        """
+        If the current player is an AI, automatically flip a tile.
+        """
+        if self.get_current_player().is_ai:
+            await asyncio.sleep(2.0)
+            await self.__auto_flip_tile()
 
     async def __auto_flip_tile(self) -> None:
         """
