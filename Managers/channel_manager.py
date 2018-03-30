@@ -37,8 +37,7 @@ class ChannelManager:
     async def check_valid_forcestart(self, ctx):
         error = self._get_invalid_forcestart_error(ctx)
         if error:
-            temp_message = await self.bot.say(error)
-            await self._say_temp_message(temp_message)
+            await self._say_temp_message(error)
             return
         user = ctx.message.author
         timer = self.join_timers[user]
