@@ -4,6 +4,7 @@ from Blackjack.announcer import BlackjackPlayerAnnouncer
 from Blackjack.deck import Deck
 from Blackjack.dealer import BlackjackDealer
 from Blackjack.hand import BlackjackHand, PlayerHand
+from Core.ai_users import AiUserGenerator
 from Core.core_game_class import GameCore
 from Core.constants import GAME_ID
 from Core.turn_timer import TurnTimer
@@ -16,6 +17,7 @@ class Blackjack(GameCore):
         self.deck = Deck()
         self.bot = bot
         self.announcer = BlackjackPlayerAnnouncer(bot)
+        self.ai_generator = AiUserGenerator(bot)
         self.dealer = self.init_dealer()
         self._turn_timer = TurnTimer(bot, self)
         self.standing_players = []  # Players to compare with the dealer's hand at the end of the game.
@@ -26,7 +28,7 @@ class Blackjack(GameCore):
 
     def init_dealer(self) -> BlackjackDealer:
         # TODO let players host blackjack games
-        user = self.bot.user
+        user = self.ai_generator.get_ai_user()
         return BlackjackDealer(user, self)
 
     async def start_game(self):

@@ -84,7 +84,6 @@ class ChannelManager:
             await game.add_ai()
             await self._check_player_capacity(game)
         except AttributeError:
-
             await self._say_temp_message("This game currently doesn't support AI players.")
 
     async def _check_player_capacity(self, game) -> None:
