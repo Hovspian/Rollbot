@@ -54,7 +54,7 @@ class ResultChecker:
             self._add_winning_match(DITTO)
             return True
         elif self._is_all_matching(filtered):
-            self._add_winning_match(symbols[0])
+            self._add_winning_match(filtered[0])
             return True
 
     @staticmethod
