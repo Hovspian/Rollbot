@@ -171,7 +171,7 @@ async def forcestart(ctx):
 
 
 @bot.command(pass_context=True)
-async def ai(ctx):
+async def addai(ctx):
     # Add an AI to the game. The game must implement add_ai() for this to work.
     await channel_manager.check_valid_add_ai(ctx)
 
