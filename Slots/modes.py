@@ -58,10 +58,10 @@ class GiantSlotsBias(SlotsBias):
 class ClassicSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.default_outcomes = [CHERRY, CHERRY,
-                                 STRAWBERRY, STRAWBERRY,
+        self.default_outcomes = [CHERRY,
+                                 STRAWBERRY,
                                  PEAR, PEAR,
-                                 PINEAPPLE, PINEAPPLE,
+                                 PINEAPPLE,
                                  CHICKEN,
                                  GRAPES,
                                  MEAT,
@@ -77,7 +77,7 @@ class ClassicSlots(SlotMachine):
                                  WATERMELON,
                                  EGGPLANT,
                                  SEVEN,
-                                 BUTT
+                                 BUTT, BUTT
                                  ]
 
     @staticmethod
@@ -101,10 +101,10 @@ class GiantClassicSlots(GiantSlots, ClassicSlots):
 class MapleSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.default_outcomes = [BUBBLING, BUBBLING,
-                                 WARBOW, WARBOW,
-                                 MUSHROOM, MUSHROOM,
-                                 SLIME, SLIME,
+        self.default_outcomes = [BUBBLING,
+                                 WARBOW,
+                                 MUSHROOM,
+                                 SLIME,
                                  KUMBI,
                                  PINKY,
                                  OCTOPUS,
@@ -120,7 +120,7 @@ class MapleSlots(SlotMachine):
                                  GIFT,
                                  MAPLE_CANDY,
                                  PINK_DRAGON,
-                                 PANLID]
+                                 PANLID, PANLID]
 
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:
@@ -144,7 +144,7 @@ class GiantMapleSlots(GiantSlots, MapleSlots):
 class PokeSlots(SlotMachine):
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.default_outcomes = [MAGIKARP, MAGIKARP, MAGIKARP,
+        self.default_outcomes = [MAGIKARP, MAGIKARP,
                                  PIDGEY, PIDGEY,
                                  WEEPINBELL, WEEPINBELL,
                                  PSYDUCK, PSYDUCK,
@@ -165,7 +165,7 @@ class PokeSlots(SlotMachine):
                                  HONCHKROW,
                                  PIKACHU,
                                  GOLD_MAGIKARP,
-                                 DITTO]
+                                 DITTO, DITTO]
     @staticmethod
     def get_win_message(matches, winning_stats, payout) -> str:
         linebreak = '\n'
