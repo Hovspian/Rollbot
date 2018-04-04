@@ -121,7 +121,7 @@ class ChannelManager:
 
     def _get_invalid_add_ai_error(self, ctx) -> str or None:
         channel = ctx.message.channel
-        user = ctx.message.user
+        user = ctx.message.author
         error = None
         if not self._is_game_in_channel(channel):
             error = "No game in this channel."
