@@ -154,6 +154,7 @@ class Blackjack(GameCore):
             await self.end_game()
 
     async def __check_dealer_turn(self) -> None:
+        self._turn_timer.refresh_turn_timer()
         are_players_standing = self.standing_players
         if are_players_standing:
             await self.dealer.make_move()
@@ -161,6 +162,7 @@ class Blackjack(GameCore):
             await self.announcer.no_players_left()
 
     async def __next_player_turn(self) -> None:
+        self._turn_timer.refresh_turn_timer()
         current_player = self.__get_current_player()
         player_name = current_player.name
         hand = current_player.get_active_hand()
