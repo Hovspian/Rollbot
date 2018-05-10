@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from time import localtime, time, sleep, asctime
+from aiohttp.errors import ClientOSError, ClientError
 
 from Core.constants import *
 from Managers.SessionManagers.Bots.blackjack_bot import BlackjackBot
@@ -326,5 +328,24 @@ async def eightball():
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await bot.say(EIGHTBALL_RESPONSES[pick_random])
 
+while True:
+    try:
+        start = time()
+        print("Start running at " + asctime(localtime(start)))
+        bot.run(TOKEN)
+    except ClientOSError as ex:
+        end = time()
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
+                                               "Caused by ClientOSError (probably no internet). Arguments: " + ex.args)
+        sleep(300)
+    except ClientError as ex:
+        end = time()
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
+                                                                        "Caused by ClientError. Arguments: " + ex.args)
+        sleep(60)
+    except Exception as ex:
+        end = time()
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. Caused by " +
+                                                         type(ex).__name__ + "(Unknown reason). Arguments: " + ex.args)
+        sleep(60)
 
-bot.run(TOKEN)
