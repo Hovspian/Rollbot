@@ -336,16 +336,16 @@ while True:
     except ClientOSError as ex:
         end = time()
         print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
-                                               "Caused by ClientOSError (probably no internet). Arguments: " + ex.args)
+                                               "Caused by ClientOSError (probably no internet).")
         sleep(300)
     except ClientError as ex:
         end = time()
         print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
-                                                                        "Caused by ClientError. Arguments: " + ex.args)
+                                                                        "Caused by ClientError.")
         sleep(60)
     except Exception as ex:
         end = time()
         print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. Caused by " +
-                                                         type(ex).__name__ + "(Unknown reason). Arguments: " + ex.args)
+                                                         type(ex).__name__ + "(Unknown reason)")
         sleep(60)
 
