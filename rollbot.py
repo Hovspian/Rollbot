@@ -346,6 +346,6 @@ while True:
     except Exception as ex:
         end = time()
         print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. Caused by " +
-                                                         str(type(ex).__name__) + "(Unknown reason)")
+                                                                               "Unknown reason")
         sleep(60)
 
