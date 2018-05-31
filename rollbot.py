@@ -196,6 +196,15 @@ async def butts():
 
 
 @bot.command(pass_context=True)
+async def melons():
+    num_melons = random.randint(0, 10) * 2
+    if num_melons > 0:
+        await bot.say(':melon:' * num_melons + f'```{num_melons} Melons```')
+    else:
+        await bot.say('```No Melons```')
+
+
+@bot.command(pass_context=True)
 async def slots(ctx):
     await slot_machine_bot.initialize_slots(ctx)
 
