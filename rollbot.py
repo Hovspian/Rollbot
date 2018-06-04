@@ -344,17 +344,17 @@ while True:
         bot.run(TOKEN)
     except ClientOSError as ex:
         end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
                                                "Caused by ClientOSError (probably no internet).")
         sleep(300)
     except ClientError as ex:
         end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. "
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
                                                                         "Caused by ClientError.")
         sleep(60)
     except Exception as ex:
         end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + (end - start) + " seconds. Caused by " +
+        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. Caused by " +
                                                                                "Unknown reason")
         sleep(60)
 
