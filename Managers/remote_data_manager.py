@@ -85,7 +85,6 @@ class ButtManager:
         :param item_type: Eg. 'butts', 'melons'
         """
         user_id = ctx.message.author.id
-        print(user_id)
         server_id = ctx.message.server.id
         self.__add_stats(user_id, amount, item_type)
         self.__add_stats(server_id, amount, item_type)
