@@ -11,6 +11,7 @@ from Managers.remote_data_manager import RemoteDataManager
 class StatisticsBot:
     def __init__(self, bot, data_manager: RemoteDataManager):
         self.gold_stats = GoldStats(bot, data_manager)
+        self.data_manager = data_manager
         self.bot = bot
 
     async def query_gold(self, ctx, query) -> None:
@@ -20,7 +21,7 @@ class StatisticsBot:
             message = self.gold_stats.get_personal_gold_report(ctx)
         await self.bot.say(message)
 
-    async def query_stats(self, ctx, query) -> None:
+    async def query_gold_stats(self, ctx, query) -> None:
         if query:
             stats_list = self.gold_stats.query_user_totals(ctx, query)
         else:
@@ -56,8 +57,35 @@ class StatisticsBot:
                                stats_list,
                                CODE_TAG])
 
-    async def butt_counter(self):
+    async def stats(self, ctx) -> None:
         pass
+
+    def update_melons(self, ctx, amount: int) -> None:
+        self.data_manager.update_melons(ctx, amount)
+
+    def update_butts(self, ctx, amount: int) -> None:
+        self.data_manager.update_butts(ctx, amount)
+
+    def update_eggplants(self, ctx, amount: int) -> None:
+        self.data_manager.update_eggplants(ctx, amount)
+
+    def update_fuqs(self, ctx, amount: int) -> None:
+        self.data_manager.update_fuqs(ctx, amount)
+
+    async def total_butts(self, ctx) -> None:
+        butts_dict = self.data_manager.get_server_butts(ctx)
+        num_butts = butts_dict['butts']
+        num_commands = butts_dict['butts_commands']
+        await self.bot.say(f':peach: Total butts on this server: {num_butts} ({num_commands} `/butts`) :peach: ')
+
+    async def global_butts(self) -> None:
+        num_butts = 0
+        num_commands = 0
+        for server in self.bot.servers:
+            butts_dict = self.data_manager.get_butts_from_server_id(server.id)
+            num_butts += butts_dict['butts']
+            num_commands += butts_dict['butts_commands']
+        await self.bot.say(f':peach: Global butts: {num_butts} ({num_commands}  `/butts`) :peach:')
 
 
 class GoldStats:

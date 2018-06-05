@@ -185,9 +185,10 @@ async def fill(ctx):
 
 
 @bot.command(pass_context=True)
-async def butts():
+async def butts(ctx):
     num_butts = random.randint(1, 20)
     butts_message = [':peach:' * num_butts]
+    stats_bot.update_butts(ctx, num_butts)
     if num_butts > 1:
         butts_message.append(f'```{num_butts} Butts```')
     else:
@@ -196,12 +197,48 @@ async def butts():
 
 
 @bot.command(pass_context=True)
-async def melons():
+async def totalbutts(ctx):
+    await stats_bot.total_butts(ctx)
+
+
+@bot.command(pass_context=True)
+async def globalbutts():
+    await stats_bot.global_butts()
+
+
+@bot.command(pass_context=True)
+async def stats(ctx):
+    await stats_bot.stats(ctx)
+
+
+@bot.command(pass_context=True)
+async def melons(ctx):
     num_melons = random.randint(0, 10) * 2
+    stats_bot.update_melons(ctx, num_melons)
     if num_melons > 0:
         await bot.say(':melon:' * num_melons + f'```{num_melons} Melons```')
     else:
         await bot.say('```No Melons```')
+
+
+@bot.command(pass_context=True)
+async def eggplants(ctx):
+    amount = random.randint(0, 20)
+    stats_bot.update_eggplants(ctx, amount)
+    if amount > 0:
+        await bot.say(':eggplant:' * amount + f'```{amount} Eggplants```')
+    else:
+        await bot.say('```No dongerinos```')
+
+
+@bot.command(pass_context=True)
+async def fuqs(ctx):
+    amount = random.randint(0, 20)
+    stats_bot.update_fuqs(ctx, amount)
+    if amount > 0:
+        await bot.say('<:dafuq:451983622140854277>' * amount + f'```{amount} fuqs given```')
+    else:
+        await bot.say('```No fuqs given```')
 
 
 @bot.command(pass_context=True)
@@ -274,8 +311,8 @@ async def gold(ctx, query=None):
 
 
 @bot.command(pass_context=True)
-async def stats(ctx, query=None):
-    await stats_bot.query_stats(ctx, query)
+async def gold_stats(ctx, query=None):
+    await stats_bot.query_gold_stats(ctx, query)
 
 
 @bot.command(pass_context=True)

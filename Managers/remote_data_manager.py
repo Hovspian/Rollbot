@@ -7,6 +7,7 @@ from Managers.user_profile import get_default_profile
 class RemoteDataManager:
     def __init__(self, bot):
         self.gold_manager = GoldManager(bot)
+        self.butt_manager = ButtManager(bot)
 
     def batch_transfer(self, payouts: dict):
         for payout in payouts:
@@ -27,6 +28,103 @@ class RemoteDataManager:
     @staticmethod
     def is_valid_transfer(to_user, from_user) -> bool:
         return to_user.id != from_user.id
+
+    def update_butts(self, ctx, amount: int) -> None:
+        self.butt_manager.update(ctx, amount, 'butts')
+
+    def get_butts_from_server_id(self, server_id) -> dict:
+        return self.butt_manager.get_stats(server_id, 'butts')
+
+    def get_server_butts(self, ctx) -> dict:
+        return self.butt_manager.get_server_stats(ctx, 'butts')
+
+    def get_user_butts(self, ctx) -> dict:
+        return self.butt_manager.get_user_stats(ctx, 'butts')
+
+    def update_melons(self, ctx, amount: int) -> None:
+        self.butt_manager.update(ctx, amount, 'melons')
+
+    def get_server_melons(self, ctx) -> dict:
+        return self.butt_manager.get_server_stats(ctx, 'melons')
+
+    def get_user_melons(self, ctx) -> dict:
+        return self.butt_manager.get_user_stats(ctx, 'melons')
+
+    def update_eggplants(self, ctx, amount: int) -> None:
+        self.butt_manager.update(ctx, amount, 'eggplants')
+
+    def get_server_eggplants(self, ctx) -> dict:
+        return self.butt_manager.get_server_stats(ctx, 'eggplants')
+
+    def get_user_eggplants(self, ctx) -> dict:
+        return self.butt_manager.get_user_stats(ctx, 'eggplants')
+
+    def update_fuqs(self, ctx, amount) -> None:
+        self.butt_manager.update(ctx, amount, 'fuqs')
+
+    def get_server_fuqs(self, ctx) -> dict:
+        return self.butt_manager.get_server_stats(ctx, 'fuqs')
+
+    def get_user_fuqs(self, ctx) -> dict:
+        return self.butt_manager.get_user_stats(ctx, 'fuqs')
+
+
+class ButtManager:
+    """
+    Get/Update Butts, Melons, etc. statistics.
+    """
+    def __init__(self, bot):
+        dynamodb = boto3.resource('dynamodb')
+        self.table = dynamodb.Table('Butts')
+        self.bot = bot
+
+    def update(self, ctx, amount: int, item_type: str) -> None:
+        """
+        :param ctx: Discord message context
+        :param amount: The amount of whatever to increase
+        :param item_type: Eg. 'butts', 'melons'
+        """
+        user_id = ctx.message.author.id
+        print(user_id)
+        server_id = ctx.message.server.id
+        self.__add_stats(user_id, amount, item_type)
+        self.__add_stats(server_id, amount, item_type)
+
+    def get_server_stats(self, ctx, item_type: str) -> dict:
+        server_id = ctx.message.server.id
+        return self.get_stats(server_id, item_type)
+
+    def get_user_stats(self, ctx, item_type: str) -> dict:
+        user_id = ctx.message.author.id
+        return self.get_stats(user_id, item_type)
+
+    def get_stats(self, entity_id: str, item_type: str) -> dict:
+        command = item_type + '_commands'  # Eg. 'butts_commands', the number of times /butts was used
+        try:
+            response = self.table.get_item(Key={'id': entity_id})
+            item = response['Item']
+            if item is not None:
+                return {
+                    item_type: item[item_type],
+                    command: item[command]
+                }
+        except KeyError:
+            return {item_type: 0, command: 0}
+
+    def __add_stats(self, entity_id: str, amount: int, item_type: str) -> None:
+        command = item_type + '_commands'  # Eg. 'butts_commands', the number of times /butts was used
+        try:
+            self.table.update_item(
+                Key={'id': entity_id},
+                UpdateExpression=f'SET {item_type} = if_not_exists({item_type}, :zero) + :val,'
+                                 f'{command} = if_not_exists({command}, :zero) + :increment',
+                ExpressionAttributeValues={':val': amount,
+                                           ':zero': 0,
+                                           ':increment': 1}
+            )
+        except ClientError as e:
+            print(f"Failed to update or create profile for {item_type}. :spaghetti:")
+            raise e
 
 
 class GoldManager:
