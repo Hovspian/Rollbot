@@ -305,6 +305,13 @@ async def scratch(ctx):
     await scratchcard_bot.scratch(ctx)
 
 
+@bot.command()
+async def scratchbutts():
+    pick_random = random.randint(0, len(SCRATCH_BUTTS) - 1)
+    message = ':peach:' + SCRATCH_BUTTS[pick_random]
+    await bot.say(message)
+
+
 @bot.command(pass_context=True)
 async def gold(ctx, query=None):
     await stats_bot.query_gold(ctx, query)

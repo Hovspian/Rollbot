@@ -66,6 +66,49 @@ ROLLGAME_COMMANDS = "**Rollgame commands:**" \
                     " someone rolls 1 and loses. The winnings are split between everyone else." \
                     "\nNote: if there is a tie then I will do more rolls on my own to determine the winner."
 
+SCRATCH_BUTTS = [':point_left:',
+                 '<:weepinbell:425870197656780801>',
+                 '<:bobface:455948634949943296>',
+                 '<:dafuq:451983622140854277>',
+                 ':melon:',
+                 '<:zergling:231180053491351552>',
+                 '<a:ditto:426978211046621185>',
+                 '<:mareep:425868255522062337>',
+                 '<a:spinkiss:452567956380057630>',
+                 '<:mesowad:246852286993793025>',
+                 ':middle_finger:',
+                 ':hammer:',
+                 '<:mesocoin:246852286914101248>',
+                 ':cloud:',
+                 ':cloud_tornado:',
+                 '<a:nomnom:445818147845439504>',
+                 ':thinking:',
+                 ':wave:',
+                 '<:bobface:455948634949943296>',
+                 ':left_facing_fist:',
+                 ':peach:',
+                 ':100:',
+                 ':revolving_hearts:',
+                 ':hotsprings:',
+                 ':notes:',
+                 ':arrow_left:',
+                 ':end:',
+                 ':speech_balloon:',
+                 ':anger_right:',
+                 ':thought_balloon:',
+                 ':loudspeaker:',
+                 '<a:seizureditto:428052671891636224>',
+                 ':fire:',
+                 ':shower:',
+                 ':tada:',
+                 ':runner:',
+                 ':cactus:',
+                 '<:lurveyes:245292457741385728>',
+                 ':eyes:',
+                 ':pray:',
+                 '<:psy:457036806089867264>'
+                 ]
+
 
 SPACE = ' '
 DOUBLE_SPACE = '  '
