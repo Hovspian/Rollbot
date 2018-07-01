@@ -7,6 +7,7 @@ from Core.constants import *
 from Managers.SessionManagers.Bots.blackjack_bot import BlackjackBot
 from Managers.SessionManagers.Bots.bombtile_bot import BombtileBot
 from Managers.SessionManagers.Bots.hammer_race_bot import HammerRaceBot
+from Managers.SessionManagers.Bots.meso_plz_bot import MesoPlzBot
 from Managers.SessionManagers.Bots.roll_game_bot import RollGameBot
 from Managers.SessionManagers.Bots.scratch_card_bot import ScratchCardBot
 from Managers.SessionManagers.Bots.slot_machine_bot import SlotMachineBot
@@ -15,6 +16,7 @@ from Managers.channel_manager import ChannelManager
 from Managers.local_data_manager import LocalDataManager
 from Managers.remote_data_manager import RemoteDataManager
 from Managers.statistics import StatisticsBot
+from MesoPlz.meso_plz import MesoPlz
 from RollGames.roll import Roll
 from Slots.modes import *
 from discordtoken import TOKEN
@@ -29,6 +31,7 @@ slot_machine_bot = None
 scratchcard_bot = None
 rollgame_bot = None
 bombtile_bot = None
+mesoplz_bot = None
 stats_bot = None
 
 
@@ -57,6 +60,7 @@ def initialize_modules():
     global scratchcard_bot
     global rollgame_bot
     global bombtile_bot
+    global mesoplz_bot
     global stats_bot
 
     data_manager = get_data_manager()
@@ -69,6 +73,7 @@ def initialize_modules():
     scratchcard_bot = ScratchCardBot(session_options)
     rollgame_bot = RollGameBot(session_options)
     bombtile_bot = BombtileBot(session_options)
+    mesoplz_bot = MesoPlzBot(session_options)
     stats_bot = StatisticsBot(bot, data_manager)
 
 
@@ -310,6 +315,11 @@ async def scratchbutts():
     pick_random = random.randint(0, len(SCRATCH_BUTTS) - 1)
     message = ':peach:' + SCRATCH_BUTTS[pick_random]
     await bot.say(message)
+
+
+@bot.command(pass_context=True)
+async def mesoplz(ctx):
+    await mesoplz_bot.mesos_plz(ctx)
 
 
 @bot.command(pass_context=True)
