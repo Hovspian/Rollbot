@@ -391,24 +391,21 @@ async def eightball():
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await bot.say(EIGHTBALL_RESPONSES[pick_random])
 
-while True:
-    try:
-        start = time()
-        print("Start running at " + asctime(localtime(start)))
-        bot.run(TOKEN)
-    except ClientOSError as ex:
-        end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
-                                               "Caused by ClientOSError (probably no internet).")
-        sleep(300)
-    except ClientError as ex:
-        end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
-                                                                        "Caused by ClientError.")
-        sleep(60)
-    except Exception as ex:
-        end = time()
-        print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. Caused by " +
-                                                                               "Unknown reason")
-        sleep(60)
+
+try:
+    start = time()
+    print("Start running at " + asctime(localtime(start)))
+    bot.run(TOKEN)
+except ClientOSError as ex:
+    end = time()
+    print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
+                                           "Caused by ClientOSError (probably no internet).")
+except ClientError as ex:
+    end = time()
+    print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. "
+                                                                    "Caused by ClientError.")
+except Exception as ex:
+    end = time()
+    print("End running at " + asctime(localtime(end)) + ". Ran for " + str(end - start) + " seconds. Caused by " +
+                                                                           "Unknown reason")
 
