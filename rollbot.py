@@ -22,7 +22,6 @@ from discordtoken import TOKEN
 
 description = '''A bot to roll for users and provide rolling games.'''
 bot = commands.Bot(command_prefix='/', description=description)
-client = discord.Client()
 blackjack_bot = None
 channel_manager = None
 hammer_race_bot = None
@@ -393,3 +392,4 @@ async def eightball():
 
 print("Start running at " + asctime(localtime(time())))
 bot.run(TOKEN)
+bot.close()
