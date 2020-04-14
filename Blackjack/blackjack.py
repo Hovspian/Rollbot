@@ -32,11 +32,11 @@ class Blackjack(GameCore):
         return BlackjackDealer(user, self)
 
     async def start_game(self):
+        super().start_game()
         self.__dispense_cards()
         await self.__show_player_cards()
         await self.dealer.show_face_up()
         await self.__check_initial_dealer_cards()
-        super().start_game()
         await self._turn_timer.run()
 
     def add_user(self, user):
