@@ -85,12 +85,12 @@ class ButtManager:
         :param item_type: Eg. 'butts', 'melons'
         """
         user_id = ctx.message.author.id
-        server_id = ctx.message.server.id
+        server_id = ctx.message.guild.id
         self.__add_stats(user_id, amount, item_type)
         self.__add_stats(server_id, amount, item_type)
 
     def get_server_stats(self, ctx, item_type: str) -> dict:
-        server_id = ctx.message.server.id
+        server_id = ctx.message.guild.id
         return self.get_stats(server_id, item_type)
 
     def get_user_stats(self, ctx, item_type: str) -> dict:

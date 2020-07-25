@@ -81,7 +81,7 @@ class StatisticsBot:
     async def global_butts(self) -> None:
         num_butts = 0
         num_commands = 0
-        for server in self.bot.servers:
+        for server in self.bot.guilds:
             butts_dict = self.data_manager.get_butts_from_server_id(server.id)
             num_butts += butts_dict['butts']
             num_commands += butts_dict['butts_commands']
@@ -101,13 +101,13 @@ class GoldStats:
         return "You don't have any gold. Play a game?"
 
     def get_user_gold_report(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.__get_user_gold(user)
 
     def query_user_totals(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.get_totals(user)
@@ -119,7 +119,7 @@ class GoldStats:
             return LINEBREAK.join(gold_stats)
 
     def query_user_winnings(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.get_winnings(user)
@@ -131,7 +131,7 @@ class GoldStats:
             return LINEBREAK.join(gold_stats)
 
     def query_user_losses(self, ctx, query) -> str:
-        member = ctx.message.server.get_member_named(query)
+        member = ctx.message.guild.get_member_named(query)
         if member is None:
             return f"{query} is not a user on the server."
         return self.get_losses(member)
