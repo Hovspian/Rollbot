@@ -38,7 +38,7 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('-' * len(bot.user.id))
+    print('---------')
     initialize_modules()
 
 
@@ -390,6 +390,12 @@ async def eightball():
     await bot.say(EIGHTBALL_RESPONSES[pick_random])
 
 
-print("Start running at " + asctime(localtime(time())))
-bot.run(TOKEN)
-bot.close()
+def main():
+    try:
+        bot.run(TOKEN)
+    finally:
+        print(f'End running at {asctime(localtime(time()))}')
+
+
+if __name__ == '__main__':
+    main()
