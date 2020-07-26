@@ -38,7 +38,7 @@ class TurnTimer:
 
     async def _low_time_warning(self):
         current_player = self.game.players[0]
-        await self.bot.say(f"{current_player.name} has 20 seconds.")
+        await self.game.ctx.send(f"{current_player.name} has 20 seconds.")
 
     async def check_afk(self):
         """

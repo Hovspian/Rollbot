@@ -14,7 +14,7 @@ class MoveChecker:
         move_error = self.__check_move_error(user)
         if move_error is None:
             return True
-        temp_message = await self.bot.say(move_error)
+        temp_message = await self.game.ctx.send(move_error)
         await self.__auto_delete_message(temp_message)
 
     def __check_move_error(self, user) -> any:

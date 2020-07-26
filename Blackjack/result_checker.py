@@ -8,6 +8,7 @@ class BlackjackResultChecker:
     """
 
     def __init__(self, game, player_hand: PlayerHand):
+        self.game = game
         self.announcer = game.announcer
         self.dealer_hand = game.dealer.get_active_hand()
         self.player_hand = player_hand
@@ -28,22 +29,22 @@ class BlackjackResultChecker:
         self.is_winner = True
         self.player_hand.blackjack_win()
         winnings = self.player_hand.get_winnings()
-        await self.announcer.announce_player_blackjack(winnings)
+        await self.announcer.announce_player_blackjack(winnings, self.game.ctx)
 
     async def _resolve_normal_win(self):
         self.is_winner = True
         self.player_hand.normal_win()
         winnings = self.player_hand.get_winnings()
-        await self.announcer.win(winnings)
+        await self.announcer.win(winnings, self.game.ctx)
 
     async def _resolve_standoff(self):
         wager = self.player_hand.get_wager()
-        await self.announcer.stand_off(wager)
+        await self.announcer.stand_off(wager, self.game.ctx)
 
     async def _resolve_loss(self):
         self.is_loser = True
         wager = self.player_hand.get_wager()
-        await self.announcer.loss(wager)
+        await self.announcer.loss(wager, self.game.ctx)
 
     def _is_blackjack(self) -> bool:
         # Player wins if their hand is blackjack while the dealer's is not.
@@ -67,7 +68,7 @@ class BlackjackResultChecker:
 
     async def _check_bust(self) -> bool:
         if self.player_hand.is_bust():
-            await self.announcer.declare_player_bust()
+            await self.announcer.declare_player_bust(self.game.ctx)
             return True
 
     def _get_dealer_hand_value(self):

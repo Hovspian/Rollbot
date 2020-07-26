@@ -27,33 +27,33 @@ class InputErrorHandler:
     async def _initial_validate(self, game, formatted_input):
         initial_validator = InitialFilter(game, formatted_input)
         valid_entries = await self._run_validator(initial_validator)
-        await self._check_ignored_warning(initial_validator)
+        await self._check_ignored_warning(initial_validator, game.ctx)
         return valid_entries
 
     async def _secondary_validate(self, game, parsed_input):
         secondary_validator = SecondaryFilter(game, parsed_input)
-        valid_entries = await self._run_validator(secondary_validator)
+        valid_entries = await self._run_validator(secondary_validator, game.ctx)
         return valid_entries
 
-    async def _run_validator(self, validator):
+    async def _run_validator(self, validator, ctx):
         validator.run_filter()
 
         if validator.error:
-            await self.bot.say(validator.error)
+            await ctx.send(validator.error)
         else:
             return validator.valid_entries
 
-    async def _check_ignored_warning(self, validator):
+    async def _check_ignored_warning(self, validator, ctx):
         # Outputs invalid entries from running the filter
         if validator.ignored_entries:
             invalid_entries = ", ".join(validator.ignored_entries)
             skip_message = SPACE.join(["Skipped invalid:", invalid_entries])
-            await self.bot.say(skip_message)
+            await ctx.send(skip_message)
 
     async def check_can_pick_line(self, game) -> bool:
         error = self.check_line_error(game)
         if error:
-            await self.bot.say(error)
+            await game.ctx.send(error)
         else:
             return True
 

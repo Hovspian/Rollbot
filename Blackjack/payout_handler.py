@@ -27,7 +27,7 @@ class PayoutHandler:
     async def __resolve(self, player: BlackjackPlayer) -> None:
         hands = player.get_hands()
         for hand in hands:
-            await self.announcer.player_hand(player.name, hand)
+            await self.announcer.player_hand(player.name, hand, self.game.ctx)
             hand_checker = BlackjackResultChecker(self.game, hand)
             await hand_checker.check_outcome()
             if hand_checker.is_winner:

@@ -16,7 +16,7 @@ class MesoPlzBot(GameInitializer):
         self.data_manager = options.data_manager
 
     async def mesos_plz(self, ctx) -> None:
-       await self._create_session(MesoPlz(ctx))
+        await self._create_session(MesoPlz(ctx))
 
     async def _create_session(self, meso_plz: MesoPlz):
         self._add_game(meso_plz.ctx, meso_plz)
@@ -28,28 +28,28 @@ class MesoPlzBot(GameInitializer):
     async def _report(self, meso_plz: MesoPlz) -> None:
         mesos = meso_plz.get_payout()
         if mesos == 0:
-            await self.__report_no_mesos()
+            await self.__report_no_mesos(meso_plz.ctx)
         elif mesos == 1:
-            await self.bot.say(f"{BRONZE_MESOCOIN} {mesos} meso")
+            await meso_plz.ctx.send(f"{BRONZE_MESOCOIN} {mesos} meso")
         elif 2 <= mesos <= 19:
-            await self.bot.say(f"{BRONZE_MESOCOIN} {mesos} mesos")
+            await meso_plz.ctx.send(f"{BRONZE_MESOCOIN} {mesos} mesos")
         elif 20 <= mesos <= 49:
-            await self.bot.say(f"{GOLD_MESOCOIN} {mesos} mesos")
+            await meso_plz.ctx.send(f"{GOLD_MESOCOIN} {mesos} mesos")
         elif 50 <= mesos <= 99:
-            await self.bot.say(f"{MESO_WAD} {mesos} mesos")
+            await meso_plz.ctx.send(f"{MESO_WAD} {mesos} mesos")
         elif 100 <= mesos <= 250:
-            await self.bot.say(f"{MESO_BAG} {mesos} mesos")
+            await meso_plz.ctx.send(f"{MESO_BAG} {mesos} mesos")
         else:
-            await self.bot.say(f"{MESO_BAG}{MESO_BAG} {mesos} mesos")
+            await meso_plz.ctx.send(f"{MESO_BAG}{MESO_BAG} {mesos} mesos")
 
-    async def __report_no_mesos(self):
+    async def __report_no_mesos(self, ctx):
         """
         50/50 chance to say 'ccplz'
         """
         if random.randint(0, 1):
-            await self.bot.say('ccplz')
+            await ctx.send('ccplz')
         else:
-            await self.bot.say('No mesos')
+            await ctx.send('No mesos')
 
     def _save_payout(self, meso_plz: MesoPlz) -> None:
         gold_amount = meso_plz.get_payout()

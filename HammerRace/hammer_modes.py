@@ -52,7 +52,7 @@ class ComparisonHammer(HammerRace):
         if self.valid_num_players():
             await super().run()
         else:
-            await self.bot.say(self.invalid_players_error)
+            await self.ctx.send(self.invalid_players_error)
 
     def _get_outcome_report(self) -> str:
         return LINEBREAK.join([f"Out of {self.message}:",
@@ -89,10 +89,10 @@ class VersusHammer(HammerRace):
     async def run(self):
         if self.valid_num_players():  # TODO full at 5 people
             starting_message = SPACE.join(["Race between", self._get_participant_names()])
-            await self.bot.say(starting_message)
+            await self.ctx.send(starting_message)
             await super().run()
         else:
-            await self.bot.say(self.invalid_players_error)
+            await self.ctx.send(self.invalid_players_error)
 
     def _get_outcome_report(self) -> str:
         if not self.winning_players:

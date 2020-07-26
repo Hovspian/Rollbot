@@ -19,7 +19,7 @@ class StatisticsBot:
             message = self.gold_stats.get_user_gold_report(ctx, query)
         else:
             message = self.gold_stats.get_personal_gold_report(ctx)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_gold_stats(self, ctx, query) -> None:
         if query:
@@ -29,7 +29,7 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_totals(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_winnings(self, ctx, query) -> None:
         if query:
@@ -39,7 +39,7 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_winnings(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_losses(self, ctx, query) -> None:
         if query:
@@ -49,7 +49,7 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_losses(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     @staticmethod
     def wrap_statistics(stats_list: str) -> str:
@@ -76,16 +76,16 @@ class StatisticsBot:
         butts_dict = self.data_manager.get_server_butts(ctx)
         num_butts = butts_dict['butts']
         num_commands = butts_dict['butts_commands']
-        await self.bot.say(f':peach: Total butts on this server: {num_butts} ({num_commands} `/butts`) :peach: ')
+        await ctx.send(f':peach: Total butts on this server: {num_butts} ({num_commands} `/butts`) :peach: ')
 
-    async def global_butts(self) -> None:
+    async def global_butts(self, ctx) -> None:
         num_butts = 0
         num_commands = 0
         for server in self.bot.guilds:
             butts_dict = self.data_manager.get_butts_from_server_id(server.id)
             num_butts += butts_dict['butts']
             num_commands += butts_dict['butts_commands']
-        await self.bot.say(f':peach: Global butts: {num_butts} ({num_commands}  `/butts`) :peach:')
+        await ctx.send(f':peach: Global butts: {num_butts} ({num_commands}  `/butts`) :peach:')
 
 
 class GoldStats:

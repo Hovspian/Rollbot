@@ -17,14 +17,14 @@ class BlackjackJoinTimer(JoinTimer):
         user_name = self.game.host_name
         setup_message = f"{user_name} is starting a round of Blackjack!" \
                         f" Type `/join` in the next {self.join_time} seconds to join."
-        await self.bot.say(setup_message)
+        await self.game.ctx.send(setup_message)
 
     async def _say_last_call_message(self):
         random_message = roll(self.random_messages)
         last_call = SPACE.join([random_message, "Last call to sign up!"])
-        await self.bot.say(last_call)
+        await self.game.ctx.send(last_call)
 
     async def _say_start_message(self):
         dealer = self.game.dealer.name
-        await self.bot.say(f"Starting Blackjack. Your dealer is {dealer}, "
+        await self.game.ctx.send(f"Starting Blackjack. Your dealer is {dealer}, "
                            "and plays are made against their hand.")
