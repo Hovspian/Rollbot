@@ -42,7 +42,7 @@ class ChannelManager:
         user = ctx.message.author
         timer = self.join_timers[user]
         timer.cancel_timer()
-        await self.bot.add_reaction(ctx.message, '👌')
+        await ctx.message.add_reaction('👌')
 
     def quit(self):
         # User quits the game (if possible)
