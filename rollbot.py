@@ -403,7 +403,7 @@ async def hammerrace(ctx):
     await ctx.send(HAMMERRACE_COMMANDS)
 
 
-@bot.command(alias='8ball')
+@bot.command(aliases=['8ball'])
 async def eightball(ctx):
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await ctx.send(EIGHTBALL_RESPONSES[pick_random])
