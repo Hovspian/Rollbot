@@ -43,10 +43,12 @@ async def on_ready():
 
 
 def get_data_manager():
+    # TODO: Local data manager no longer works with discord.py update
     try:
         return RemoteDataManager(bot)
     except:
-        print("No connection to the database. Falling back to local data.")
+        print("No connection to the database")
+        return
         return LocalDataManager(bot)
 
 
@@ -157,16 +159,22 @@ async def quit(ctx):
 
 @bot.command()
 async def askhammer(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_classic_race(ctx)
 
 
 @bot.command()
 async def compare(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_comparison(ctx)
 
 
 @bot.command()
 async def versushammer(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_versus(ctx)
 
 
@@ -201,17 +209,16 @@ async def butts(ctx):
 
 @bot.command()
 async def totalbutts(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await stats_bot.total_butts(ctx)
 
 
 @bot.command()
 async def globalbutts(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await stats_bot.global_butts(ctx)
-
-
-@bot.command()
-async def stats(ctx):
-    await stats_bot.stats(ctx)
 
 
 @bot.command()
@@ -290,21 +297,29 @@ async def giantpokeslots(ctx):
 
 @bot.command()
 async def hammerpot(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.create_hammerpot(ctx)
 
 
 @bot.command()
 async def scratchcard(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.create_classic(ctx)
 
 
 @bot.command()
 async def pick(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.pick_line(ctx)
 
 
 @bot.command()
 async def scratch(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.scratch(ctx)
 
 
@@ -327,16 +342,20 @@ async def gold(ctx, query=None):
 
 @bot.command()
 async def gold_stats(ctx, query=None):
+    # TODO: No longer works with discord.py update
+    return
     await stats_bot.query_gold_stats(ctx, query)
 
 
 @bot.command()
 async def winnings(ctx, query=None):
+    # TODO: No longer works with discord.py update
     await stats_bot.query_winnings(ctx, query)
 
 
 @bot.command()
 async def losses(ctx, query=None):
+    # TODO: No longer works with discord.py update
     await stats_bot.query_losses(ctx, query)
 
 

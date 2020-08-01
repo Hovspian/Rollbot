@@ -57,9 +57,6 @@ class StatisticsBot:
                                stats_list,
                                CODE_TAG])
 
-    async def stats(self, ctx) -> None:
-        pass
-
     def update_melons(self, ctx, amount: int) -> None:
         self.data_manager.update_melons(ctx, amount)
 
