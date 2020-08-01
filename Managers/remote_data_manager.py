@@ -84,7 +84,7 @@ class ButtManager:
         :param amount: The amount of whatever to increase
         :param item_type: Eg. 'butts', 'melons'
         """
-        user_id = ctx.message.author.id
+        user_id = str(ctx.message.author.id)  # Was string in older discord.py version. Convert for legacy reasons
         server_id = ctx.message.guild.id
         self.__add_stats(user_id, amount, item_type)
         self.__add_stats(server_id, amount, item_type)
@@ -94,7 +94,7 @@ class ButtManager:
         return self.get_stats(server_id, item_type)
 
     def get_user_stats(self, ctx, item_type: str) -> dict:
-        user_id = ctx.message.author.id
+        user_id = str(ctx.message.author.id)  # Was string in older discord.py version. Convert for legacy reasons
         return self.get_stats(user_id, item_type)
 
     def get_stats(self, entity_id: str, item_type: str) -> dict:
@@ -142,7 +142,8 @@ class GoldManager:
 
     def get_gold(self, user):
         try:
-            response = self.table.get_item(Key={'id': user.id})
+            # id was string in older discord.py version. Convert for legacy reasons
+            response = self.table.get_item(Key={'id': str(user.id)})
             item = response['Item']
             if item is not None:
                 return item['gold']
@@ -151,7 +152,8 @@ class GoldManager:
 
     def get_gold_stats(self, user) -> dict or None:
         try:
-            response = self.table.get_item(Key={'id': user.id})
+            # id was string in older discord.py version. Convert for legacy reasons
+            response = self.table.get_item(Key={'id': str(user.id)})
             item = response['Item']
             if item is not None:
                 return item['gold_stats']
@@ -161,7 +163,8 @@ class GoldManager:
     def __refresh_rollbot(self):
         try:
             self.table.update_item(
-                Key={'id': self.bot.user.id},
+                # id was string in older discord.py version. Convert for legacy reasons
+                Key={'id': str(self.bot.user.id)},
                 UpdateExpression='SET gold = :val',
                 ExpressionAttributeValues={':val': 1000000}
             )
@@ -184,7 +187,7 @@ class GoldManager:
     def __update_gold(self, user, amount):
         try:
             self.table.update_item(
-                Key={'id': user.id},
+                Key={'id': str(user.id)},  # id was string in older discord.py version. Convert for legacy reasons
                 UpdateExpression='SET gold = gold + :val',
                 ExpressionAttributeValues={':val': amount}
             )
@@ -206,12 +209,13 @@ class GoldManager:
 
     def __update_win(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'id': to_user.id},
+            Key={'id': str(to_user.id)},  # id was string in older discord.py version. Convert for legacy reasons
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total + :val,'
                              '#gs.#id.won = #gs.#id.won + :val',
 
             ExpressionAttributeNames={'#gs': 'gold_stats',
-                                      '#id': from_user.id,
+                                      # id was string in older discord.py version. Convert for legacy reasons
+                                      '#id': str(from_user.id),
                                       '#total': 'total'},
 
             ExpressionAttributeValues={':val': amount}
@@ -219,12 +223,14 @@ class GoldManager:
 
     def __update_loss(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'id': from_user.id},
+            # id was string in older discord.py version. Convert for legacy reasons
+            Key={'id': str(from_user.id)},
             UpdateExpression='SET #gs.#id.#total = #gs.#id.#total - :val,'
                              '#gs.#id.lost = #gs.#id.lost + :val',
 
             ExpressionAttributeNames={'#gs': 'gold_stats',
-                                      '#id': to_user.id,
+                                      # id was string in older discord.py version. Convert for legacy reasons
+                                      '#id': str(to_user.id),
                                       '#total': 'total'},
 
             ExpressionAttributeValues={':val': amount}
@@ -232,10 +238,12 @@ class GoldManager:
 
     def __create_win_stat(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'id': to_user.id},
+            # id was string in older discord.py version. Convert for legacy reasons
+            Key={'id': str(to_user.id)},
             UpdateExpression='SET #gs.#id = :gs',
             ExpressionAttributeNames={'#gs': 'gold_stats',
-                                      '#id': from_user.id},
+                                      # id was string in older discord.py version. Convert for legacy reasons
+                                      '#id': str(from_user.id)},
             ExpressionAttributeValues={
                 ':gs': {'total': amount,
                         'won': amount,
@@ -245,10 +253,12 @@ class GoldManager:
 
     def __create_lose_stat(self, to_user, amount, from_user):
         self.table.update_item(
-            Key={'id': from_user.id},
+            # id was string in older discord.py version. Convert for legacy reasons
+            Key={'id': str(from_user.id)},
             UpdateExpression='SET #gs.#id = :gs',
             ExpressionAttributeNames={'#gs': 'gold_stats',
-                                      '#id': to_user.id},
+                                      # id was string in older discord.py version. Convert for legacy reasons
+                                      '#id': str(to_user.id)},
             ExpressionAttributeValues={
                 ':gs': {'total': -amount,
                         'won': 0,
@@ -271,9 +281,11 @@ class MigrateTable:
     def reset_users(self):
         users = self.bot.get_all_members()
         for user in users:
-            self.new_table.delete_item(Key={'id': user.id})
+            # id was string in older discord.py version. Convert for legacy reasons
+            self.new_table.delete_item(Key={'id': str(user.id)})
         print("Users deleted.")
-        self.new_table.delete_item(Key={'id': self.bot.user.id})
+        # id was string in older discord.py version. Convert for legacy reasons
+        self.new_table.delete_item(Key={'id': str(self.bot.user.id)})
         self.gold_manager.create_profile(self.bot.user, 1000000)
         print("Profile created for Rollbot.")
 
