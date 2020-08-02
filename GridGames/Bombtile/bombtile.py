@@ -51,7 +51,7 @@ class Bombtile(GameCore):
         ai_user = self.ai_generator.get_ai_user()
         ai_player = BombtilePlayer.create_ai(ai_user)
         super().add_player(ai_player)
-        await self.bot.say(f"{ai_player.name} has joined the game.")
+        await self.ctx.send(f"{ai_player.name} has joined the game.")
 
     def is_max_num_players(self) -> bool:
         return len(self.players) == self.max_players
@@ -67,7 +67,7 @@ class Bombtile(GameCore):
             await self.announcer.announce_current_turn()
             await self._turn_timer.run()
         else:
-            await self.bot.say("Bombtile needs at least two players to start.")
+            await self.ctx.send("Bombtile needs at least two players to start.")
 
     async def flip(self, coordinates) -> None:
         """

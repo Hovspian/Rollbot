@@ -38,15 +38,17 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('-' * len(bot.user.id))
+    print('---------')
     initialize_modules()
 
 
 def get_data_manager():
+    # TODO: Local data manager no longer works with discord.py update
     try:
         return RemoteDataManager(bot)
     except:
-        print("No connection to the database. Falling back to local data.")
+        print("No connection to the database")
+        return
         return LocalDataManager(bot)
 
 
@@ -75,13 +77,13 @@ def initialize_modules():
     stats_bot = StatisticsBot(bot, data_manager)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def roll(ctx, max=100):
     """Rolls a random integer between 1 and max. 100 is the default max if another is not given."""
     roller = ctx.message.author
 
     if max < 1:
-        await bot.say('1 is the minimum for rolls.')
+        await ctx.send('1 is the minimum for rolls.')
         return
 
     roll = random.randint(1, max)
@@ -93,101 +95,107 @@ async def roll(ctx, max=100):
     except AttributeError:
         print("Existing game is not accepting rolls.")
 
-    await bot.say(f"{roller.display_name} rolled {roll} (1-{max})")
+    await ctx.send(f"{roller.display_name} rolled {roll} (1-{max})")
 
 
-@bot.group(pass_context=True)
+@bot.group()
 async def rollgame(ctx):
     if ctx.invoked_subcommand is None:
-        await bot.say("You must specify a type of roll game. Try `/rollgame normal`")
+        await ctx.send("You must specify a type of roll game. Try `/rollgame normal`")
 
 
-@rollgame.command(pass_context=True)
+@rollgame.command()
 async def normal(ctx, bet=100):
     await rollgame_bot.create_normal_roll(ctx, bet)
 
 
-@rollgame.command(pass_context=True)
+@rollgame.command()
 async def difference(ctx, bet=100):
     await rollgame_bot.create_difference_roll(ctx, bet)
 
 
-@rollgame.command(pass_context=True)
+@rollgame.command()
 async def countdown(ctx, bet=100):
     await rollgame_bot.create_countdown_roll(ctx, bet)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def join(ctx):
     """ Allows the user to join the channel's active game. """
     await channel_manager.check_valid_join(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def blackjack(ctx):
     await blackjack_bot.create_game(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def hit(ctx):
     await blackjack_bot.make_move(ctx, 'hit')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def stand(ctx):
     await blackjack_bot.make_move(ctx, 'stand')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def split(ctx):
     await blackjack_bot.make_move(ctx, 'split')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def doubledown(ctx):
     await blackjack_bot.make_move(ctx, 'doubledown')
 
 
 # End Blackjack commands
 
-@bot.command(pass_context=True)
+@bot.command()
 async def quit(ctx):
     """ TODO leave the current game """
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def askhammer(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_classic_race(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def compare(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_comparison(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def versushammer(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await hammer_race_bot.create_versus(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def forcestart(ctx):
     await channel_manager.check_valid_forcestart(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def addai(ctx):
     # Add an AI to the game. The game must implement add_ai() for this to work.
     await channel_manager.check_valid_add_ai(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def fill(ctx):
     # TODO Fill the remaining player slots with AI players.
     await channel_manager.check_valid_add_ai(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def butts(ctx):
     num_butts = random.randint(1, 20)
     butts_message = [':peach:' * num_butts]
@@ -196,156 +204,167 @@ async def butts(ctx):
         butts_message.append(f'```{num_butts} Butts```')
     else:
         butts_message.append(f'```{num_butts} Butt```')
-    await bot.say(''.join(butts_message))
+    await ctx.send(''.join(butts_message))
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def totalbutts(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await stats_bot.total_butts(ctx)
 
 
-@bot.command(pass_context=True)
-async def globalbutts():
-    await stats_bot.global_butts()
+@bot.command()
+async def globalbutts(ctx):
+    # TODO: No longer works with discord.py update
+    return
+    await stats_bot.global_butts(ctx)
 
 
-@bot.command(pass_context=True)
-async def stats(ctx):
-    await stats_bot.stats(ctx)
-
-
-@bot.command(pass_context=True)
+@bot.command()
 async def melons(ctx):
     num_melons = random.randint(0, 10) * 2
     stats_bot.update_melons(ctx, num_melons)
     if num_melons > 0:
-        await bot.say(':melon:' * num_melons + f'```{num_melons} Melons```')
+        await ctx.send(':melon:' * num_melons + f'```{num_melons} Melons```')
     else:
-        await bot.say('```No Melons```')
+        await ctx.send('```No Melons```')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def eggplants(ctx):
     amount = random.randint(0, 20)
     stats_bot.update_eggplants(ctx, amount)
     if amount > 0:
-        await bot.say(':eggplant:' * amount + f'```{amount} Eggplants```')
+        await ctx.send(':eggplant:' * amount + f'```{amount} Eggplants```')
     else:
-        await bot.say('```No dongerinos```')
+        await ctx.send('```No dongerinos```')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def fuqs(ctx):
     amount = random.randint(0, 20)
     stats_bot.update_fuqs(ctx, amount)
     if amount > 0:
-        await bot.say('<:dafuq:451983622140854277>' * amount + f'```{amount} fuqs given```')
+        await ctx.send('<:dafuq:451983622140854277>' * amount + f'```{amount} fuqs given```')
     else:
-        await bot.say('```No fuqs given```')
+        await ctx.send('```No fuqs given```')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def slots(ctx):
     await slot_machine_bot.initialize_slots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def bigslots(ctx):
     await slot_machine_bot.initialize_bigslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def giantslots(ctx):
     await slot_machine_bot.initialize_giantslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def mapleslots(ctx):
     await slot_machine_bot.initialize_mapleslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def bigmapleslots(ctx):
     await slot_machine_bot.initialize_bigmapleslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def giantmapleslots(ctx):
     await slot_machine_bot.initialize_giantmapleslots(ctx)
 
-@bot.command(pass_context=True)
+@bot.command()
 async def pokeslots(ctx):
     await slot_machine_bot.initialize_pokeslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def bigpokeslots(ctx):
     await slot_machine_bot.initialize_bigpokeslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def giantpokeslots(ctx):
     await slot_machine_bot.initialize_giantpokeslots(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def hammerpot(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.create_hammerpot(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def scratchcard(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.create_classic(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def pick(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.pick_line(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def scratch(ctx):
+    # TODO: No longer works with discord.py update
+    return
     await scratchcard_bot.scratch(ctx)
 
 
 @bot.command()
-async def scratchbutts():
+async def scratchbutts(ctx):
     pick_random = random.randint(0, len(SCRATCH_BUTTS) - 1)
     message = ':peach:' + SCRATCH_BUTTS[pick_random]
-    await bot.say(message)
+    await ctx.send(message)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def mesoplz(ctx):
     await mesoplz_bot.mesos_plz(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def gold(ctx, query=None):
     await stats_bot.query_gold(ctx, query)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def gold_stats(ctx, query=None):
+    # TODO: No longer works with discord.py update
+    return
     await stats_bot.query_gold_stats(ctx, query)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def winnings(ctx, query=None):
+    # TODO: No longer works with discord.py update
     await stats_bot.query_winnings(ctx, query)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def losses(ctx, query=None):
+    # TODO: No longer works with discord.py update
     await stats_bot.query_losses(ctx, query)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def flip(ctx):
     await bombtile_bot.flip(ctx)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def bombtile(ctx):
     await bombtile_bot.create_bombtile(ctx)
 
@@ -353,43 +372,49 @@ async def bombtile(ctx):
 bot.remove_command('help')
 
 
-@bot.group(pass_context = True)
+@bot.group()
 async def help(ctx):
     if ctx.invoked_subcommand is None:
-        await bot.say(BASIC_COMMANDS)
+        await ctx.send(BASIC_COMMANDS)
 
 
 @help.command()
-async def slots():
-    await bot.say(SLOTS_COMMANDS)
+async def slots(ctx):
+    await ctx.send(SLOTS_COMMANDS)
 
 
 @help.command()
-async def blackjack():
-    await bot.say(BLACKJACK_COMMANDS)
+async def blackjack(ctx):
+    await ctx.send(BLACKJACK_COMMANDS)
 
 
 @help.command()
-async def rollgame():
-    await bot.say(ROLLGAME_COMMANDS)
+async def rollgame(ctx):
+    await ctx.send(ROLLGAME_COMMANDS)
 
 
 @help.command()
-async def scratchcard():
-    await bot.say(SCRATCHCARD_COMMANDS)
+async def scratchcard(ctx):
+    await ctx.send(SCRATCHCARD_COMMANDS)
 
 
 @help.command()
-async def hammerrace():
-    await bot.say(HAMMERRACE_COMMANDS)
+async def hammerrace(ctx):
+    await ctx.send(HAMMERRACE_COMMANDS)
 
 
-@bot.command(alias='8ball')
-async def eightball():
+@bot.command(aliases=['8ball'])
+async def eightball(ctx):
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
-    await bot.say(EIGHTBALL_RESPONSES[pick_random])
+    await ctx.send(EIGHTBALL_RESPONSES[pick_random])
 
 
-print("Start running at " + asctime(localtime(time())))
-bot.run(TOKEN)
-bot.close()
+def main():
+    try:
+        bot.run(TOKEN)
+    finally:
+        print(f'End running at {asctime(localtime(time()))}')
+
+
+if __name__ == '__main__':
+    main()

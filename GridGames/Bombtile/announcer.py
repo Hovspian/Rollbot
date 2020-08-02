@@ -16,13 +16,13 @@ class BombtileAnnouncer:
 
     async def render_grid(self) -> None:
         grid = self.renderer.get_grid()
-        await self.bot.say(grid)
+        await self.bombtile.ctx.send(grid)
 
     async def announce_start(self) -> None:
         starting_message = LINEBREAK.join([':bomb: Welcome to Bombtile! :bomb:',
                                            self.renderer.get_grid(),
                                            'Players take turns flipping tiles. Whoever gets the bomb `<!>` loses!'])
-        await self.bot.say(starting_message)
+        await self.bombtile.ctx.send(starting_message)
 
     async def announce_multiplier(self) -> None:
         player = self.bombtile.get_current_player()
@@ -30,7 +30,7 @@ class BombtileAnnouncer:
         wager = player.get_wager()
         message = f"{player.name} revealed a {multiplier}x multiplier! " \
                   f"Their {wager} gold wager is multiplied."
-        await self.bot.say(message)
+        await self.bombtile.ctx.send(message)
 
     async def report_payout(self, winner, amount: int) -> None:
         # Amount is calculated at the end of the game.
@@ -40,11 +40,11 @@ class BombtileAnnouncer:
                       f"({multiplier}x multiplier) :dollar: :dollar:"
         else:
             message = f":dollar: {winner.name} won {amount} gold. :dollar:"
-        await self.bot.say(message)
+        await self.bombtile.ctx.send(message)
 
     async def announce_current_turn(self):
         player = self.bombtile.get_current_player()
-        await self.bot.say(f"It's {player.name}'s turn to `/flip` a tile.")
+        await self.bombtile.ctx.send(f"It's {player.name}'s turn to `/flip` a tile.")
 
     async def report_loss(self) -> None:
         loser = self.bombtile.get_current_player()
@@ -53,14 +53,14 @@ class BombtileAnnouncer:
             message = f":bomb: :bomb: {loser.name} hit the bomb `<!>` with a {multiplier}x multiplier! :bomb: :bomb: "
         else:
             message = f":bomb: {loser.name} hit the bomb `<!>`! :bomb:"
-        await self.bot.say(message)
+        await self.bombtile.ctx.send(message)
 
     async def auto_reveal(self, player) -> None:
-        await self.bot.say(f"Automatically revealing the last tile for {player.name}...")
+        await self.bombtile.ctx.send(f"Automatically revealing the last tile for {player.name}...")
         await asyncio.sleep(1.0)
 
     async def announce_afk(self) -> None:
         player = self.bombtile.get_current_player()
-        await self.bot.say(f"{player.name} seems to be away.")
+        await self.bombtile.ctx.send(f"{player.name} seems to be away.")
         await asyncio.sleep(1.0)
 

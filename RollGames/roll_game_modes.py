@@ -114,5 +114,5 @@ class CountdownRollGame(RollGame):
             self.users.remove(roll.roller)
             self.users.append(roll.roller)
             if roll.rolled > 1:
-                await self.bot.say(f"Waiting for roll to {self.next_roll} from {self.users[0].display_name}")
+                await self.ctx.send(f"Waiting for roll to {self.next_roll} from {self.users[0].display_name}")
 

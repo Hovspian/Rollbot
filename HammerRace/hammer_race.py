@@ -24,16 +24,16 @@ class HammerRace(GameCore):
 
     async def run(self) -> None:
         self.start_game()
-        initial = await self.bot.say(self._round_report())
+        initial = await self.ctx.send(self._round_report())
         self._add_message_to_cleanup(initial)
 
         while self.in_progress:
             await asyncio.sleep(2.0)
             self._next_round()
-            message = await self.bot.say(self._round_report())
+            message = await self.ctx.send(self._round_report())
             self._add_message_to_cleanup(message)
 
-        await self.bot.say(self._get_outcome_report())
+        await self.ctx.send(self._get_outcome_report())
         await self._cleanup()
 
     def valid_num_players(self) -> bool:

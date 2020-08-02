@@ -52,7 +52,7 @@ class ScratchCardInitializer(GameInitializer):
 
     async def say_starting_message(self, game):
         message = game.feedback.announce_start()
-        await self.bot.say(message)
+        await game.ctx.send(message)
 
     def _save_payout(self, game):
         to_user = game.get_host()
@@ -125,7 +125,7 @@ class ScratchCardMoveHandler:
         if game_host == user:
             return True
         else:
-            await self.announcer.not_host_error(game_host)
+            await self.announcer.not_host_error(game_host, ctx)
 
     async def get_game_host(self, ctx):
         game = await self.get_game(ctx)
@@ -137,7 +137,7 @@ class ScratchCardMoveHandler:
         if game and await self._is_matching_game(game):
             return game
         else:
-            await self.announcer.no_active_card_error()
+            await self.announcer.no_active_card_error(ctx)
 
     # Only Hammerpot uses /pick so far.
     async def _is_pick_valid(self, ctx) -> bool:
@@ -145,7 +145,7 @@ class ScratchCardMoveHandler:
         if game.id == GAME_ID["HAMMERPOT"]:
             return True
         else:
-            await self.announcer.wrong_game_error()
+            await self.announcer.wrong_game_error(ctx)
 
     @staticmethod
     async def _is_matching_game(game: GameCore):
@@ -160,21 +160,21 @@ class ScratchCardMoveAnnouncer:
     async def report_turn(self, game):
         current_card = game.feedback.get_card()
         report = game.feedback.get_report()
-        await self.bot.say(current_card)
-        await self.bot.say(report)
+        await game.ctx.send(current_card)
+        await game.ctx.send(report)
 
-    async def not_host_error(self, game_host):
+    async def not_host_error(self, game_host, ctx):
         host_name = game_host.display_name
-        temp_message = await self.bot.say(f'The current game host is {host_name}. '
+        temp_message = await ctx.send(f'The current game host is {host_name}. '
                                           'Please make a game in another channel.')
         await self._auto_delete_message(temp_message)
 
-    async def no_active_card_error(self):
-        temp_message = await self.bot.say("You don't have an active card.")
+    async def no_active_card_error(self, ctx):
+        temp_message = await ctx.send("You don't have an active card.")
         await self._auto_delete_message(temp_message)
 
-    async def wrong_game_error(self):
-        temp_message = await self.bot.say("That command is for another game.")
+    async def wrong_game_error(self, ctx):
+        temp_message = await ctx.send("That command is for another game.")
         await self._auto_delete_message(temp_message)
 
     async def _auto_delete_message(self, message):

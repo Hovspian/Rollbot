@@ -46,7 +46,7 @@ class GameInitializer:
         user = ctx.message.author
         for game in self.channel_manager.get_games():
             if self._is_in_game(game, user):
-                await self.bot.say("Please finish your current game first.")
+                await ctx.send("Please finish your current game first.")
                 return False
         return True
 

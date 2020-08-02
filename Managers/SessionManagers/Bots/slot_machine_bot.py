@@ -71,8 +71,8 @@ class SlotMachineBot(GameInitializer):
         host_name = slot_machine.get_host_name()
         report = '\n'.join([f"{host_name}'s slot results",
                             slot_machine.get_outcome_report()])
-        await self.bot.say(slot_machine.render_slots())
-        await self.bot.say(report)
+        await slot_machine.ctx.send(slot_machine.render_slots())
+        await slot_machine.ctx.send(report)
 
     def _save_payout(self, slot_machine):
         to_user = slot_machine.get_host()

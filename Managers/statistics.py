@@ -19,7 +19,7 @@ class StatisticsBot:
             message = self.gold_stats.get_user_gold_report(ctx, query)
         else:
             message = self.gold_stats.get_personal_gold_report(ctx)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_gold_stats(self, ctx, query) -> None:
         if query:
@@ -29,7 +29,7 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_totals(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_winnings(self, ctx, query) -> None:
         if query:
@@ -39,7 +39,7 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_winnings(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     async def query_losses(self, ctx, query) -> None:
         if query:
@@ -49,16 +49,13 @@ class StatisticsBot:
             stats_list = self.gold_stats.get_losses(user)
 
         message = self.wrap_statistics(stats_list)
-        await self.bot.say(message)
+        await ctx.send(message)
 
     @staticmethod
     def wrap_statistics(stats_list: str) -> str:
         return LINEBREAK.join([CODE_TAG,
                                stats_list,
                                CODE_TAG])
-
-    async def stats(self, ctx) -> None:
-        pass
 
     def update_melons(self, ctx, amount: int) -> None:
         self.data_manager.update_melons(ctx, amount)
@@ -76,16 +73,16 @@ class StatisticsBot:
         butts_dict = self.data_manager.get_server_butts(ctx)
         num_butts = butts_dict['butts']
         num_commands = butts_dict['butts_commands']
-        await self.bot.say(f':peach: Total butts on this server: {num_butts} ({num_commands} `/butts`) :peach: ')
+        await ctx.send(f':peach: Total butts on this server: {num_butts} ({num_commands} `/butts`) :peach: ')
 
-    async def global_butts(self) -> None:
+    async def global_butts(self, ctx) -> None:
         num_butts = 0
         num_commands = 0
-        for server in self.bot.servers:
+        for server in self.bot.guilds:
             butts_dict = self.data_manager.get_butts_from_server_id(server.id)
             num_butts += butts_dict['butts']
             num_commands += butts_dict['butts_commands']
-        await self.bot.say(f':peach: Global butts: {num_butts} ({num_commands}  `/butts`) :peach:')
+        await ctx.send(f':peach: Global butts: {num_butts} ({num_commands}  `/butts`) :peach:')
 
 
 class GoldStats:
@@ -101,13 +98,13 @@ class GoldStats:
         return "You don't have any gold. Play a game?"
 
     def get_user_gold_report(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.__get_user_gold(user)
 
     def query_user_totals(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.get_totals(user)
@@ -119,7 +116,7 @@ class GoldStats:
             return LINEBREAK.join(gold_stats)
 
     def query_user_winnings(self, ctx, query) -> str:
-        user = ctx.message.server.get_member_named(query)
+        user = ctx.message.guild.get_member_named(query)
         if user is None:
             return f"{query} is not a user on the server."
         return self.get_winnings(user)
@@ -131,7 +128,7 @@ class GoldStats:
             return LINEBREAK.join(gold_stats)
 
     def query_user_losses(self, ctx, query) -> str:
-        member = ctx.message.server.get_member_named(query)
+        member = ctx.message.guild.get_member_named(query)
         if member is None:
             return f"{query} is not a user on the server."
         return self.get_losses(member)

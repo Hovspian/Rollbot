@@ -55,7 +55,7 @@ class Blackjack(GameCore):
         player = self.__get_current_player()
         is_last_player = len(self.players) == 1
         if player.afk > 0 or is_last_player:
-            await self.bot.say(f"{player.name} is away. They have forfeited the match.")
+            await self.ctx.send(f"{player.name} is away. They have forfeited the match.")
             self.forfeit()
         else:
             await self.__requeue_afk_player()
@@ -64,7 +64,7 @@ class Blackjack(GameCore):
     async def __requeue_afk_player(self):
         player = self.players.pop(0)
         self.players.append(player)
-        await self.bot.say(f"{player.name} seems to be away. Skipping their turn...")
+        await self.ctx.send(f"{player.name} seems to be away. Skipping their turn...")
 
     def forfeit(self):
         """
@@ -79,31 +79,31 @@ class Blackjack(GameCore):
         hand = self.__get_current_player().get_active_hand()
         new_card = self.deck.draw_card()
         hand.hit(new_card)
-        await self.announcer.report_hit(hand, new_card)
+        await self.announcer.report_hit(hand, new_card, self.ctx)
         await self.__check_hit_bust(hand)
 
     async def stand_current_hand(self) -> None:
         hand = self.__get_current_player().get_active_hand()
         hand.end_turn()
-        await self.announcer.progressing()
+        await self.announcer.progressing(self.ctx)
         await self.__check_next_hand()
 
     async def attempt_double_down(self) -> None:
         hand = self.__get_current_player().get_active_hand()
         if self._double_down(hand):
             wager = hand.get_wager()
-            await self.announcer.double_down_success(wager)
+            await self.announcer.double_down_success(wager, self.ctx)
             await self.stand_current_hand()
         else:
-            await self.announcer.double_down_fail()
+            await self.announcer.double_down_fail(self.ctx)
 
     async def attempt_split(self) -> None:
         player = self.__get_current_player()
         hand = player.get_active_hand()
         if player.split_hand():
-            await self.announcer.split_successful(hand)
+            await self.announcer.split_successful(hand, self.ctx)
         else:
-            await self.announcer.split_fail()
+            await self.announcer.split_fail(self.ctx)
 
     def get_payouts(self):
         return self.payouts
@@ -137,7 +137,7 @@ class Blackjack(GameCore):
     async def __show_player_cards(self) -> None:
         for player in self.players:
             hand = player.get_active_hand()
-            await self.announcer.player_cards(player.name, hand)
+            await self.announcer.player_cards(player.name, hand, self.ctx)
 
     async def __check_initial_dealer_cards(self) -> None:
         if await self.dealer.has_blackjack():
@@ -159,19 +159,19 @@ class Blackjack(GameCore):
         if are_players_standing:
             await self.dealer.make_move()
         else:
-            await self.announcer.no_players_left()
+            await self.announcer.no_players_left(self.ctx)
 
     async def __next_player_turn(self) -> None:
         self._turn_timer.refresh_turn_timer()
         current_player = self.__get_current_player()
         player_name = current_player.name
         hand = current_player.get_active_hand()
-        await self.announcer.next_turn(player_name, hand)
+        await self.announcer.next_turn(player_name, hand, self.ctx)
 
     async def __check_next_hand(self) -> None:
         active_hand = self.__get_current_player().get_active_hand()
         if active_hand:
-            await self.announcer.next_hand_options(active_hand)
+            await self.announcer.next_hand_options(active_hand, self.ctx)
         else:
             self.__current_player_stand()
             await self.__next_turn()
@@ -186,9 +186,9 @@ class Blackjack(GameCore):
 
     async def __check_hit_bust(self, hand: BlackjackHand) -> None:
         if not hand.is_bust():
-            await self.announcer.ask_hit_again()
+            await self.announcer.ask_hit_again(self.ctx)
             return
-        await self.announcer.declare_player_bust()
+        await self.announcer.declare_player_bust(self.ctx)
         await self.__bust_current_hand()
 
     async def __bust_current_hand(self) -> None:
@@ -215,4 +215,3 @@ class Blackjack(GameCore):
 
     def __knock_out_current_player(self) -> None:
         del self.players[0]
-

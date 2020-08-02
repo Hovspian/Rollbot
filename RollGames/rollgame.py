@@ -21,7 +21,7 @@ class RollGame(GameCore):
             await self.start_game()
             self.end_game()
         else:
-            await self.bot.say(self.invalid_players_error)
+            await self.ctx.send(self.invalid_players_error)
 
     async def start_game(self):
         super().start_game()
@@ -29,14 +29,14 @@ class RollGame(GameCore):
         await self.determine()
 
         if self.result[0][1] == 0:
-            await self.bot.say("It's a tie")
+            await self.ctx.send("It's a tie")
         else:
             loser = self.get_name(self.result[0][0])
             winners = []
             for tup in self.result[1]:
                 winners.append(self.get_name(tup[0]))
             split_winners = ', '.join(winners)
-            await self.bot.say(f"{loser} owes {split_winners} {self.result[1][0][1]}g")
+            await self.ctx.send(f"{loser} owes {split_winners} {self.result[1][0][1]}g")
 
     def valid_num_players(self) -> bool:
         return len(self.players) > 1

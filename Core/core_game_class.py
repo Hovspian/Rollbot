@@ -42,4 +42,3 @@ class GameCore:
 
     def end_game(self):
         self.in_progress = False
-

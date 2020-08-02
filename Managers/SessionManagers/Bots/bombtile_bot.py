@@ -71,7 +71,7 @@ class BombtileMoveHandler:
     async def attempt_flip(self, ctx) -> None:
         error = self._get_move_error(ctx)
         if error:
-            await self.bot.say(error)
+            await ctx.send(error)
             return
         await self._flip(ctx)
 
@@ -125,24 +125,24 @@ class BombtileInputValidator:
     async def validate_input(self, ctx):
         raw_input = message_without_command(ctx.message.content)
         formatted_input = self.parser.format_input(raw_input)
-        is_in_bounds = await self._check_in_bounds(formatted_input[0])
+        is_in_bounds = await self._check_in_bounds(formatted_input[0], ctx)
         if is_in_bounds:
-            return await self._get_parsed_coordinates(formatted_input)
+            return await self._get_parsed_coordinates(formatted_input, ctx)
 
-    async def _get_parsed_coordinates(self, formatted_input):
+    async def _get_parsed_coordinates(self, formatted_input, ctx):
         coordinates = self.parser.get_single_parse(formatted_input)
-        if await self._check_unflipped_tile(coordinates):
+        if await self._check_unflipped_tile(coordinates, ctx):
             return coordinates
 
-    async def _check_unflipped_tile(self, list_coordinates: List[int]) -> bool:
+    async def _check_unflipped_tile(self, list_coordinates: List[int], ctx) -> bool:
         if self.game.is_flippable_tile(list_coordinates):
             return True
-        await self.bot.say("That tile has already been flipped.")
+        await ctx.send("That tile has already been flipped.")
 
-    async def _check_in_bounds(self, coordinates: str):
+    async def _check_in_bounds(self, coordinates: str, ctx):
         if self._valid_num_axes(coordinates) and self._is_in_bounds(coordinates):
             return True
-        await self.bot.say("Please flip a valid tile within the board size. Eg. `/flip A0`")
+        await ctx.send("Please flip a valid tile within the board size. Eg. `/flip A0`")
 
     @staticmethod
     def _valid_num_axes(coordinates: str) -> bool:

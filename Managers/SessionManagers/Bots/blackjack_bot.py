@@ -40,8 +40,8 @@ class BlackjackBot:
         if game and self.id == game.id:
             return True
         else:
-            temp_message = await self.bot.say("You aren't in a Blackjack game. Join the next one?")
-            self._auto_delete_message(temp_message)
+            temp_message = await game.ctx.send("You aren't in a Blackjack game. Join the next one?")
+            await self._auto_delete_message(temp_message)
 
     @staticmethod
     def _is_in_game(game, user) -> bool:

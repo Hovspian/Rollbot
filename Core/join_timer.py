@@ -30,11 +30,11 @@ class JoinTimer:
 
     async def _say_setup_message(self):
         host = self.game.host_name
-        await self.bot.say(f"{host} is starting a {self.game.title}. "
+        await self.game.ctx.send(f"{host} is starting a {self.game.title}. "
                            f"Type `/join` in the next {self.join_time} seconds to join.")
 
     async def _say_last_call_message(self):
-        await self.bot.say("Last call to sign up!")
+        await self.game.ctx.send("Last call to sign up!")
 
     async def _say_start_message(self):
         # TODO this triggers even if it fails the num players check
