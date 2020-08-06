@@ -227,8 +227,10 @@ async def melons(ctx):
     num_melons = random.randint(0, 10) * 2
     # TODO: No longer works with discord.py/boto update
     # stats_bot.update_melons(ctx, num_melons)
+
+    item = 'Melons' if num_melons > 1 else 'Melon'
     if num_melons > 0:
-        await ctx.send(':melon:' * num_melons + f'```{num_melons} Melons```')
+        await ctx.send(':melon:' * num_melons + f'```{num_melons} {item}```')
     else:
         await ctx.send('```No Melons```')
 
@@ -238,8 +240,9 @@ async def eggplants(ctx):
     amount = random.randint(0, 20)
     # TODO: No longer works with discord.py/boto update
     # stats_bot.update_eggplants(ctx, amount)
+    item = 'Eggplants' if amount > 1 else 'Eggplant'
     if amount > 0:
-        await ctx.send(':eggplant:' * amount + f'```{amount} Eggplants```')
+        await ctx.send(':eggplant:' * amount + f'```{amount} {item}```')
     else:
         await ctx.send('```No dongerinos```')
 
@@ -249,8 +252,9 @@ async def fuqs(ctx):
     amount = random.randint(0, 20)
     # TODO: No longer works with discord.py/boto update
     # stats_bot.update_fuqs(ctx, amount)
+    item = 'fuqs' if amount > 1 else 'fuq'
     if amount > 0:
-        await ctx.send('<:dafuq:451983622140854277>' * amount + f'```{amount} fuqs given```')
+        await ctx.send('<:dafuq:451983622140854277>' * amount + f'```{amount} {item} given```')
     else:
         await ctx.send('```No fuqs given```')
 
