@@ -199,7 +199,8 @@ async def fill(ctx):
 async def butts(ctx):
     num_butts = random.randint(1, 20)
     butts_message = [':peach:' * num_butts]
-    stats_bot.update_butts(ctx, num_butts)
+    # TODO: No longer works with discord.py update
+    # stats_bot.update_butts(ctx, num_butts)
     if num_butts > 1:
         butts_message.append(f'```{num_butts} Butts```')
     else:
@@ -216,7 +217,7 @@ async def totalbutts(ctx):
 
 @bot.command()
 async def globalbutts(ctx):
-    # TODO: No longer works with discord.py update
+    # TODO: No longer works with discord.py/boto update
     return
     await stats_bot.global_butts(ctx)
 
@@ -224,7 +225,8 @@ async def globalbutts(ctx):
 @bot.command()
 async def melons(ctx):
     num_melons = random.randint(0, 10) * 2
-    stats_bot.update_melons(ctx, num_melons)
+    # TODO: No longer works with discord.py/boto update
+    # stats_bot.update_melons(ctx, num_melons)
     if num_melons > 0:
         await ctx.send(':melon:' * num_melons + f'```{num_melons} Melons```')
     else:
@@ -234,7 +236,8 @@ async def melons(ctx):
 @bot.command()
 async def eggplants(ctx):
     amount = random.randint(0, 20)
-    stats_bot.update_eggplants(ctx, amount)
+    # TODO: No longer works with discord.py/boto update
+    # stats_bot.update_eggplants(ctx, amount)
     if amount > 0:
         await ctx.send(':eggplant:' * amount + f'```{amount} Eggplants```')
     else:
@@ -244,7 +247,8 @@ async def eggplants(ctx):
 @bot.command()
 async def fuqs(ctx):
     amount = random.randint(0, 20)
-    stats_bot.update_fuqs(ctx, amount)
+    # TODO: No longer works with discord.py/boto update
+    # stats_bot.update_fuqs(ctx, amount)
     if amount > 0:
         await ctx.send('<:dafuq:451983622140854277>' * amount + f'```{amount} fuqs given```')
     else:
