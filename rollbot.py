@@ -20,8 +20,10 @@ from RollGames.roll import Roll
 from Slots.modes import *
 from discordtoken import TOKEN
 
+intents = discord.Intents.default()
+intents.members = True
 description = '''A bot to roll for users and provide rolling games.'''
-bot = commands.Bot(command_prefix='/', description=description)
+bot = commands.Bot(command_prefix='/', description=description, intents=intents)
 blackjack_bot = None
 channel_manager = None
 hammer_race_bot = None
