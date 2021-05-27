@@ -116,7 +116,8 @@ SCRATCH_BUTTS = [':point_left:',
                  ':bow:',
                  ':kiss:',
                  ':unamused:',
-                 ':selfie:'
+                 ':selfie:',
+                 '<:psyduckeyes:847363330658271232>'
                  ]
 
 

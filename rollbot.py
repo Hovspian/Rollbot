@@ -273,7 +273,8 @@ async def ducks(ctx):
         '<:psywoke:667904479164760074>',
         '<:psysly:667904478845992991>',
         '<a:notlikeaduckonfire:562446845608198144>',
-        '<a:notlikeacoldduck:530210238587207691>'
+        '<a:notlikeacoldduck:530210238587207691>',
+        '<:psyduckeyes:847363330658271232>'
     ]
     amount = random.randint(0, 20)
     output = []
