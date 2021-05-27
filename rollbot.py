@@ -262,6 +262,27 @@ async def fuqs(ctx):
 
 
 @bot.command()
+async def ducks(ctx):
+    possible_ducks = [
+        '<:psyduck:425868255501090818>',
+        '<:shinypsyduck:708533235205931019>',
+        '<:psy:457036806089867264>',
+        '<a:spinningpsyduck:708525558446948414>',
+        '<a:psymygod:519687422142054400>'
+    ]
+    amount = random.randint(0, 20)
+    output = []
+    for i in range(amount):
+        index = random.randint(0, len(possible_ducks) - 1)
+        output.append(possible_ducks[index])
+    item = 'ducks' if len(output) > 1 else 'duck'
+    if amount > 0:
+        await ctx.send(''.join(output))
+        await ctx.send(f'```{amount} {item}```')
+    else:
+        await ctx.send('```Psy?```')
+
+@bot.command()
 async def slots(ctx):
     await slot_machine_bot.initialize_slots(ctx)
 
