@@ -268,7 +268,12 @@ async def ducks(ctx):
         '<:shinypsyduck:708533235205931019>',
         '<:psy:457036806089867264>',
         '<a:spinningpsyduck:708525558446948414>',
-        '<a:psymygod:519687422142054400>'
+        '<a:psymygod:519687422142054400>',
+        '<:psyparty:612166267448721428>',
+        '<:psywoke:667904479164760074>',
+        '<:psysly:667904478845992991>',
+        '<a:notlikeaduckonfire:562446845608198144>',
+        '<a:notlikeacoldduck:530210238587207691>'
     ]
     amount = random.randint(0, 20)
     output = []
@@ -277,7 +282,7 @@ async def ducks(ctx):
         output.append(possible_ducks[index])
     item = 'ducks' if len(output) > 1 else 'duck'
     if amount > 0:
-        await ctx.send(''.join(output))
+        await ctx.send(' '.join(output))
         await ctx.send(f'```{amount} {item}```')
     else:
         await ctx.send('```Psy?```')
