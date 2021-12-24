@@ -445,6 +445,11 @@ async def eightball(ctx):
     pick_random = random.randint(0, len(EIGHTBALL_RESPONSES) - 1)
     await ctx.send(EIGHTBALL_RESPONSES[pick_random])
 
+@bot.command()
+async def tsundereball(ctx):
+    pick_random = random.randint(0, len(TSUNDERE_BALL) - 1)
+    await ctx.send(TSUNDERE_BALL[pick_random])
+
 
 def main():
     try:

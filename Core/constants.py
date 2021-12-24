@@ -134,3 +134,22 @@ GAME_ID = {
     "BLACKJACK": 5,
     "BOMBTILE": 6
 }
+
+TSUNDERE_BALL = [
+    "I don't want to talk about it.",
+    "Never mind.",
+    "Forget about it.",
+    "No.",
+    "Sure.",
+    "It's nothing. Don't worry about it.",
+    "Well, maybe.",
+    "Not particularly your business.",
+    "Why do you care?",
+    "Yes.",
+    "(Annoyed sigh) No.",
+    "Barely.",
+    "Fine. Yes.",
+    "Well, it's not like I don't agree...",
+    "As long as it's me you're asking advice from, fine. (Yes.)",
+    "As long as it's me you're asking advice from, fine. (No.)"
+]
